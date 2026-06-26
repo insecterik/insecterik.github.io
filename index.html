@@ -289,6 +289,170 @@
     font-size:13px;
   }
 
+  /* ===== MENU TOGGLE (hamburguesa) ===== */
+  .menu-toggle{
+    background:rgba(255,255,255,.12);
+    border:none;
+    border-radius:8px;
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    order:-1;
+  }
+
+  .menu-toggle span,
+  .menu-toggle span::before,
+  .menu-toggle span::after{
+    content:"";
+    display:block;
+    width:18px;
+    height:2px;
+    background:var(--verde-brillante);
+    position:relative;
+    transition:transform .2s ease, opacity .2s ease;
+  }
+
+  .menu-toggle span::before{ position:absolute; top:-6px; }
+  .menu-toggle span::after{ position:absolute; top:6px; }
+
+  body.sidebar-open .menu-toggle span{ background:transparent; }
+  body.sidebar-open .menu-toggle span::before{ transform:rotate(45deg); top:0; }
+  body.sidebar-open .menu-toggle span::after{ transform:rotate(-45deg); top:0; }
+
+  /* ===== LAYOUT con sidebar ===== */
+  .layout{
+    display:flex;
+    max-width:1400px;
+    margin:0 auto;
+    align-items:flex-start;
+  }
+
+  .main-content{
+    flex:1;
+    min-width:0;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,20,18,.5);
+    z-index:40;
+  }
+
+  body.sidebar-open .sidebar-overlay{ display:block; }
+
+  .sidebar{
+    width:280px;
+    flex-shrink:0;
+    background:white;
+    border-right:1px solid #e7eee9;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    padding:22px 0 40px;
+  }
+
+  .sidebar-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px 16px;
+    border-bottom:1px solid #eef2f0;
+    margin-bottom:10px;
+  }
+
+  .sidebar-header h3{
+    margin:0;
+    font-size:14px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--verde-texto);
+  }
+
+  .sidebar-close{
+    display:none;
+    background:none;
+    border:none;
+    font-size:20px;
+    line-height:1;
+    color:var(--gris-texto);
+    cursor:pointer;
+  }
+
+  .cat-group{
+    border-bottom:1px solid #f1f5f3;
+  }
+
+  .cat-toggle{
+    width:100%;
+    background:none;
+    border:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px 20px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:700;
+    color:var(--verde-texto);
+    text-align:left;
+  }
+
+  .cat-toggle .count{
+    background:var(--crema);
+    color:var(--gris-texto);
+    font-size:11px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:12px;
+    margin-left:8px;
+  }
+
+  .cat-toggle .arrow{
+    margin-left:auto;
+    transition:transform .2s ease;
+    color:var(--verde-brillante);
+    font-size:11px;
+  }
+
+  .cat-toggle.open .arrow{ transform:rotate(90deg); }
+
+  .cat-name{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .species-list{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+    background:#fafdfb;
+  }
+
+  .species-list.open{
+    max-height:1000px;
+  }
+
+  .species-list a{
+    display:block;
+    padding:9px 20px 9px 38px;
+    font-size:13px;
+    color:#3c4a46;
+    border-top:1px solid #eef2f0;
+  }
+
+  .species-list a:hover{
+    color:var(--verde-texto);
+    background:#eef7ee;
+  }
+
   @media (max-width:700px){
     .top-header{ padding:14px 20px; }
     .top-nav{ gap:14px; }
@@ -297,12 +461,33 @@
     .hero h1{ font-size:36px; }
     .hero .subtitle{ font-size:17px; }
     .hero-stats{ gap:18px; font-size:13px; }
+
+    .sidebar{
+      position:fixed;
+      top:0;
+      left:0;
+      height:100vh;
+      width:280px;
+      max-width:80vw;
+      transform:translateX(-100%);
+      transition:transform .25s ease;
+      z-index:50;
+      box-shadow:4px 0 18px rgba(0,0,0,.15);
+    }
+
+    body.sidebar-open .sidebar{ transform:translateX(0); }
+    .sidebar-close{ display:block; }
+  }
+
+  @media (min-width:701px){
+    .menu-toggle{ display:none; }
   }
 </style>
 </head>
 <body>
 
 <div class="top-header">
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú de categorías"><span></span></button>
   <div class="logo">Tibirita Bio</div>
   <div class="top-nav">
     <a href="#colecciones">Colecciones</a>
@@ -314,62 +499,94 @@
   </div>
 </div>
 
-<div class="hero">
-  <div class="hero-inner">
-    <h1>Aprender,<br>Explorar, Valorar</h1>
-    <p class="subtitle">la magnífica diversidad de la fauna de Tibirita, Cundinamarca</p>
-    <div class="hero-stats">
-      {% assign total = site.especies | size %}
-      <div><strong>{{ total }}</strong>especies registradas</div>
-      {% assign categorias = site.especies | map: "categoria" | uniq %}
-      {% for cat in categorias %}
-        {% assign count = 0 %}
-        {% for e in site.especies %}
-          {% if e.categoria == cat %}
-            {% assign count = count | plus: 1 %}
-          {% endif %}
-        {% endfor %}
-        <div><strong>{{ count }}</strong>{{ cat }}</div>
-      {% endfor %}
-    </div>
-  </div>
-</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div class="section-title">
-  <h2>CATÁLOGO DE FAUNA</h2>
-  <span>{{ site.especies | size }} especies en total</span>
-</div>
+<div class="layout">
 
-<div class="container">
-  <div class="gallery">
-    {% for especie in site.especies %}
-    <div class="card">
-      <div class="card-photo">
-        {% if especie.categoria %}
-        <div class="badge">{{ especie.categoria }}</div>
-        {% endif %}
-        {% if especie.imagenes %}
-        <img src="{{ especie.imagenes[0] }}" alt="{{ especie.title }}">
-        {% endif %}
-      </div>
-      <div class="card-content">
-        {% if especie.subcategoria %}
-        <div class="subcategoria">{{ especie.subcategoria }}</div>
-        {% endif %}
-        <h2><a href="{{ especie.url }}">{{ especie.title }}</a></h2>
-        <p class="descripcion">{{ especie.descripcion }}</p>
-        {% if especie.cientifico %}
-        <p class="cientifico">{{ especie.cientifico }}</p>
-        {% endif %}
-      </div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>Categorías</h3>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">&times;</button>
     </div>
+
+    {% assign categorias = site.especies | map: "categoria" | uniq %}
+    {% for cat in categorias %}
+      {% assign especies_cat = site.especies | where: "categoria", cat %}
+      <div class="cat-group">
+        <button class="cat-toggle">
+          <span class="cat-name">{{ cat }}<span class="count">{{ especies_cat | size }}</span></span>
+          <span class="arrow">▶</span>
+        </button>
+        <div class="species-list">
+          {% for especie in especies_cat %}
+          <a href="{{ especie.url }}">{{ especie.title }}</a>
+          {% endfor %}
+        </div>
+      </div>
     {% endfor %}
-  </div>
-</div>
+  </aside>
 
-<footer>
-  Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
-</footer>
+  <div class="main-content">
+
+    <div class="hero">
+      <div class="hero-inner">
+        <h1>Aprender,<br>Explorar, Valorar</h1>
+        <p class="subtitle">la magnífica diversidad de la fauna de Tibirita, Cundinamarca</p>
+        <div class="hero-stats">
+          {% assign total = site.especies | size %}
+          <div><strong>{{ total }}</strong>especies registradas</div>
+          {% for cat in categorias %}
+            {% assign count = 0 %}
+            {% for e in site.especies %}
+              {% if e.categoria == cat %}
+                {% assign count = count | plus: 1 %}
+              {% endif %}
+            {% endfor %}
+            <div><strong>{{ count }}</strong>{{ cat }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <h2>CATÁLOGO DE FAUNA</h2>
+      <span>{{ site.especies | size }} especies en total</span>
+    </div>
+
+    <div class="container">
+      <div class="gallery">
+        {% for especie in site.especies %}
+        <div class="card">
+          <div class="card-photo">
+            {% if especie.categoria %}
+            <div class="badge">{{ especie.categoria }}</div>
+            {% endif %}
+            {% if especie.imagenes %}
+            <img src="{{ especie.imagenes[0] }}" alt="{{ especie.title }}">
+            {% endif %}
+          </div>
+          <div class="card-content">
+            {% if especie.subcategoria %}
+            <div class="subcategoria">{{ especie.subcategoria }}</div>
+            {% endif %}
+            <h2><a href="{{ especie.url }}">{{ especie.title }}</a></h2>
+            <p class="descripcion">{{ especie.descripcion }}</p>
+            {% if especie.cientifico %}
+            <p class="cientifico">{{ especie.cientifico }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <footer>
+      Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
+    </footer>
+
+  </div><!-- /.main-content -->
+
+</div><!-- /.layout -->
 
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
@@ -382,6 +599,36 @@ if (window.netlifyIdentity) {
     }
   });
 }
+</script>
+
+<script>
+  // Abrir / cerrar sidebar en móvil
+  var body = document.body;
+  var menuToggle = document.getElementById('menuToggle');
+  var sidebarClose = document.getElementById('sidebarClose');
+  var sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  function openSidebar(){ body.classList.add('sidebar-open'); }
+  function closeSidebar(){ body.classList.remove('sidebar-open'); }
+
+  if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+  if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+  if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+  // Acordeón de categorías
+  document.querySelectorAll('.cat-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var list = btn.nextElementSibling;
+      var isOpen = list.classList.contains('open');
+
+      btn.classList.toggle('open', !isOpen);
+      list.classList.toggle('open', !isOpen);
+    });
+  });
+
+  // Abre automáticamente la primera categoría
+  var firstToggle = document.querySelector('.cat-toggle');
+  if (firstToggle) firstToggle.click();
 </script>
 
 </body>

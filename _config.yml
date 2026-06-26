@@ -1,8 +1,8 @@
 title: Biodiversidad de Tibirita
 
 collections:
-especies:
-output: true
+  especies:
+    output: true
 
 defaults:
 
@@ -11,3 +11,4 @@ defaults:
   type: especies
   values:
   layout: especie
+

@@ -453,6 +453,136 @@
     background:#eef7ee;
   }
 
+  /* ===== LIGHTBOX ===== */
+  .card-photo{ cursor:zoom-in; }
+
+  .lightbox{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,20,18,.92);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .lightbox.open{
+    display:flex;
+  }
+
+  .lightbox-box{
+    position:relative;
+    max-width:1000px;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .lightbox-stage{
+    position:relative;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .lightbox-stage img{
+    max-width:100%;
+    max-height:75vh;
+    border-radius:10px;
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+    object-fit:contain;
+    background:#0e1f1c;
+  }
+
+  .lightbox-close{
+    position:absolute;
+    top:-44px;
+    right:0;
+    background:rgba(255,255,255,.12);
+    border:none;
+    color:white;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    font-size:20px;
+    cursor:pointer;
+    line-height:1;
+  }
+
+  .lightbox-close:hover{ background:var(--verde-brillante); color:var(--verde-header); }
+
+  .lightbox-nav{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(255,255,255,.12);
+    border:none;
+    color:white;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    font-size:20px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .lightbox-nav:hover{ background:var(--verde-brillante); color:var(--verde-header); }
+  .lightbox-nav.prev{ left:-10px; }
+  .lightbox-nav.next{ right:-10px; }
+
+  .lightbox-caption{
+    color:white;
+    text-align:center;
+    margin-top:16px;
+  }
+
+  .lightbox-caption .title{
+    font-size:18px;
+    font-weight:700;
+    margin:0 0 4px;
+  }
+
+  .lightbox-caption .counter{
+    font-size:13px;
+    color:#a9bdb8;
+    margin:0;
+  }
+
+  .lightbox-thumbs{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .lightbox-thumbs img{
+    width:56px;
+    height:56px;
+    object-fit:cover;
+    border-radius:6px;
+    cursor:pointer;
+    opacity:.55;
+    border:2px solid transparent;
+    transition:opacity .15s ease, border-color .15s ease;
+  }
+
+  .lightbox-thumbs img.active{
+    opacity:1;
+    border-color:var(--verde-brillante);
+  }
+
+  @media (max-width:700px){
+    .lightbox-nav.prev{ left:0; }
+    .lightbox-nav.next{ right:0; }
+    .lightbox-stage img{ max-height:55vh; }
+  }
+
   @media (max-width:700px){
     .top-header{ padding:14px 20px; }
     .top-nav{ gap:14px; }
@@ -557,7 +687,9 @@
       <div class="gallery">
         {% for especie in site.especies %}
         <div class="card">
-          <div class="card-photo">
+          <div class="card-photo"
+               {% if especie.imagenes %}data-images='{{ especie.imagenes | jsonify }}'{% endif %}
+               data-title="{{ especie.title }}">
             {% if especie.categoria %}
             <div class="badge">{{ especie.categoria }}</div>
             {% endif %}
@@ -587,6 +719,22 @@
   </div><!-- /.main-content -->
 
 </div><!-- /.layout -->
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-box">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">&times;</button>
+    <div class="lightbox-stage">
+      <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Anterior">&#8249;</button>
+      <img id="lightboxImg" src="" alt="">
+      <button class="lightbox-nav next" id="lightboxNext" aria-label="Siguiente">&#8250;</button>
+    </div>
+    <div class="lightbox-caption">
+      <p class="title" id="lightboxTitle"></p>
+      <p class="counter" id="lightboxCounter"></p>
+    </div>
+    <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+  </div>
+</div>
 
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
@@ -629,6 +777,108 @@ if (window.netlifyIdentity) {
   // Abre automáticamente la primera categoría
   var firstToggle = document.querySelector('.cat-toggle');
   if (firstToggle) firstToggle.click();
+</script>
+
+<script>
+  // ===== LIGHTBOX de imágenes por especie =====
+  (function(){
+    var lightbox = document.getElementById('lightbox');
+    var imgEl = document.getElementById('lightboxImg');
+    var titleEl = document.getElementById('lightboxTitle');
+    var counterEl = document.getElementById('lightboxCounter');
+    var thumbsEl = document.getElementById('lightboxThumbs');
+    var btnClose = document.getElementById('lightboxClose');
+    var btnPrev = document.getElementById('lightboxPrev');
+    var btnNext = document.getElementById('lightboxNext');
+
+    var images = [];
+    var currentIndex = 0;
+    var currentTitle = '';
+
+    function render(){
+      if (!images.length) return;
+      imgEl.src = images[currentIndex];
+      imgEl.alt = currentTitle;
+      titleEl.textContent = currentTitle;
+      counterEl.textContent = (currentIndex + 1) + ' / ' + images.length;
+
+      thumbsEl.querySelectorAll('img').forEach(function(t, i){
+        t.classList.toggle('active', i === currentIndex);
+      });
+
+      var multi = images.length > 1;
+      btnPrev.style.display = multi ? 'flex' : 'none';
+      btnNext.style.display = multi ? 'flex' : 'none';
+      thumbsEl.style.display = multi ? 'flex' : 'none';
+    }
+
+    function openLightbox(imageList, title, startIndex){
+      images = imageList;
+      currentTitle = title;
+      currentIndex = startIndex || 0;
+
+      thumbsEl.innerHTML = '';
+      images.forEach(function(src, i){
+        var t = document.createElement('img');
+        t.src = src;
+        t.alt = title + ' ' + (i + 1);
+        t.addEventListener('click', function(){
+          currentIndex = i;
+          render();
+        });
+        thumbsEl.appendChild(t);
+      });
+
+      render();
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox(){
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function showPrev(){
+      if (!images.length) return;
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      render();
+    }
+
+    function showNext(){
+      if (!images.length) return;
+      currentIndex = (currentIndex + 1) % images.length;
+      render();
+    }
+
+    document.querySelectorAll('.card-photo[data-images]').forEach(function(photo){
+      photo.addEventListener('click', function(){
+        var list;
+        try {
+          list = JSON.parse(photo.getAttribute('data-images'));
+        } catch (e) {
+          list = [];
+        }
+        if (!list.length) return;
+        openLightbox(list, photo.getAttribute('data-title') || '', 0);
+      });
+    });
+
+    btnClose.addEventListener('click', closeLightbox);
+    btnPrev.addEventListener('click', showPrev);
+    btnNext.addEventListener('click', showNext);
+
+    lightbox.addEventListener('click', function(e){
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', function(e){
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') showPrev();
+      if (e.key === 'ArrowRight') showNext();
+    });
+  })();
 </script>
 
 </body>

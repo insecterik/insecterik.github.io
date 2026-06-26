@@ -11,7 +11,7 @@ public_folder: "/images/uploads"
 collections:
   - name: "especies"
     label: "Especies"
-    folder: "content/especies"
+    folder: "_especies"
     create: true
     slug: "{{slug}}"
 

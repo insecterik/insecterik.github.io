@@ -1,7 +1,10 @@
 backend:
   name: github
-  repo: TU_USUARIO/biodiversidad-tibirita
+  repo: InsectErik/insecterik.github.io
   branch: main
+
+site_url: https://insecterik.github.io
+display_url: https://insecterik.github.io
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
@@ -12,12 +15,31 @@ collections:
     folder: "content/especies"
     create: true
     slug: "{{slug}}"
+
     fields:
-      - {label: "Título", name: "title", widget: "string"}
-      - {label: "Categoría", name: "categoria", widget: "select", options: ["Aves","Mariposas","Insectos","Mamíferos"]}
-      - {label: "Subcategoría", name: "subcategoria", widget: "string"}
-      - {label: "Descripción", name: "descripcion", widget: "text"}
-      - label: "Imágenes"
+      - { label: "Nombre común", name: "title", widget: "string" }
+
+      - { label: "Nombre científico", name: "cientifico", widget: "string", required: false }
+
+      - {
+          label: "Categoría",
+          name: "categoria",
+          widget: "select",
+          options: ["Aves", "Mariposas", "Insectos", "Mamíferos"]
+        }
+
+      - { label: "Subcategoría", name: "subcategoria", widget: "string" }
+
+      - { label: "Descripción", name: "descripcion", widget: "text" }
+
+      - { label: "Fecha de observación", name: "fecha", widget: "datetime", required: false }
+
+      - { label: "Ubicación", name: "ubicacion", widget: "string", required: false }
+
+      - label: "Galería"
         name: "imagenes"
         widget: "list"
-        field: {label: Imagen, name: imagen, widget: image}
+        field:
+          label: "Imagen"
+          name: "imagen"
+          widget: "image"

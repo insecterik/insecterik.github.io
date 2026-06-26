@@ -462,6 +462,9 @@
 <!-- Contenido Markdown original de Jekyll, oculto, usado solo como fuente de datos -->
 <div id="rawContent">
 {{ content }}
+{% for img in page.imagenes %}
+  <img src="{{ img }}" alt="{{ page.title }}">
+{% endfor %}
 </div>
 
 <div class="lightbox" id="lightbox">

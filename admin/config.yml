@@ -2,7 +2,7 @@ backend:
   name: git-gateway
   branch: main
 
-site_url: https://stellar-mermaid-a3fba2.netlify.app
+site_url: https://insecterik.github.io
 display_url: https://insecterik.github.io
 
 media_folder: "images/uploads"

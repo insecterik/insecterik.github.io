@@ -7,7 +7,6 @@ display_url: https://insecterik.github.io
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
-public_folder: "/images/uploads"
 
 collections:
   - name: "especies"

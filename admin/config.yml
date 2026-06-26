@@ -1,12 +1,12 @@
 backend:
-  name: github
-  repo: InsectErik/insecterik.github.io
+  name: git-gateway
   branch: main
 
 site_url: https://insecterik.github.io
 display_url: https://insecterik.github.io
 
 media_folder: "images/uploads"
+public_folder: "/images/uploads"
 public_folder: "/images/uploads"
 
 collections:

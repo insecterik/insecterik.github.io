@@ -1,14 +1,13 @@
-title: Biodiversidad de Tibirita
+title: "Biodiversidad de Tibirita"
 
 collections:
   especies:
     output: true
 
 defaults:
-
-* scope:
-  path: ""
-  type: especies
-  values:
-  layout: especie
+  - scope:
+      path: ""
+      type: especies
+    values:
+      layout: especie
 

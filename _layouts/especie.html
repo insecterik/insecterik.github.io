@@ -1,24 +1,674 @@
-<!DOCTYPE html>
+---
+---
 
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ page.title }}</title>
+<title>{{ page.title }} &middot; Biodiversidad de Tibirita</title>
+
+<style>
+  :root{
+    --verde-oscuro:#1c3f3a;
+    --verde-header:#16332f;
+    --verde-brillante:#2ecc71;
+    --verde-texto:#1b5e20;
+    --crema:#f4f8f2;
+    --gris-texto:#5a6b66;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--crema);
+    color:#222;
+  }
+
+  a{ text-decoration:none; }
+
+  /* ===== HEADER ===== */
+  .top-header{
+    background:var(--verde-header);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 40px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+
+  .logo{
+    color:var(--verde-brillante);
+    font-weight:800;
+    font-size:22px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+
+  .top-nav{
+    display:flex;
+    align-items:center;
+    gap:28px;
+  }
+
+  .top-nav a{
+    color:#dfe9e6;
+    font-size:13px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    font-weight:600;
+  }
+
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--verde-brillante) !important;
+  }
+
+  /* ===== BREADCRUMB ===== */
+  .breadcrumb{
+    max-width:1100px;
+    margin:24px auto 0;
+    padding:0 24px;
+    font-size:13px;
+    color:var(--gris-texto);
+  }
+
+  .breadcrumb a{
+    color:var(--verde-texto);
+    font-weight:600;
+  }
+
+  /* ===== HERO GALLERY ===== */
+  .species-hero{
+    max-width:1100px;
+    margin:18px auto 0;
+    padding:0 24px;
+    display:grid;
+    grid-template-columns:1.6fr 1fr;
+    gap:24px;
+  }
+
+  .species-main-photo{
+    position:relative;
+    height:440px;
+    border-radius:18px;
+    overflow:hidden;
+    background:#dfe9e6;
+    cursor:zoom-in;
+  }
+
+  .species-main-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .3s ease;
+  }
+
+  .species-main-photo:hover img{
+    transform:scale(1.03);
+  }
+
+  .species-main-photo .zoom-hint{
+    position:absolute;
+    bottom:14px;
+    right:14px;
+    background:rgba(10,20,18,.65);
+    color:white;
+    font-size:12px;
+    padding:6px 12px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .species-thumbs-col{
+    display:grid;
+    grid-template-rows:repeat(2, 1fr);
+    gap:24px;
+  }
+
+  .species-thumbs-col .thumb{
+    position:relative;
+    border-radius:18px;
+    overflow:hidden;
+    background:#dfe9e6;
+    cursor:zoom-in;
+    height:208px;
+  }
+
+  .species-thumbs-col .thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .3s ease;
+  }
+
+  .species-thumbs-col .thumb:hover img{
+    transform:scale(1.05);
+  }
+
+  .species-thumbs-col .thumb.more::after{
+    content:attr(data-more);
+    position:absolute;
+    inset:0;
+    background:rgba(10,20,18,.55);
+    color:white;
+    font-size:22px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  @media (max-width:780px){
+    .species-hero{
+      grid-template-columns:1fr;
+    }
+    .species-main-photo{ height:300px; }
+    .species-thumbs-col{
+      grid-template-rows:none;
+      grid-template-columns:1fr 1fr;
+    }
+    .species-thumbs-col .thumb{ height:140px; }
+  }
+
+  /* ===== INFO SECTION ===== */
+  .species-info{
+    max-width:1100px;
+    margin:36px auto 60px;
+    padding:0 24px;
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:32px;
+    align-items:start;
+  }
+
+  @media (max-width:780px){
+    .species-info{ grid-template-columns:1fr; }
+  }
+
+  .species-badge{
+    display:inline-block;
+    background:var(--verde-brillante);
+    color:var(--verde-header);
+    padding:5px 14px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+
+  .species-title{
+    font-size:38px;
+    font-weight:800;
+    color:var(--verde-texto);
+    margin:0 0 4px;
+    text-transform:capitalize;
+  }
+
+  .species-scientific{
+    font-size:16px;
+    font-style:italic;
+    color:var(--gris-texto);
+    margin:0 0 22px;
+  }
+
+  .species-description p{
+    font-size:16px;
+    line-height:1.7;
+    color:#3c4a46;
+    margin:0 0 16px;
+  }
+
+  /* ===== DATA CARD ===== */
+  .data-card{
+    background:white;
+    border-radius:16px;
+    box-shadow:0 4px 16px rgba(0,0,0,.08);
+    padding:22px 24px;
+  }
+
+  .data-card h3{
+    margin:0 0 16px;
+    font-size:14px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--verde-texto);
+    border-bottom:1px solid #eef2f0;
+    padding-bottom:12px;
+  }
+
+  .data-row{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 0;
+    border-bottom:1px solid #f4f7f5;
+    font-size:14px;
+  }
+
+  .data-row:last-child{ border-bottom:none; }
+
+  .data-row .label{
+    color:var(--gris-texto);
+    font-weight:600;
+  }
+
+  .data-row .value{
+    color:#222;
+    text-align:right;
+    text-transform:capitalize;
+  }
+
+  .back-button{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:20px;
+    color:var(--verde-texto);
+    font-weight:700;
+    font-size:14px;
+  }
+
+  .back-button:hover{ text-decoration:underline; }
+
+  /* ===== FOOTER ===== */
+  footer{
+    background:var(--verde-header);
+    color:#cfd9d6;
+    text-align:center;
+    padding:24px;
+    font-size:13px;
+  }
+
+  /* ===== LIGHTBOX (igual al del catálogo) ===== */
+  .lightbox{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,20,18,.92);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .lightbox.open{ display:flex; }
+
+  .lightbox-box{
+    position:relative;
+    max-width:1000px;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .lightbox-stage{
+    position:relative;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .lightbox-stage img{
+    max-width:100%;
+    max-height:75vh;
+    border-radius:10px;
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+    object-fit:contain;
+    background:#0e1f1c;
+  }
+
+  .lightbox-close{
+    position:absolute;
+    top:-44px;
+    right:0;
+    background:rgba(255,255,255,.12);
+    border:none;
+    color:white;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    font-size:20px;
+    cursor:pointer;
+    line-height:1;
+  }
+
+  .lightbox-close:hover{ background:var(--verde-brillante); color:var(--verde-header); }
+
+  .lightbox-nav{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(255,255,255,.12);
+    border:none;
+    color:white;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    font-size:20px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .lightbox-nav:hover{ background:var(--verde-brillante); color:var(--verde-header); }
+  .lightbox-nav.prev{ left:-10px; }
+  .lightbox-nav.next{ right:-10px; }
+
+  .lightbox-caption{
+    color:white;
+    text-align:center;
+    margin-top:16px;
+  }
+
+  .lightbox-caption .title{
+    font-size:18px;
+    font-weight:700;
+    margin:0 0 4px;
+    text-transform:capitalize;
+  }
+
+  .lightbox-caption .counter{
+    font-size:13px;
+    color:#a9bdb8;
+    margin:0;
+  }
+
+  .lightbox-thumbs{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .lightbox-thumbs img{
+    width:56px;
+    height:56px;
+    object-fit:cover;
+    border-radius:6px;
+    cursor:pointer;
+    opacity:.55;
+    border:2px solid transparent;
+    transition:opacity .15s ease, border-color .15s ease;
+  }
+
+  .lightbox-thumbs img.active{
+    opacity:1;
+    border-color:var(--verde-brillante);
+  }
+
+  @media (max-width:700px){
+    .lightbox-nav.prev{ left:0; }
+    .lightbox-nav.next{ right:0; }
+    .lightbox-stage img{ max-height:55vh; }
+  }
+
+  /* Oculta el contenido Markdown crudo: solo se usa como fuente de datos para el JS */
+  #rawContent{ display:none; }
+</style>
 </head>
 <body>
 
-<h1>{{ page.title }}</h1>
+<div class="top-header">
+  <a class="logo" href="/">Tibirita Bio</a>
+  <div class="top-nav">
+    <a class="back-link" href="/">&#8592; Volver al catálogo</a>
+  </div>
+</div>
 
-<p><strong>Nombre científico:</strong> {{ page.cientifico }}</p>
-<p><strong>Categoría:</strong> {{ page.categoria }}</p>
-<p><strong>Subcategoría:</strong> {{ page.subcategoria }}</p>
-<p><strong>Ubicación:</strong> {{ page.ubicacion }}</p>
+<div class="breadcrumb">
+  <a href="/">Catálogo</a> / <span id="breadcrumbCurrent">{{ page.title }}</span>
+</div>
 
-<p>{{ page.descripcion }}</p>
+<div class="species-hero" id="speciesHero"></div>
 
-{% for img in page.imagenes %} <img src="{{ img }}" style="max-width:600px;">
-{% endfor %}
+<div class="species-info">
+  <div>
+    <div id="speciesTextBlock">
+      <span class="species-badge" id="speciesBadge" style="display:none;"></span>
+      <h1 class="species-title" id="speciesTitle">{{ page.title }}</h1>
+      <p class="species-scientific" id="speciesScientific" style="display:none;"></p>
+      <div class="species-description" id="speciesDescription"></div>
+    </div>
+  </div>
+
+  <div class="data-card">
+    <h3>Ficha técnica</h3>
+    <div id="dataCardRows"></div>
+    <a class="back-button" href="/">&#8592; Ver más especies</a>
+  </div>
+</div>
+
+<footer>
+  Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
+</footer>
+
+<!-- Contenido Markdown original de Jekyll, oculto, usado solo como fuente de datos -->
+<div id="rawContent">
+{{ content }}
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-box">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">&times;</button>
+    <div class="lightbox-stage">
+      <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Anterior">&#8249;</button>
+      <img id="lightboxImg" src="" alt="">
+      <button class="lightbox-nav next" id="lightboxNext" aria-label="Siguiente">&#8250;</button>
+    </div>
+    <div class="lightbox-caption">
+      <p class="title" id="lightboxTitle"></p>
+      <p class="counter" id="lightboxCounter"></p>
+    </div>
+    <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var raw = document.getElementById('rawContent');
+
+  // ----- 1. Extraer todas las imágenes del contenido Markdown renderizado -----
+  var imgs = Array.prototype.slice.call(raw.querySelectorAll('img')).map(function(img){
+    return img.getAttribute('src');
+  });
+
+  // ----- 2. Extraer pares "Campo: valor" desde <p><strong>Campo:</strong> valor</p> -----
+  var fields = {};
+  var descriptionParagraphs = [];
+
+  Array.prototype.slice.call(raw.querySelectorAll('p')).forEach(function(p){
+    var strong = p.querySelector('strong');
+    var text = p.textContent.trim();
+
+    if (!text) return;
+    if (p.querySelector('img')) return; // ya se procesó como imagen
+
+    if (strong) {
+      var label = strong.textContent.replace(':', '').trim();
+      var value = text.replace(strong.textContent, '').replace(/^:\s*/, '').trim();
+      if (value) {
+        fields[label.toLowerCase()] = { label: label, value: value };
+        return;
+      }
+    }
+
+    descriptionParagraphs.push(text);
+  });
+
+  // ----- 3. Pintar la galería principal (foto grande + miniaturas) -----
+  var heroEl = document.getElementById('speciesHero');
+  var titleText = document.getElementById('speciesTitle').textContent.trim();
+
+  if (imgs.length) {
+    var mainHtml = '<div class="species-main-photo" data-index="0">' +
+                     '<img src="' + imgs[0] + '" alt="' + titleText + '">' +
+                     '<span class="zoom-hint">&#128269; Ver en grande</span>' +
+                   '</div>';
+
+    var thumbsHtml = '';
+    if (imgs.length > 1) {
+      thumbsHtml += '<div class="species-thumbs-col">';
+      var maxThumbs = 2;
+      for (var i = 1; i < Math.min(imgs.length, maxThumbs + 1); i++) {
+        var isLastVisible = (i === maxThumbs) && (imgs.length > maxThumbs + 1);
+        thumbsHtml += '<div class="thumb' + (isLastVisible ? ' more' : '') + '"' +
+                        (isLastVisible ? ' data-more="+' + (imgs.length - maxThumbs) + '"' : '') +
+                        ' data-index="' + i + '">' +
+                        '<img src="' + imgs[i] + '" alt="' + titleText + ' ' + (i+1) + '">' +
+                      '</div>';
+      }
+      thumbsHtml += '</div>';
+    }
+
+    heroEl.innerHTML = mainHtml + thumbsHtml;
+  } else {
+    heroEl.style.display = 'none';
+  }
+
+  // ----- 4. Pintar badge de categoría, nombre científico y descripción -----
+  var badgeEl = document.getElementById('speciesBadge');
+  var sciEl = document.getElementById('speciesScientific');
+  var descEl = document.getElementById('speciesDescription');
+  var dataRowsEl = document.getElementById('dataCardRows');
+
+  if (fields['categoría'] || fields['categoria']) {
+    var cat = fields['categoría'] || fields['categoria'];
+    badgeEl.textContent = cat.value;
+    badgeEl.style.display = 'inline-block';
+  }
+
+  var sciKey = Object.keys(fields).find(function(k){ return k.indexOf('científico') !== -1 || k.indexOf('cientifico') !== -1; });
+  if (sciKey) {
+    sciEl.textContent = fields[sciKey].value;
+    sciEl.style.display = 'block';
+  }
+
+  descriptionParagraphs.forEach(function(text){
+    var p = document.createElement('p');
+    p.textContent = text;
+    descEl.appendChild(p);
+  });
+
+  // Resto de campos (categoría, subcategoría, ubicación, etc.) van a la ficha técnica
+  var skipKeys = sciKey ? [sciKey] : [];
+  Object.keys(fields).forEach(function(key){
+    if (skipKeys.indexOf(key) !== -1) return;
+    var f = fields[key];
+    var row = document.createElement('div');
+    row.className = 'data-row';
+    row.innerHTML = '<span class="label">' + f.label + '</span><span class="value">' + f.value + '</span>';
+    dataRowsEl.appendChild(row);
+  });
+
+  if (!dataRowsEl.children.length) {
+    document.querySelector('.data-card').style.display = 'none';
+  }
+
+  // ----- 5. Lightbox -----
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxTitle = document.getElementById('lightboxTitle');
+  var lightboxCounter = document.getElementById('lightboxCounter');
+  var lightboxThumbs = document.getElementById('lightboxThumbs');
+  var btnClose = document.getElementById('lightboxClose');
+  var btnPrev = document.getElementById('lightboxPrev');
+  var btnNext = document.getElementById('lightboxNext');
+
+  var currentIndex = 0;
+
+  function renderLightbox(){
+    if (!imgs.length) return;
+    lightboxImg.src = imgs[currentIndex];
+    lightboxImg.alt = titleText;
+    lightboxTitle.textContent = titleText;
+    lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imgs.length;
+
+    lightboxThumbs.querySelectorAll('img').forEach(function(t, i){
+      t.classList.toggle('active', i === currentIndex);
+    });
+
+    var multi = imgs.length > 1;
+    btnPrev.style.display = multi ? 'flex' : 'none';
+    btnNext.style.display = multi ? 'flex' : 'none';
+    lightboxThumbs.style.display = multi ? 'flex' : 'none';
+  }
+
+  function openLightbox(startIndex){
+    currentIndex = startIndex || 0;
+
+    lightboxThumbs.innerHTML = '';
+    imgs.forEach(function(src, i){
+      var t = document.createElement('img');
+      t.src = src;
+      t.alt = titleText + ' ' + (i + 1);
+      t.addEventListener('click', function(){
+        currentIndex = i;
+        renderLightbox();
+      });
+      lightboxThumbs.appendChild(t);
+    });
+
+    renderLightbox();
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function showPrev(){
+    if (!imgs.length) return;
+    currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+    renderLightbox();
+  }
+
+  function showNext(){
+    if (!imgs.length) return;
+    currentIndex = (currentIndex + 1) % imgs.length;
+    renderLightbox();
+  }
+
+  heroEl.addEventListener('click', function(e){
+    var target = e.target.closest('[data-index]');
+    if (!target) return;
+    openLightbox(parseInt(target.getAttribute('data-index'), 10));
+  });
+
+  btnClose.addEventListener('click', closeLightbox);
+  btnPrev.addEventListener('click', showPrev);
+  btnNext.addEventListener('click', showNext);
+
+  lightbox.addEventListener('click', function(e){
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showPrev();
+    if (e.key === 'ArrowRight') showNext();
+  });
+})();
+</script>
 
 </body>
 </html>

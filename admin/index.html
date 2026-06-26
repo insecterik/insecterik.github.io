@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8">
   <title>Administrador - Biodiversidad de Tibirita</title>
+
+  <script>
+    (function () {
+      const target = "https://stellar-mermaid-a3fba2.netlify.app/admin/#/";
+
+      if (window.location.hostname === "insecterik.github.io") {
+        window.location.replace(target);
+      }
+    })();
+  </script>
 </head>
+
 <body>
-<script src="https://unpkg.com/decap-cms@^3/dist/decap-cms.js"></script>
-
-<script>
-  (function () {
-    const target = "https://stellar-mermaid-a3fba2.netlify.app/admin/#/";
-
-    if (window.location.hostname === "insecterik.github.io") {
-      window.location.replace(target);
-    }
-  })();
-</script>
+  <script src="https://unpkg.com/decap-cms@^3/dist/decap-cms.js"></script>
 </body>
 </html>

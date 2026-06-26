@@ -1,0 +1,23 @@
+backend:
+  name: github
+  repo: TU_USUARIO/biodiversidad-tibirita
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "especies"
+    label: "Especies"
+    folder: "content/especies"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Título", name: "title", widget: "string"}
+      - {label: "Categoría", name: "categoria", widget: "select", options: ["Aves","Mariposas","Insectos","Mamíferos"]}
+      - {label: "Subcategoría", name: "subcategoria", widget: "string"}
+      - {label: "Descripción", name: "descripcion", widget: "text"}
+      - label: "Imágenes"
+        name: "imagenes"
+        widget: "list"
+        field: {label: Imagen, name: imagen, widget: image}

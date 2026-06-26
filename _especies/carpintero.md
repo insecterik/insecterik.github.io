@@ -8,4 +8,5 @@ fecha: 2026-06-26T15:32:00.000-05:00
 ubicacion: centro
 imagenes:
   - /images/uploads/file_000000001d54720ebcf299ad0cddf15f.png
+  - /images/uploads/1000057510.jpg
 ---

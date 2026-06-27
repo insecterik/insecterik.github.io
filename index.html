@@ -1,0 +1,885 @@
+---
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biodiversidad de Tibirita</title>
+
+<style>
+  :root{
+    --verde-oscuro:#1c3f3a;
+    --verde-header:#16332f;
+    --verde-brillante:#2ecc71;
+    --verde-texto:#1b5e20;
+    --crema:#f4f8f2;
+    --gris-texto:#5a6b66;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--crema);
+    color:#222;
+  }
+
+  a{ text-decoration:none; }
+
+  /* ===== HEADER ===== */
+  .top-header{
+    background:var(--verde-header);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 40px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+
+  .logo{
+    color:var(--verde-brillante);
+    font-weight:800;
+    font-size:22px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+
+  .top-nav{
+    display:flex;
+    align-items:center;
+    gap:28px;
+  }
+
+  .top-nav a{
+    color:#dfe9e6;
+    font-size:13px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    font-weight:600;
+  }
+
+  .search-box{
+    display:flex;
+    align-items:center;
+    background:rgba(255,255,255,.12);
+    border-radius:20px;
+    padding:6px 6px 6px 16px;
+  }
+
+  .search-box input{
+    background:transparent;
+    border:none;
+    outline:none;
+    color:white;
+    font-size:13px;
+    width:120px;
+  }
+
+  .search-box input::placeholder{ color:#cfd9d6; }
+
+  .search-box button{
+    background:var(--verde-brillante);
+    border:none;
+    border-radius:50%;
+    width:30px;
+    height:30px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--verde-header);
+    cursor:pointer;
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    position:relative;
+    background:linear-gradient(120deg, var(--verde-oscuro) 55%, #14292533 100%);
+    color:white;
+    padding:70px 40px 50px;
+    overflow:hidden;
+  }
+
+  .hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      radial-gradient(circle at 80% 30%, rgba(46,204,113,.15), transparent 60%);
+    pointer-events:none;
+  }
+
+  .hero-inner{
+    max-width:1200px;
+    margin:0 auto;
+    position:relative;
+  }
+
+  .hero h1{
+    font-size:56px;
+    font-weight:800;
+    line-height:1.1;
+    margin:0 0 10px;
+  }
+
+  .hero .subtitle{
+    font-size:22px;
+    color:#d7e4e0;
+    margin:0 0 30px;
+    max-width:600px;
+  }
+
+  .hero-stats{
+    display:flex;
+    gap:36px;
+    flex-wrap:wrap;
+    font-size:15px;
+    color:#cfd9d6;
+  }
+
+  .hero-stats strong{
+    color:var(--verde-brillante);
+    font-size:20px;
+    margin-right:6px;
+  }
+
+  /* ===== SECTION TITLE ===== */
+  .section-title{
+    max-width:1200px;
+    margin:50px auto 24px;
+    padding:0 20px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+  }
+
+  .section-title h2{
+    color:var(--verde-brillante);
+    background:var(--verde-oscuro);
+    display:inline-block;
+    padding:8px 18px;
+    border-radius:6px;
+    font-size:18px;
+    letter-spacing:1px;
+    margin:0;
+  }
+
+  .section-title span{
+    color:var(--gris-texto);
+    font-size:14px;
+  }
+
+  /* ===== GALLERY ===== */
+  .container{
+    max-width:1200px;
+    margin:auto;
+    padding:0 20px 60px;
+  }
+
+  .gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:28px;
+  }
+
+  .card{
+    background:white;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 4px 16px rgba(0,0,0,.08);
+    transition:transform .2s ease, box-shadow .2s ease;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 24px rgba(0,0,0,.14);
+  }
+
+  .card-photo{
+    position:relative;
+    width:100%;
+    height:220px;
+    overflow:hidden;
+    background:#dfe9e6;
+  }
+
+  .card-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .card-photo::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(20,40,35,.55) 100%);
+  }
+
+  .badge{
+    position:absolute;
+    top:14px;
+    left:14px;
+    z-index:2;
+    background:var(--verde-brillante);
+    color:var(--verde-header);
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+  }
+
+  .card-content{
+    padding:18px 18px 20px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .card h2{
+    margin:0 0 4px;
+    font-size:19px;
+  }
+
+  .card h2 a{
+    color:var(--verde-texto);
+  }
+
+  .card .subcategoria{
+    font-size:12px;
+    color:var(--gris-texto);
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    margin-bottom:10px;
+    font-weight:600;
+  }
+
+  .card p.descripcion{
+    font-size:14px;
+    color:#4a4a4a;
+    line-height:1.5;
+    margin:0 0 10px;
+    flex:1;
+  }
+
+  .card .cientifico{
+    font-size:13px;
+    color:var(--gris-texto);
+    font-style:italic;
+    border-top:1px solid #eef2f0;
+    padding-top:10px;
+    margin:0;
+  }
+
+  /* ===== FOOTER ===== */
+  footer{
+    background:var(--verde-header);
+    color:#cfd9d6;
+    text-align:center;
+    padding:24px;
+    font-size:13px;
+  }
+
+  /* ===== MENU TOGGLE (hamburguesa) ===== */
+  .menu-toggle{
+    background:rgba(255,255,255,.12);
+    border:none;
+    border-radius:8px;
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    order:-1;
+  }
+
+  .menu-toggle span,
+  .menu-toggle span::before,
+  .menu-toggle span::after{
+    content:"";
+    display:block;
+    width:18px;
+    height:2px;
+    background:var(--verde-brillante);
+    position:relative;
+    transition:transform .2s ease, opacity .2s ease;
+  }
+
+  .menu-toggle span::before{ position:absolute; top:-6px; }
+  .menu-toggle span::after{ position:absolute; top:6px; }
+
+  body.sidebar-open .menu-toggle span{ background:transparent; }
+  body.sidebar-open .menu-toggle span::before{ transform:rotate(45deg); top:0; }
+  body.sidebar-open .menu-toggle span::after{ transform:rotate(-45deg); top:0; }
+
+  /* ===== LAYOUT con sidebar ===== */
+  .layout{
+    display:flex;
+    max-width:1400px;
+    margin:0 auto;
+    align-items:flex-start;
+  }
+
+  .main-content{
+    flex:1;
+    min-width:0;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,20,18,.5);
+    z-index:40;
+  }
+
+  body.sidebar-open .sidebar-overlay{ display:block; }
+
+  .sidebar{
+    width:280px;
+    flex-shrink:0;
+    background:white;
+    border-right:1px solid #e7eee9;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    padding:22px 0 40px;
+  }
+
+  .sidebar-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px 16px;
+    border-bottom:1px solid #eef2f0;
+    margin-bottom:10px;
+  }
+
+  .sidebar-header h3{
+    margin:0;
+    font-size:14px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--verde-texto);
+  }
+
+  .sidebar-close{
+    display:none;
+    background:none;
+    border:none;
+    font-size:20px;
+    line-height:1;
+    color:var(--gris-texto);
+    cursor:pointer;
+  }
+
+  .cat-group{
+    border-bottom:1px solid #f1f5f3;
+  }
+
+  .cat-toggle{
+    width:100%;
+    background:none;
+    border:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px 20px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:700;
+    color:var(--verde-texto);
+    text-align:left;
+  }
+
+  .cat-toggle .count{
+    background:var(--crema);
+    color:var(--gris-texto);
+    font-size:11px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:12px;
+    margin-left:8px;
+  }
+
+  .cat-toggle .arrow{
+    margin-left:auto;
+    transition:transform .2s ease;
+    color:var(--verde-brillante);
+    font-size:11px;
+  }
+
+  .cat-toggle.open .arrow{ transform:rotate(90deg); }
+
+  .cat-name{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .species-list{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+    background:#fafdfb;
+  }
+
+  .species-list.open{
+    max-height:1000px;
+  }
+
+  .species-list a{
+    display:block;
+    padding:9px 20px 9px 38px;
+    font-size:13px;
+    color:#3c4a46;
+    border-top:1px solid #eef2f0;
+  }
+
+  .species-list a:hover{
+    color:var(--verde-texto);
+    background:#eef7ee;
+  }
+
+  /* ===== LIGHTBOX ===== */
+  .card-photo{ cursor:zoom-in; }
+
+  .lightbox{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,20,18,.92);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .lightbox.open{
+    display:flex;
+  }
+
+  .lightbox-box{
+    position:relative;
+    max-width:1000px;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .lightbox-stage{
+    position:relative;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .lightbox-stage img{
+    max-width:100%;
+    max-height:75vh;
+    border-radius:10px;
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+    object-fit:contain;
+    background:#0e1f1c;
+  }
+
+  .lightbox-close{
+    position:absolute;
+    top:-44px;
+    right:0;
+    background:rgba(255,255,255,.12);
+    border:none;
+    color:white;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    font-size:20px;
+    cursor:pointer;
+    line-height:1;
+  }
+
+  .lightbox-close:hover{ background:var(--verde-brillante); color:var(--verde-header); }
+
+  .lightbox-nav{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(255,255,255,.12);
+    border:none;
+    color:white;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    font-size:20px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .lightbox-nav:hover{ background:var(--verde-brillante); color:var(--verde-header); }
+  .lightbox-nav.prev{ left:-10px; }
+  .lightbox-nav.next{ right:-10px; }
+
+  .lightbox-caption{
+    color:white;
+    text-align:center;
+    margin-top:16px;
+  }
+
+  .lightbox-caption .title{
+    font-size:18px;
+    font-weight:700;
+    margin:0 0 4px;
+  }
+
+  .lightbox-caption .counter{
+    font-size:13px;
+    color:#a9bdb8;
+    margin:0;
+  }
+
+  .lightbox-thumbs{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .lightbox-thumbs img{
+    width:56px;
+    height:56px;
+    object-fit:cover;
+    border-radius:6px;
+    cursor:pointer;
+    opacity:.55;
+    border:2px solid transparent;
+    transition:opacity .15s ease, border-color .15s ease;
+  }
+
+  .lightbox-thumbs img.active{
+    opacity:1;
+    border-color:var(--verde-brillante);
+  }
+
+  @media (max-width:700px){
+    .lightbox-nav.prev{ left:0; }
+    .lightbox-nav.next{ right:0; }
+    .lightbox-stage img{ max-height:55vh; }
+  }
+
+  @media (max-width:700px){
+    .top-header{ padding:14px 20px; }
+    .top-nav{ gap:14px; }
+    .top-nav a{ display:none; }
+    .hero{ padding:40px 20px; }
+    .hero h1{ font-size:36px; }
+    .hero .subtitle{ font-size:17px; }
+    .hero-stats{ gap:18px; font-size:13px; }
+
+    .sidebar{
+      position:fixed;
+      top:0;
+      left:0;
+      height:100vh;
+      width:280px;
+      max-width:80vw;
+      transform:translateX(-100%);
+      transition:transform .25s ease;
+      z-index:50;
+      box-shadow:4px 0 18px rgba(0,0,0,.15);
+    }
+
+    body.sidebar-open .sidebar{ transform:translateX(0); }
+    .sidebar-close{ display:block; }
+  }
+
+  @media (min-width:701px){
+    .menu-toggle{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-header">
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú de categorías"><span></span></button>
+  <div class="logo">Tibirita Bio</div>
+  <div class="top-nav">
+    <a href="#colecciones">Colecciones</a>
+    <a href="#listas">Listas</a>
+    <div class="search-box">
+      <input type="text" placeholder="Buscar especie...">
+      <button aria-label="Buscar">🔍</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>Categorías</h3>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">&times;</button>
+    </div>
+
+    {% assign categorias = site.especies | map: "categoria" | uniq %}
+    {% for cat in categorias %}
+      {% assign especies_cat = site.especies | where: "categoria", cat %}
+      <div class="cat-group">
+        <button class="cat-toggle">
+          <span class="cat-name">{{ cat }}<span class="count">{{ especies_cat | size }}</span></span>
+          <span class="arrow">▶</span>
+        </button>
+        <div class="species-list">
+          {% for especie in especies_cat %}
+          <a href="{{ especie.url }}">{{ especie.title }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </aside>
+
+  <div class="main-content">
+
+    <div class="hero">
+      <div class="hero-inner">
+        <h1>Aprender,<br>Explorar, Valorar</h1>
+        <p class="subtitle">la magnífica diversidad de la fauna de Tibirita, Cundinamarca</p>
+        <div class="hero-stats">
+          {% assign total = site.especies | size %}
+          <div><strong>{{ total }}</strong>especies registradas</div>
+          {% for cat in categorias %}
+            {% assign count = 0 %}
+            {% for e in site.especies %}
+              {% if e.categoria == cat %}
+                {% assign count = count | plus: 1 %}
+              {% endif %}
+            {% endfor %}
+            <div><strong>{{ count }}</strong>{{ cat }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <h2>CATÁLOGO DE FAUNA</h2>
+      <span>{{ site.especies | size }} especies en total</span>
+    </div>
+
+    <div class="container">
+      <div class="gallery">
+        {% for especie in site.especies %}
+        <div class="card">
+          <div class="card-photo"
+               {% if especie.imagenes %}data-images='{{ especie.imagenes | jsonify }}'{% endif %}
+               data-title="{{ especie.title }}">
+            {% if especie.categoria %}
+            <div class="badge">{{ especie.categoria }}</div>
+            {% endif %}
+            {% if especie.imagenes %}
+            <img src="{{ especie.imagenes[0] }}" alt="{{ especie.title }}">
+            {% endif %}
+          </div>
+          <div class="card-content">
+            {% if especie.subcategoria %}
+            <div class="subcategoria">{{ especie.subcategoria }}</div>
+            {% endif %}
+            <h2><a href="{{ especie.url }}">{{ especie.title }}</a></h2>
+            <p class="descripcion">{{ especie.descripcion }}</p>
+            {% if especie.cientifico %}
+            <p class="cientifico">{{ especie.cientifico }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <footer>
+      Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
+    </footer>
+
+  </div><!-- /.main-content -->
+
+</div><!-- /.layout -->
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-box">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">&times;</button>
+    <div class="lightbox-stage">
+      <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Anterior">&#8249;</button>
+      <img id="lightboxImg" src="" alt="">
+      <button class="lightbox-nav next" id="lightboxNext" aria-label="Siguiente">&#8250;</button>
+    </div>
+    <div class="lightbox-caption">
+      <p class="title" id="lightboxTitle"></p>
+      <p class="counter" id="lightboxCounter"></p>
+    </div>
+    <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+  </div>
+</div>
+
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on("init", function(user) {
+    if (!user) {
+      window.netlifyIdentity.on("login", function() {
+        document.location.href = "/admin/";
+      });
+    }
+  });
+}
+</script>
+
+<script>
+  // Abrir / cerrar sidebar en móvil
+  var body = document.body;
+  var menuToggle = document.getElementById('menuToggle');
+  var sidebarClose = document.getElementById('sidebarClose');
+  var sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  function openSidebar(){ body.classList.add('sidebar-open'); }
+  function closeSidebar(){ body.classList.remove('sidebar-open'); }
+
+  if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+  if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+  if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+  // Acordeón de categorías
+  document.querySelectorAll('.cat-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var list = btn.nextElementSibling;
+      var isOpen = list.classList.contains('open');
+
+      btn.classList.toggle('open', !isOpen);
+      list.classList.toggle('open', !isOpen);
+    });
+  });
+
+  // Abre automáticamente la primera categoría
+  var firstToggle = document.querySelector('.cat-toggle');
+  if (firstToggle) firstToggle.click();
+</script>
+
+<script>
+  // ===== LIGHTBOX de imágenes por especie =====
+  (function(){
+    var lightbox = document.getElementById('lightbox');
+    var imgEl = document.getElementById('lightboxImg');
+    var titleEl = document.getElementById('lightboxTitle');
+    var counterEl = document.getElementById('lightboxCounter');
+    var thumbsEl = document.getElementById('lightboxThumbs');
+    var btnClose = document.getElementById('lightboxClose');
+    var btnPrev = document.getElementById('lightboxPrev');
+    var btnNext = document.getElementById('lightboxNext');
+
+    var images = [];
+    var currentIndex = 0;
+    var currentTitle = '';
+
+    function render(){
+      if (!images.length) return;
+      imgEl.src = images[currentIndex];
+      imgEl.alt = currentTitle;
+      titleEl.textContent = currentTitle;
+      counterEl.textContent = (currentIndex + 1) + ' / ' + images.length;
+
+      thumbsEl.querySelectorAll('img').forEach(function(t, i){
+        t.classList.toggle('active', i === currentIndex);
+      });
+
+      var multi = images.length > 1;
+      btnPrev.style.display = multi ? 'flex' : 'none';
+      btnNext.style.display = multi ? 'flex' : 'none';
+      thumbsEl.style.display = multi ? 'flex' : 'none';
+    }
+
+    function openLightbox(imageList, title, startIndex){
+      images = imageList;
+      currentTitle = title;
+      currentIndex = startIndex || 0;
+
+      thumbsEl.innerHTML = '';
+      images.forEach(function(src, i){
+        var t = document.createElement('img');
+        t.src = src;
+        t.alt = title + ' ' + (i + 1);
+        t.addEventListener('click', function(){
+          currentIndex = i;
+          render();
+        });
+        thumbsEl.appendChild(t);
+      });
+
+      render();
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox(){
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function showPrev(){
+      if (!images.length) return;
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      render();
+    }
+
+    function showNext(){
+      if (!images.length) return;
+      currentIndex = (currentIndex + 1) % images.length;
+      render();
+    }
+
+    document.querySelectorAll('.card-photo[data-images]').forEach(function(photo){
+      photo.addEventListener('click', function(){
+        var list;
+        try {
+          list = JSON.parse(photo.getAttribute('data-images'));
+        } catch (e) {
+          list = [];
+        }
+        if (!list.length) return;
+        openLightbox(list, photo.getAttribute('data-title') || '', 0);
+      });
+    });
+
+    btnClose.addEventListener('click', closeLightbox);
+    btnPrev.addEventListener('click', showPrev);
+    btnNext.addEventListener('click', showNext);
+
+    lightbox.addEventListener('click', function(e){
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', function(e){
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') showPrev();
+      if (e.key === 'ArrowRight') showNext();
+    });
+  })();
+</script>
+
+</body>
+</html>

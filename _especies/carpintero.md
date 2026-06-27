@@ -9,4 +9,5 @@ ubicacion: centro
 imagenes:
   - /images/uploads/file_000000001d54720ebcf299ad0cddf15f.png
   - /images/uploads/1000057510.jpg
+  - /images/uploads/1000057476.jpg
 ---

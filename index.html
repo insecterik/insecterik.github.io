@@ -95,9 +95,18 @@
   /* ===== HERO ===== */
   .hero{
     position:relative;
-    background:linear-gradient(120deg, var(--verde-oscuro) 55%, #14292533 100%);
+    width:100%;
+    background:
+      linear-gradient(120deg, rgba(22,51,47,.92) 35%, rgba(20,41,37,.45) 100%),
+      url('images/uploads/portada.png');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
     color:white;
-    padding:70px 40px 50px;
+    padding:0 60px;
+    min-height:88vh;
+    display:flex;
+    align-items:center;
     overflow:hidden;
   }
 
@@ -113,35 +122,40 @@
   .hero-inner{
     max-width:1200px;
     margin:0 auto;
+    width:100%;
     position:relative;
   }
 
   .hero h1{
-    font-size:56px;
+    font-size:76px;
     font-weight:800;
-    line-height:1.1;
-    margin:0 0 10px;
+    line-height:1.05;
+    margin:0 0 18px;
+    letter-spacing:-1px;
   }
 
   .hero .subtitle{
-    font-size:22px;
-    color:#d7e4e0;
-    margin:0 0 30px;
-    max-width:600px;
+    font-size:26px;
+    color:#ffffff;
+    font-weight:300;
+    margin:0 0 38px;
+    max-width:680px;
+    line-height:1.4;
   }
 
   .hero-stats{
     display:flex;
-    gap:36px;
+    gap:32px 40px;
     flex-wrap:wrap;
-    font-size:15px;
-    color:#cfd9d6;
+    font-size:17px;
+    color:#ffffff;
   }
 
   .hero-stats strong{
     color:var(--verde-brillante);
-    font-size:20px;
+    font-size:24px;
     margin-right:6px;
+    font-weight:800;
   }
 
   /* ===== SECTION TITLE ===== */
@@ -679,10 +693,11 @@
     .top-header{ padding:14px 20px; }
     .top-nav{ gap:14px; }
     .top-nav a{ display:none; }
-    .hero{ padding:40px 20px; }
-    .hero h1{ font-size:36px; }
-    .hero .subtitle{ font-size:17px; }
-    .hero-stats{ gap:18px; font-size:13px; }
+    .hero{ padding:60px 20px; min-height:auto; }
+    .hero h1{ font-size:38px; }
+    .hero .subtitle{ font-size:18px; }
+    .hero-stats{ gap:14px 22px; font-size:14px; }
+    .hero-stats strong{ font-size:18px; }
 
     .sidebar{
       position:fixed;
@@ -723,6 +738,16 @@
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+<div class="hero">
+  <div class="hero-inner">
+    <h1>Aprender,<br>Explorar, Valorar</h1>
+    <p class="subtitle">la magnífica diversidad de la fauna de Tibirita, Cundinamarca</p>
+    <div class="hero-stats" id="heroStats">
+      <!-- llenado por JS -->
+    </div>
+  </div>
+</div>
+
 <div class="layout">
 
   <aside class="sidebar" id="sidebar">
@@ -736,16 +761,6 @@
   </aside>
 
   <div class="main-content">
-
-    <div class="hero">
-      <div class="hero-inner">
-        <h1>Aprender,<br>Explorar, Valorar</h1>
-        <p class="subtitle">la magnífica diversidad de la fauna de Tibirita, Cundinamarca</p>
-        <div class="hero-stats" id="heroStats">
-          <!-- llenado por JS -->
-        </div>
-      </div>
-    </div>
 
     <div class="section-title">
       <h2>CATÁLOGO DE FAUNA</h2>

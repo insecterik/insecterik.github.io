@@ -794,20 +794,164 @@
   var DB = { categories: [], species: [] };
   var activeFilter = null; // null = todos
 
-  // ── CARGA DATA.JSON ──────────────────────
-  fetch('data.json?v=' + Date.now())
-    .then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(function (data) {
-      DB = data;
+  // ── CONFIG: repo de GitHub donde Decap guarda el contenido ──
+  var GH_USER   = 'insecterik';
+  var GH_REPO   = 'insecterik.github.io';
+  var GH_BRANCH = 'main';
+  var GH_API    = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/';
+  var GH_RAW    = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/';
+
+  // ── MINI PARSER DE FRONT MATTER YAML ─────
+  // Soporta: claves simples, listas en bloque ("- valor") y valores entre comillas.
+  function parseFrontMatter(raw) {
+    raw = raw.replace(/\r\n/g, '\n'); // normaliza saltos de línea Windows (CRLF) a Unix (LF)
+    var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
+    if (!match) return {};
+    var lines = match[1].split('\n');
+    var data = {};
+    var currentKey = null;
+
+    lines.forEach(function (line) {
+      if (!line.trim()) return;
+
+      var listItem = /^\s*-\s+(.*)$/.exec(line);
+      if (listItem && currentKey) {
+        if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+        data[currentKey].push(cleanValue(listItem[1]));
+        return;
+      }
+
+      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+      if (kv) {
+        var key = kv[1];
+        var val = kv[2].trim();
+        if (val === '') {
+          // Probablemente el inicio de una lista en las líneas siguientes
+          currentKey = key;
+          data[key] = [];
+        } else {
+          data[key] = cleanValue(val);
+          currentKey = null;
+        }
+      }
+    });
+
+    return data;
+  }
+
+  function cleanValue(v) {
+    v = v.trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      v = v.slice(1, -1);
+    }
+    return v;
+  }
+
+  function slugify(str) {
+    return (str || '')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quita tildes
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
+
+  // Lista los archivos .md de una carpeta del repo usando la API de GitHub
+  function listMdFiles(folder) {
+    return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
+      .then(function (r) {
+        if (!r.ok) throw new Error('No se pudo listar ' + folder + ' (HTTP ' + r.status + ')');
+        return r.json();
+      })
+      .then(function (items) {
+        return (items || [])
+          .filter(function (it) { return it.type === 'file' && /\.md$/i.test(it.name); })
+          .map(function (it) { return folder + '/' + it.name; });
+      });
+  }
+
+  // Descarga y parsea el front matter de una lista de rutas .md
+  function fetchAndParseAll(paths) {
+    return Promise.all(paths.map(function (path) {
+      return fetch(GH_RAW + path + '?v=' + Date.now())
+        .then(function (r) {
+          if (!r.ok) throw new Error('No se pudo leer ' + path);
+          return r.text();
+        })
+        .then(function (raw) {
+          var fm = parseFrontMatter(raw);
+          fm.__path = path;
+          return fm;
+        });
+    }));
+  }
+
+  // ── CARGA DE CONTENIDO DESDE content/*.md (vía GitHub) ──────
+  Promise.all([
+    listMdFiles('content/categorias').then(fetchAndParseAll),
+    listMdFiles('content/subcategorias').then(fetchAndParseAll),
+    listMdFiles('content/especies').then(fetchAndParseAll)
+  ])
+    .then(function (results) {
+      var rawCategorias    = results[0]; // mariposas.md, mamiferos.md...
+      var rawSubcategorias = results[1]; // diurnas.md...
+      var rawEspecies      = results[2]; // monarca.md...
+
+      // 1) Categorías raíz (nivel 1): vienen de content/categorias
+      var categories = rawCategorias.map(function (c) {
+        return {
+          id: slugify(c.title),
+          parentId: null,
+          name: c.title || '(sin nombre)',
+          description: c.descripcion || '',
+          image: c.imagen || ''
+        };
+      });
+
+      // 2) Subcategorías (nivel 2): vienen de content/subcategorias,
+      //    se vinculan a su categoría raíz por nombre (campo "categoria")
+      rawSubcategorias.forEach(function (sc) {
+        categories.push({
+          id: slugify(sc.title),
+          parentId: slugify(sc.categoria),
+          name: sc.title || '(sin nombre)',
+          description: sc.descripcion || '',
+          image: sc.imagen || ''
+        });
+      });
+
+      // 3) Especies: vienen de content/especies,
+      //    se vinculan a su subcategoría (o categoría raíz si no tienen) por nombre
+      var species = rawEspecies.map(function (sp) {
+        var catId = sp.subcategoria ? slugify(sp.subcategoria)
+                  : (sp.categoria ? slugify(sp.categoria) : null);
+
+        var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
+                     : (sp.imagenes ? [sp.imagenes] : []);
+
+        return {
+          id: slugify(sp.title) + '-' + slugify(sp.__path),
+          categoryId: catId,
+          name: sp.title || '(sin nombre)',
+          scientificName: sp.cientifico || '',
+          description: sp.descripcion || '',
+          location: sp.ubicacion || '',
+          date: sp.fecha || '',
+          photos: imagenes
+        };
+      });
+
+      DB = { categories: categories, species: species };
       renderAll();
     })
-    .catch(function () {
+    .catch(function (err) {
+      console.error(err);
       document.getElementById('gallery').innerHTML =
-        '<p style="padding:40px;color:#888;grid-column:1/-1">No se pudo cargar data.json. ' +
-        'Asegúrate de que el archivo existe en la raíz del repositorio.</p>';
+        '<p style="padding:40px;color:#888;grid-column:1/-1">No se pudo cargar el contenido desde GitHub. ' +
+        'Revisa la consola del navegador (F12) para más detalles, y verifica que las carpetas ' +
+        '<code>content/categorias</code>, <code>content/subcategorias</code> y <code>content/especies</code> ' +
+        'existan en el repositorio.</p>';
     });
 
   // ── RENDER PRINCIPAL ─────────────────────

@@ -1,6 +1,3 @@
----
----
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -583,6 +580,101 @@
     .lightbox-stage img{ max-height:55vh; }
   }
 
+  /* ===== SUBCATEGORÍAS EN SIDEBAR ===== */
+  .subcat-group{ border-top:1px solid #f1f5f3; }
+
+  .subcat-toggle{
+    width:100%;
+    background:none;
+    border:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:9px 20px 9px 32px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    color:var(--gris-texto);
+    text-align:left;
+    gap:6px;
+  }
+  .subcat-toggle .count{
+    background:var(--crema);
+    color:var(--gris-texto);
+    font-size:10px;
+    padding:1px 6px;
+    border-radius:10px;
+    margin-left:4px;
+  }
+  .subcat-toggle .arrow{
+    margin-left:auto;
+    font-size:9px;
+    color:var(--verde-brillante);
+    transition:transform .2s ease;
+  }
+  .subcat-toggle.open .arrow{ transform:rotate(90deg); }
+  .subcat-toggle:hover{ color:var(--verde-texto); background:#f5faf5; }
+
+  .subspecies-list{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+    background:#f9fcfa;
+  }
+  .subspecies-list.open{ max-height:2000px; }
+
+  .subspecies-list .species-link{
+    display:block;
+    padding:8px 20px 8px 46px;
+    font-size:12px;
+    color:#3c4a46;
+    border-top:1px solid #eef2f0;
+    text-decoration:none;
+  }
+  .subspecies-list .species-link.deep{ padding-left:58px; }
+  .subspecies-list .species-link:hover{ color:var(--verde-texto); background:#eef7ee; }
+
+  .subsubcat{
+    padding:6px 20px 4px 46px;
+    font-size:10px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:var(--verde-brillante);
+  }
+
+  /* Especie directa en species-list (sin subcat) */
+  .species-list > .species-link{
+    display:block;
+    padding:9px 20px 9px 38px;
+    font-size:13px;
+    color:#3c4a46;
+    border-top:1px solid #eef2f0;
+    text-decoration:none;
+  }
+  .species-list > .species-link:hover{ color:var(--verde-texto); background:#eef7ee; }
+
+  /* Filtro activo */
+  .active-filter{
+    color:var(--verde-texto) !important;
+    background:#eef7ee !important;
+  }
+
+  /* Contador de fotos en tarjeta */
+  .photo-counter{
+    position:absolute;
+    bottom:10px;
+    right:10px;
+    z-index:3;
+    background:rgba(10,30,20,.65);
+    color:#fff;
+    font-size:11px;
+    font-weight:600;
+    padding:3px 9px;
+    border-radius:12px;
+    pointer-events:none;
+  }
+
   @media (max-width:700px){
     .top-header{ padding:14px 20px; }
     .top-nav{ gap:14px; }
@@ -639,21 +731,8 @@
       <button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">&times;</button>
     </div>
 
-    {% assign categorias = site.especies | map: "categoria" | uniq %}
-    {% for cat in categorias %}
-      {% assign especies_cat = site.especies | where: "categoria", cat %}
-      <div class="cat-group">
-        <button class="cat-toggle">
-          <span class="cat-name">{{ cat }}<span class="count">{{ especies_cat | size }}</span></span>
-          <span class="arrow">▶</span>
-        </button>
-        <div class="species-list">
-          {% for especie in especies_cat %}
-          <a href="{{ especie.url }}">{{ especie.title }}</a>
-          {% endfor %}
-        </div>
-      </div>
-    {% endfor %}
+    <!-- Categorías y especies se generan por JS desde data.json -->
+    <div id="sidebarCategories"></div>
   </aside>
 
   <div class="main-content">
@@ -662,53 +741,20 @@
       <div class="hero-inner">
         <h1>Aprender,<br>Explorar, Valorar</h1>
         <p class="subtitle">la magnífica diversidad de la fauna de Tibirita, Cundinamarca</p>
-        <div class="hero-stats">
-          {% assign total = site.especies | size %}
-          <div><strong>{{ total }}</strong>especies registradas</div>
-          {% for cat in categorias %}
-            {% assign count = 0 %}
-            {% for e in site.especies %}
-              {% if e.categoria == cat %}
-                {% assign count = count | plus: 1 %}
-              {% endif %}
-            {% endfor %}
-            <div><strong>{{ count }}</strong>{{ cat }}</div>
-          {% endfor %}
+        <div class="hero-stats" id="heroStats">
+          <!-- llenado por JS -->
         </div>
       </div>
     </div>
 
     <div class="section-title">
       <h2>CATÁLOGO DE FAUNA</h2>
-      <span>{{ site.especies | size }} especies en total</span>
+      <span id="totalCount"></span>
     </div>
 
     <div class="container">
-      <div class="gallery">
-        {% for especie in site.especies %}
-        <div class="card">
-          <div class="card-photo"
-               {% if especie.imagenes %}data-images='{{ especie.imagenes | jsonify }}'{% endif %}
-               data-title="{{ especie.title }}">
-            {% if especie.categoria %}
-            <div class="badge">{{ especie.categoria }}</div>
-            {% endif %}
-            {% if especie.imagenes %}
-            <img src="{{ especie.imagenes[0] }}" alt="{{ especie.title }}">
-            {% endif %}
-          </div>
-          <div class="card-content">
-            {% if especie.subcategoria %}
-            <div class="subcategoria">{{ especie.subcategoria }}</div>
-            {% endif %}
-            <h2><a href="{{ especie.url }}">{{ especie.title }}</a></h2>
-            <p class="descripcion">{{ especie.descripcion }}</p>
-            {% if especie.cientifico %}
-            <p class="cientifico">{{ especie.cientifico }}</p>
-            {% endif %}
-          </div>
-        </div>
-        {% endfor %}
+      <div class="gallery" id="gallery">
+        <!-- tarjetas generadas por JS desde data.json -->
       </div>
     </div>
 
@@ -736,149 +782,431 @@
   </div>
 </div>
 
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on("init", function(user) {
-    if (!user) {
-      window.netlifyIdentity.on("login", function() {
-        document.location.href = "/admin/";
-      });
-    }
-  });
-}
-</script>
+// ═══════════════════════════════════════════
+// Biodiversidad de Tibirita — app.js inline
+// Lee data.json y construye sidebar + galería
+// ═══════════════════════════════════════════
 
-<script>
-  // Abrir / cerrar sidebar en móvil
+(function () {
+  'use strict';
+
+  var DB = { categories: [], species: [] };
+  var activeFilter = null; // null = todos
+
+  // ── CARGA DATA.JSON ──────────────────────
+  fetch('data.json?v=' + Date.now())
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      DB = data;
+      renderAll();
+    })
+    .catch(function () {
+      document.getElementById('gallery').innerHTML =
+        '<p style="padding:40px;color:#888;grid-column:1/-1">No se pudo cargar data.json. ' +
+        'Asegúrate de que el archivo existe en la raíz del repositorio.</p>';
+    });
+
+  // ── RENDER PRINCIPAL ─────────────────────
+  function renderAll() {
+    renderHeroStats();
+    renderSidebar();
+    renderGallery(DB.species);
+  }
+
+  // ── HERO STATS ───────────────────────────
+  function renderHeroStats() {
+    var container = document.getElementById('heroStats');
+    var total = DB.species.length;
+    var html = '<div><strong>' + total + '</strong> especies registradas</div>';
+
+    // Stats por categoría raíz
+    DB.categories
+      .filter(function (c) { return !c.parentId; })
+      .forEach(function (cat) {
+        var count = countSpeciesDeep(cat.id);
+        if (count > 0) {
+          html += '<div><strong>' + count + '</strong> ' + cat.name + '</div>';
+        }
+      });
+
+    container.innerHTML = html;
+    document.getElementById('totalCount').textContent = total + ' especies en total';
+  }
+
+  // ── SIDEBAR ──────────────────────────────
+  function renderSidebar() {
+    var container = document.getElementById('sidebarCategories');
+    var html = '';
+
+    // Enlace "Todas"
+    html += '<div class="cat-group">' +
+      '<button class="cat-toggle open" data-id="__all__">' +
+      '<span class="cat-name">Todas las especies<span class="count">' + DB.species.length + '</span></span>' +
+      '</button></div>';
+
+    // Categorías raíz con subcategorías y especies
+    DB.categories
+      .filter(function (c) { return !c.parentId; })
+      .forEach(function (root) {
+        var subs = DB.categories.filter(function (c) { return c.parentId === root.id; });
+        var directSpecies = DB.species.filter(function (s) { return s.categoryId === root.id; });
+        var totalCount = countSpeciesDeep(root.id);
+
+        html += '<div class="cat-group">';
+        html += '<button class="cat-toggle" data-id="' + root.id + '">' +
+          '<span class="cat-name">' + (root.icon || '') + ' ' + root.name +
+          '<span class="count">' + totalCount + '</span></span>' +
+          '<span class="arrow">▶</span>' +
+          '</button>';
+
+        html += '<div class="species-list">';
+
+        // Subcategorías
+        subs.forEach(function (sub) {
+          var subSpecies = DB.species.filter(function (s) { return s.categoryId === sub.id; });
+          var subSubs = DB.categories.filter(function (c) { return c.parentId === sub.id; });
+          var subTotal = countSpeciesDeep(sub.id);
+
+          // Sub-header como toggle
+          html += '<div class="subcat-group">';
+          html += '<button class="subcat-toggle" data-id="' + sub.id + '">' +
+            (sub.icon || '📁') + ' ' + sub.name +
+            '<span class="count">' + subTotal + '</span>' +
+            '<span class="arrow">▶</span>' +
+            '</button>';
+          html += '<div class="subspecies-list">';
+
+          // Especies directas de la subcategoría
+          subSpecies.forEach(function (sp) {
+            html += '<a href="#" class="species-link" data-species-id="' + sp.id + '">' + sp.name + '</a>';
+          });
+
+          // Sub-subcategorías (nivel 3)
+          subSubs.forEach(function (gc) {
+            var gcSpecies = DB.species.filter(function (s) { return s.categoryId === gc.id; });
+            if (!gcSpecies.length) return;
+            html += '<div class="subsubcat">' + (gc.icon || '') + ' ' + gc.name + '</div>';
+            gcSpecies.forEach(function (sp) {
+              html += '<a href="#" class="species-link deep" data-species-id="' + sp.id + '">' + sp.name + '</a>';
+            });
+          });
+
+          html += '</div></div>'; // subspecies-list + subcat-group
+
+          // Separador visual
+          html += '';
+        });
+
+        // Especies directas de la categoría raíz (sin subcategoría)
+        directSpecies.forEach(function (sp) {
+          html += '<a href="#" class="species-link" data-species-id="' + sp.id + '">' + sp.name + '</a>';
+        });
+
+        html += '</div></div>'; // species-list + cat-group
+      });
+
+    container.innerHTML = html;
+    bindSidebarEvents();
+  }
+
+  function bindSidebarEvents() {
+    // Acordeón categorías principales
+    document.querySelectorAll('.cat-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var list = btn.nextElementSibling;
+        var isOpen = btn.classList.contains('open');
+
+        if (btn.dataset.id === '__all__') {
+          activeFilter = null;
+          renderGallery(DB.species);
+          highlightActive(btn);
+          return;
+        }
+
+        // toggle acordeón
+        if (list) {
+          btn.classList.toggle('open', !isOpen);
+          list.classList.toggle('open', !isOpen);
+        }
+
+        // filtrar por categoría raíz (incluye subcategorías)
+        activeFilter = btn.dataset.id;
+        var ids = getAllDescendantIds(btn.dataset.id);
+        renderGallery(DB.species.filter(function (s) { return ids.includes(s.categoryId); }));
+        highlightActive(btn);
+      });
+    });
+
+    // Acordeón subcategorías
+    document.querySelectorAll('.subcat-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var list = btn.nextElementSibling;
+        var isOpen = btn.classList.contains('open');
+        btn.classList.toggle('open', !isOpen);
+        if (list) list.classList.toggle('open', !isOpen);
+
+        // filtrar por subcategoría
+        activeFilter = btn.dataset.id;
+        var ids = getAllDescendantIds(btn.dataset.id);
+        renderGallery(DB.species.filter(function (s) { return ids.includes(s.categoryId); }));
+        highlightActive(btn);
+      });
+    });
+
+    // Click en especie individual → scroll a la tarjeta
+    document.querySelectorAll('.species-link').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var id = a.dataset.speciesId;
+        var sp = DB.species.find(function (s) { return s.id === id; });
+        if (!sp) return;
+        // Muestra solo esa especie en la galería
+        renderGallery([sp]);
+        highlightActive(a);
+        // Scroll al inicio de la galería en móvil
+        document.getElementById('gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        closeSidebar();
+      });
+    });
+
+    // Abrir primera categoría raíz automáticamente
+    var firstToggle = document.querySelector('.cat-group:nth-child(2) .cat-toggle');
+    if (firstToggle) firstToggle.click();
+  }
+
+  function highlightActive(el) {
+    document.querySelectorAll('.cat-toggle, .subcat-toggle, .species-link')
+      .forEach(function (e) { e.classList.remove('active-filter'); });
+    el.classList.add('active-filter');
+  }
+
+  // ── GALERÍA ──────────────────────────────
+  function renderGallery(species) {
+    var gallery = document.getElementById('gallery');
+    document.getElementById('totalCount').textContent = species.length + ' especie' + (species.length !== 1 ? 's' : '') + ' en total';
+
+    if (!species.length) {
+      gallery.innerHTML = '<p style="padding:40px;color:#888;grid-column:1/-1">No hay especies en esta categoría aún.</p>';
+      return;
+    }
+
+    gallery.innerHTML = '';
+    species.forEach(function (sp) {
+      var cat = DB.categories.find(function (c) { return c.id === sp.categoryId; });
+      var catPath = getCatPath(sp.categoryId);
+      var photos = sp.photos || [];
+
+      var card = document.createElement('div');
+      card.className = 'card';
+
+      // Foto principal
+      var photoDiv = document.createElement('div');
+      photoDiv.className = 'card-photo';
+      if (photos.length) {
+        photoDiv.setAttribute('data-images', JSON.stringify(photos));
+        photoDiv.setAttribute('data-title', sp.name);
+        photoDiv.style.cursor = 'zoom-in';
+
+        var badge = document.createElement('div');
+        badge.className = 'badge';
+        badge.textContent = cat ? cat.name : '';
+        photoDiv.appendChild(badge);
+
+        // Contador de fotos
+        if (photos.length > 1) {
+          var cnt = document.createElement('span');
+          cnt.className = 'photo-counter';
+          cnt.textContent = '📷 ' + photos.length;
+          photoDiv.appendChild(cnt);
+        }
+
+        var img = document.createElement('img');
+        img.src = photos[0];
+        img.alt = sp.name;
+        img.loading = 'lazy';
+        photoDiv.appendChild(img);
+      } else {
+        // Placeholder sin foto
+        photoDiv.style.display = 'flex';
+        photoDiv.style.alignItems = 'center';
+        photoDiv.style.justifyContent = 'center';
+        photoDiv.style.fontSize = '3rem';
+        photoDiv.textContent = cat ? (cat.icon || '🌿') : '🌿';
+        var badge2 = document.createElement('div');
+        badge2.className = 'badge';
+        badge2.textContent = cat ? cat.name : '';
+        photoDiv.insertBefore(badge2, photoDiv.firstChild);
+      }
+
+      // Contenido de texto
+      var content = document.createElement('div');
+      content.className = 'card-content';
+
+      // Ruta de categoría (ej: Aves > Colibríes)
+      if (catPath) {
+        var subDiv = document.createElement('div');
+        subDiv.className = 'subcategoria';
+        subDiv.textContent = catPath;
+        content.appendChild(subDiv);
+      }
+
+      var h2 = document.createElement('h2');
+      var a = document.createElement('a');
+      a.href = '#';
+      a.textContent = sp.name;
+      a.addEventListener('click', function (e) { e.preventDefault(); });
+      h2.appendChild(a);
+      content.appendChild(h2);
+
+      if (sp.description) {
+        var desc = document.createElement('p');
+        desc.className = 'descripcion';
+        desc.textContent = sp.description;
+        content.appendChild(desc);
+      }
+
+      if (sp.scientificName) {
+        var sci = document.createElement('p');
+        sci.className = 'cientifico';
+        sci.textContent = sp.scientificName;
+        content.appendChild(sci);
+      }
+
+      card.appendChild(photoDiv);
+      card.appendChild(content);
+      gallery.appendChild(card);
+    });
+
+    // Re-bind lightbox en las nuevas tarjetas
+    bindLightboxCards();
+  }
+
+  // ── HELPERS ──────────────────────────────
+  function getAllDescendantIds(catId) {
+    var ids = [catId];
+    DB.categories.filter(function (c) { return c.parentId === catId; }).forEach(function (c) {
+      ids = ids.concat(getAllDescendantIds(c.id));
+    });
+    return ids;
+  }
+
+  function countSpeciesDeep(catId) {
+    return DB.species.filter(function (s) { return getAllDescendantIds(catId).includes(s.categoryId); }).length;
+  }
+
+  function getCatPath(catId) {
+    var parts = [];
+    var cur = DB.categories.find(function (c) { return c.id === catId; });
+    while (cur) {
+      parts.unshift(cur.name);
+      cur = cur.parentId ? DB.categories.find(function (c) { return c.id === cur.parentId; }) : null;
+    }
+    // Solo mostramos desde el nivel 2 en adelante (sin repetir la categoría raíz que ya está en el badge)
+    return parts.length > 1 ? parts.join(' › ') : '';
+  }
+
+  // ── SIDEBAR MÓVIL ────────────────────────
   var body = document.body;
   var menuToggle = document.getElementById('menuToggle');
-  var sidebarClose = document.getElementById('sidebarClose');
+  var sidebarCloseBtn = document.getElementById('sidebarClose');
   var sidebarOverlay = document.getElementById('sidebarOverlay');
 
-  function openSidebar(){ body.classList.add('sidebar-open'); }
-  function closeSidebar(){ body.classList.remove('sidebar-open'); }
+  function closeSidebar() { body.classList.remove('sidebar-open'); }
 
-  if (menuToggle) menuToggle.addEventListener('click', openSidebar);
-  if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-  if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+  if (menuToggle)      menuToggle.addEventListener('click', function () { body.classList.add('sidebar-open'); });
+  if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+  if (sidebarOverlay)  sidebarOverlay.addEventListener('click', closeSidebar);
 
-  // Acordeón de categorías
-  document.querySelectorAll('.cat-toggle').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var list = btn.nextElementSibling;
-      var isOpen = list.classList.contains('open');
-
-      btn.classList.toggle('open', !isOpen);
-      list.classList.toggle('open', !isOpen);
+  // ── BÚSQUEDA ─────────────────────────────
+  var searchInput = document.querySelector('.search-box input');
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      var q = searchInput.value.trim().toLowerCase();
+      if (!q) { renderGallery(DB.species); return; }
+      renderGallery(DB.species.filter(function (s) {
+        return (s.name || '').toLowerCase().includes(q) ||
+               (s.scientificName || '').toLowerCase().includes(q) ||
+               (s.description || '').toLowerCase().includes(q);
+      }));
     });
+
+    document.querySelector('.search-box button').addEventListener('click', function () {
+      searchInput.dispatchEvent(new Event('input'));
+    });
+  }
+
+  // ── LIGHTBOX ─────────────────────────────
+  var lightbox  = document.getElementById('lightbox');
+  var imgEl     = document.getElementById('lightboxImg');
+  var titleEl   = document.getElementById('lightboxTitle');
+  var counterEl = document.getElementById('lightboxCounter');
+  var thumbsEl  = document.getElementById('lightboxThumbs');
+  var btnClose  = document.getElementById('lightboxClose');
+  var btnPrev   = document.getElementById('lightboxPrev');
+  var btnNext   = document.getElementById('lightboxNext');
+
+  var lbImages = [], lbIndex = 0, lbTitle = '';
+
+  function lbRender() {
+    if (!lbImages.length) return;
+    imgEl.src = lbImages[lbIndex];
+    imgEl.alt = lbTitle;
+    titleEl.textContent = lbTitle;
+    counterEl.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+    thumbsEl.querySelectorAll('img').forEach(function (t, i) { t.classList.toggle('active', i === lbIndex); });
+    var multi = lbImages.length > 1;
+    btnPrev.style.display = multi ? 'flex' : 'none';
+    btnNext.style.display = multi ? 'flex' : 'none';
+    thumbsEl.style.display = multi ? 'flex' : 'none';
+  }
+
+  function openLightbox(images, title, start) {
+    lbImages = images; lbTitle = title; lbIndex = start || 0;
+    thumbsEl.innerHTML = '';
+    images.forEach(function (src, i) {
+      var t = document.createElement('img');
+      t.src = src; t.alt = title + ' ' + (i + 1);
+      t.addEventListener('click', function () { lbIndex = i; lbRender(); });
+      thumbsEl.appendChild(t);
+    });
+    lbRender();
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() { lightbox.classList.remove('open'); document.body.style.overflow = ''; }
+
+  btnClose.addEventListener('click', closeLightbox);
+  btnPrev.addEventListener('click', function () { lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length; lbRender(); });
+  btnNext.addEventListener('click', function () { lbIndex = (lbIndex + 1) % lbImages.length; lbRender(); });
+  lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', function (e) {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length; lbRender(); }
+    if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % lbImages.length; lbRender(); }
   });
 
-  // Abre automáticamente la primera categoría
-  var firstToggle = document.querySelector('.cat-toggle');
-  if (firstToggle) firstToggle.click();
-</script>
-
-<script>
-  // ===== LIGHTBOX de imágenes por especie =====
-  (function(){
-    var lightbox = document.getElementById('lightbox');
-    var imgEl = document.getElementById('lightboxImg');
-    var titleEl = document.getElementById('lightboxTitle');
-    var counterEl = document.getElementById('lightboxCounter');
-    var thumbsEl = document.getElementById('lightboxThumbs');
-    var btnClose = document.getElementById('lightboxClose');
-    var btnPrev = document.getElementById('lightboxPrev');
-    var btnNext = document.getElementById('lightboxNext');
-
-    var images = [];
-    var currentIndex = 0;
-    var currentTitle = '';
-
-    function render(){
-      if (!images.length) return;
-      imgEl.src = images[currentIndex];
-      imgEl.alt = currentTitle;
-      titleEl.textContent = currentTitle;
-      counterEl.textContent = (currentIndex + 1) + ' / ' + images.length;
-
-      thumbsEl.querySelectorAll('img').forEach(function(t, i){
-        t.classList.toggle('active', i === currentIndex);
-      });
-
-      var multi = images.length > 1;
-      btnPrev.style.display = multi ? 'flex' : 'none';
-      btnNext.style.display = multi ? 'flex' : 'none';
-      thumbsEl.style.display = multi ? 'flex' : 'none';
-    }
-
-    function openLightbox(imageList, title, startIndex){
-      images = imageList;
-      currentTitle = title;
-      currentIndex = startIndex || 0;
-
-      thumbsEl.innerHTML = '';
-      images.forEach(function(src, i){
-        var t = document.createElement('img');
-        t.src = src;
-        t.alt = title + ' ' + (i + 1);
-        t.addEventListener('click', function(){
-          currentIndex = i;
-          render();
-        });
-        thumbsEl.appendChild(t);
-      });
-
-      render();
-      lightbox.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeLightbox(){
-      lightbox.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-
-    function showPrev(){
-      if (!images.length) return;
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-      render();
-    }
-
-    function showNext(){
-      if (!images.length) return;
-      currentIndex = (currentIndex + 1) % images.length;
-      render();
-    }
-
-    document.querySelectorAll('.card-photo[data-images]').forEach(function(photo){
-      photo.addEventListener('click', function(){
+  function bindLightboxCards() {
+    document.querySelectorAll('.card-photo[data-images]').forEach(function (photo) {
+      // evitar doble-bind
+      if (photo._lbBound) return;
+      photo._lbBound = true;
+      photo.addEventListener('click', function () {
         var list;
-        try {
-          list = JSON.parse(photo.getAttribute('data-images'));
-        } catch (e) {
-          list = [];
-        }
+        try { list = JSON.parse(photo.getAttribute('data-images')); } catch (e) { list = []; }
         if (!list.length) return;
         openLightbox(list, photo.getAttribute('data-title') || '', 0);
       });
     });
+  }
 
-    btnClose.addEventListener('click', closeLightbox);
-    btnPrev.addEventListener('click', showPrev);
-    btnNext.addEventListener('click', showNext);
-
-    lightbox.addEventListener('click', function(e){
-      if (e.target === lightbox) closeLightbox();
-    });
-
-    document.addEventListener('keydown', function(e){
-      if (!lightbox.classList.contains('open')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') showPrev();
-      if (e.key === 'ArrowRight') showNext();
-    });
-  })();
+})();
 </script>
 
 </body>

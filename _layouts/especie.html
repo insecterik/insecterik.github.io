@@ -1,12 +1,10 @@
----
----
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ page.title }} &middot; Biodiversidad de Tibirita</title>
+<title id="pageTitleTag">Especie &middot; Biodiversidad de Tibirita</title>
+
 
 <style>
   :root{
@@ -418,9 +416,6 @@
     .lightbox-nav.next{ right:0; }
     .lightbox-stage img{ max-height:55vh; }
   }
-
-  /* Oculta el contenido Markdown crudo: solo se usa como fuente de datos para el JS */
-  #rawContent{ display:none; }
 </style>
 </head>
 <body>
@@ -432,8 +427,8 @@
   </div>
 </div>
 
-<div class="breadcrumb">
-  <a href="/">Catálogo</a> / <span id="breadcrumbCurrent">{{ page.title }}</span>
+<div class="breadcrumb" id="breadcrumb">
+  <a href="/">Catálogo</a> / <span id="breadcrumbCurrent">Cargando&hellip;</span>
 </div>
 
 <div class="species-hero" id="speciesHero"></div>
@@ -442,7 +437,7 @@
   <div>
     <div id="speciesTextBlock">
       <span class="species-badge" id="speciesBadge" style="display:none;"></span>
-      <h1 class="species-title" id="speciesTitle">{{ page.title }}</h1>
+      <h1 class="species-title" id="speciesTitle">Cargando especie&hellip;</h1>
       <p class="species-scientific" id="speciesScientific" style="display:none;"></p>
       <div class="species-description" id="speciesDescription"></div>
     </div>
@@ -458,14 +453,6 @@
 <footer>
   Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
 </footer>
-
-<!-- Contenido Markdown original de Jekyll, oculto, usado solo como fuente de datos -->
-<div id="rawContent">
-{{ content }}
-{% for img in page.imagenes %}
-  <img src="{{ img }}" alt="{{ page.title }}">
-{% endfor %}
-</div>
 
 <div class="lightbox" id="lightbox">
   <div class="lightbox-box">
@@ -485,191 +472,392 @@
 
 <script>
 (function(){
-  var raw = document.getElementById('rawContent');
+  'use strict';
 
-  // ----- 1. Extraer todas las imágenes del contenido Markdown renderizado -----
-  var imgs = Array.prototype.slice.call(raw.querySelectorAll('img')).map(function(img){
-    return img.getAttribute('src');
-  });
+  // ── CONFIG: mismo repo que usa index.html ──
+  var GH_USER   = 'insecterik';
+  var GH_REPO   = 'insecterik.github.io';
+  var GH_BRANCH = 'main';
+  var GH_API    = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/';
+  var GH_RAW    = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/';
 
-  // ----- 2. Extraer pares "Campo: valor" desde <p><strong>Campo:</strong> valor</p> -----
-  var fields = {};
-  var descriptionParagraphs = [];
+  // ── MINI PARSER DE FRONT MATTER YAML (igual al de index.html) ──
+  function parseFrontMatter(raw) {
+    raw = raw.replace(/\r\n/g, '\n');
+    var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
+    if (!match) return {};
+    var lines = match[1].split('\n');
+    var data = {};
+    var currentKey = null;
 
-  Array.prototype.slice.call(raw.querySelectorAll('p')).forEach(function(p){
-    var strong = p.querySelector('strong');
-    var text = p.textContent.trim();
+    lines.forEach(function (line) {
+      if (!line.trim()) return;
 
-    if (!text) return;
-    if (p.querySelector('img')) return; // ya se procesó como imagen
-
-    if (strong) {
-      var label = strong.textContent.replace(':', '').trim();
-      var value = text.replace(strong.textContent, '').replace(/^:\s*/, '').trim();
-      if (value) {
-        fields[label.toLowerCase()] = { label: label, value: value };
+      var listItem = /^\s*-\s+(.*)$/.exec(line);
+      if (listItem && currentKey) {
+        if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+        data[currentKey].push(cleanValue(listItem[1]));
         return;
       }
-    }
 
-    descriptionParagraphs.push(text);
-  });
-
-  // ----- 3. Pintar la galería principal (foto grande + miniaturas) -----
-  var heroEl = document.getElementById('speciesHero');
-  var titleText = document.getElementById('speciesTitle').textContent.trim();
-
-  if (imgs.length) {
-    var mainHtml = '<div class="species-main-photo" data-index="0">' +
-                     '<img src="' + imgs[0] + '" alt="' + titleText + '">' +
-                     '<span class="zoom-hint">&#128269; Ver en grande</span>' +
-                   '</div>';
-
-    var thumbsHtml = '';
-    if (imgs.length > 1) {
-      thumbsHtml += '<div class="species-thumbs-col">';
-      var maxThumbs = 2;
-      for (var i = 1; i < Math.min(imgs.length, maxThumbs + 1); i++) {
-        var isLastVisible = (i === maxThumbs) && (imgs.length > maxThumbs + 1);
-        thumbsHtml += '<div class="thumb' + (isLastVisible ? ' more' : '') + '"' +
-                        (isLastVisible ? ' data-more="+' + (imgs.length - maxThumbs) + '"' : '') +
-                        ' data-index="' + i + '">' +
-                        '<img src="' + imgs[i] + '" alt="' + titleText + ' ' + (i+1) + '">' +
-                      '</div>';
+      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+      if (kv) {
+        var key = kv[1];
+        var val = kv[2].trim();
+        if (val === '') {
+          currentKey = key;
+          data[key] = [];
+        } else {
+          data[key] = cleanValue(val);
+          currentKey = null;
+        }
       }
-      thumbsHtml += '</div>';
+    });
+
+    return data;
+  }
+
+  function cleanValue(v) {
+    v = v.trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      v = v.slice(1, -1);
+    }
+    return v;
+  }
+
+  function slugify(str) {
+    return (str || '')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
+
+  function capitalize(str) {
+    str = str || '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function listMdFiles(folder) {
+    return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
+      .then(function (r) {
+        if (!r.ok) throw new Error('No se pudo listar ' + folder + ' (HTTP ' + r.status + ')');
+        return r.json();
+      })
+      .then(function (items) {
+        return (items || [])
+          .filter(function (it) { return it.type === 'file' && /\.md$/i.test(it.name); })
+          .map(function (it) { return folder + '/' + it.name; });
+      });
+  }
+
+  function fetchAndParseAll(paths) {
+    return Promise.all(paths.map(function (path) {
+      return fetch(GH_RAW + path + '?v=' + Date.now())
+        .then(function (r) {
+          if (!r.ok) throw new Error('No se pudo leer ' + path);
+          return r.text();
+        })
+        .then(function (raw) {
+          var fm = parseFrontMatter(raw);
+          fm.__path = path;
+          return fm;
+        });
+    }));
+  }
+
+  // ── ESTADO DE ERROR / "NO ENCONTRADO" ──
+  function showError(message) {
+    document.getElementById('speciesTitle').textContent = 'No se encontró la especie';
+    document.getElementById('breadcrumbCurrent').textContent = 'No encontrada';
+    document.getElementById('speciesHero').style.display = 'none';
+    document.querySelector('.data-card').style.display = 'none';
+    var descEl = document.getElementById('speciesDescription');
+    var p = document.createElement('p');
+    p.style.color = '#a33';
+    p.textContent = message;
+    descEl.appendChild(p);
+  }
+
+  // ── LEER ?id= DE LA URL ──
+  var params = new URLSearchParams(window.location.search);
+  var targetId = params.get('id');
+
+  if (!targetId) {
+    showError('No se especificó ninguna especie en la URL (falta el parámetro ?id=).');
+    return;
+  }
+
+  // ── CARGAR CATEGORÍAS, SUBCATEGORÍAS Y ESPECIES, IGUAL QUE EN index.html ──
+  Promise.all([
+    listMdFiles('content/categorias').then(fetchAndParseAll),
+    listMdFiles('content/subcategorias').then(fetchAndParseAll),
+    listMdFiles('content/especies').then(fetchAndParseAll)
+  ])
+    .then(function (results) {
+      var rawCategorias    = results[0];
+      var rawSubcategorias = results[1];
+      var rawEspecies      = results[2];
+
+      var categories = rawCategorias.map(function (c) {
+        return {
+          id: slugify(c.title),
+          parentId: null,
+          name: c.title || '(sin nombre)',
+          description: c.descripcion || '',
+          image: c.imagen || ''
+        };
+      });
+
+      rawSubcategorias.forEach(function (sc) {
+        categories.push({
+          id: slugify(sc.title),
+          parentId: slugify(sc.categoria),
+          name: sc.title || '(sin nombre)',
+          description: sc.descripcion || '',
+          image: sc.imagen || ''
+        });
+      });
+
+      var species = rawEspecies.map(function (sp) {
+        var catId = sp.subcategoria ? slugify(sp.subcategoria)
+                  : (sp.categoria ? slugify(sp.categoria) : null);
+
+        var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
+                     : (sp.imagenes ? [sp.imagenes] : []);
+
+        return {
+          id: slugify(sp.title) + '-' + slugify(sp.__path),
+          categoryId: catId,
+          name: sp.title || '(sin nombre)',
+          scientificName: sp.cientifico || '',
+          description: sp.descripcion || '',
+          location: sp.ubicacion || '',
+          date: sp.fecha || '',
+          photos: imagenes
+        };
+      });
+
+      var sp = species.find(function (s) { return s.id === targetId; });
+
+      if (!sp) {
+        showError('La especie solicitada ya no existe o el enlace está desactualizado.');
+        return;
+      }
+
+      renderSpecies(sp, categories);
+    })
+    .catch(function (err) {
+      console.error(err);
+      showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+    });
+
+  // ── HELPERS DE RUTA DE CATEGORÍA (igual lógica que index.html) ──
+  function getCatPath(categories, catId) {
+    var parts = [];
+    var cur = categories.find(function (c) { return c.id === catId; });
+    while (cur) {
+      parts.unshift(cur.name);
+      cur = cur.parentId ? categories.find(function (c) { return c.id === cur.parentId; }) : null;
+    }
+    return parts;
+  }
+
+  // ── RENDER PRINCIPAL DE LA PÁGINA DE ESPECIE ──
+  function renderSpecies(sp, categories) {
+    var titleText = capitalize(sp.name);
+    var imgs = sp.photos || [];
+    var catPath = getCatPath(categories, sp.categoryId); // ej: ["mariposas", "diurnas"]
+    var rootCat = catPath.length ? catPath[0] : '';
+
+    // Título de pestaña, breadcrumb y encabezado
+    document.getElementById('pageTitleTag').textContent = titleText + ' · Biodiversidad de Tibirita';
+    document.getElementById('breadcrumbCurrent').textContent = titleText;
+    document.getElementById('speciesTitle').textContent = titleText;
+
+    // ----- 1. Galería principal (foto grande + miniaturas) -----
+    var heroEl = document.getElementById('speciesHero');
+
+    if (imgs.length) {
+      var mainHtml = '<div class="species-main-photo" data-index="0">' +
+                       '<img src="' + imgs[0] + '" alt="' + titleText + '">' +
+                       '<span class="zoom-hint">&#128269; Ver en grande</span>' +
+                     '</div>';
+
+      var thumbsHtml = '';
+      if (imgs.length > 1) {
+        thumbsHtml += '<div class="species-thumbs-col">';
+        var maxThumbs = 2;
+        for (var i = 1; i < Math.min(imgs.length, maxThumbs + 1); i++) {
+          var isLastVisible = (i === maxThumbs) && (imgs.length > maxThumbs + 1);
+          thumbsHtml += '<div class="thumb' + (isLastVisible ? ' more' : '') + '"' +
+                          (isLastVisible ? ' data-more="+' + (imgs.length - maxThumbs) + '"' : '') +
+                          ' data-index="' + i + '">' +
+                          '<img src="' + imgs[i] + '" alt="' + titleText + ' ' + (i + 1) + '">' +
+                        '</div>';
+        }
+        thumbsHtml += '</div>';
+      }
+
+      heroEl.innerHTML = mainHtml + thumbsHtml;
+    } else {
+      heroEl.innerHTML = '<div class="species-main-photo" style="display:flex;align-items:center;justify-content:center;font-size:4rem;cursor:default;">🌿</div>';
     }
 
-    heroEl.innerHTML = mainHtml + thumbsHtml;
-  } else {
-    heroEl.style.display = 'none';
-  }
+    // ----- 2. Badge de categoría raíz -----
+    var badgeEl = document.getElementById('speciesBadge');
+    if (rootCat) {
+      badgeEl.textContent = rootCat;
+      badgeEl.style.display = 'inline-block';
+    }
 
-  // ----- 4. Pintar badge de categoría, nombre científico y descripción -----
-  var badgeEl = document.getElementById('speciesBadge');
-  var sciEl = document.getElementById('speciesScientific');
-  var descEl = document.getElementById('speciesDescription');
-  var dataRowsEl = document.getElementById('dataCardRows');
+    // ----- 3. Nombre científico -----
+    var sciEl = document.getElementById('speciesScientific');
+    if (sp.scientificName) {
+      sciEl.textContent = sp.scientificName;
+      sciEl.style.display = 'block';
+    }
 
-  if (fields['categoría'] || fields['categoria']) {
-    var cat = fields['categoría'] || fields['categoria'];
-    badgeEl.textContent = cat.value;
-    badgeEl.style.display = 'inline-block';
-  }
+    // ----- 4. Descripción -----
+    var descEl = document.getElementById('speciesDescription');
+    if (sp.description) {
+      var p = document.createElement('p');
+      p.textContent = sp.description;
+      descEl.appendChild(p);
+    } else {
+      var pEmpty = document.createElement('p');
+      pEmpty.style.color = '#8a9a95';
+      pEmpty.textContent = 'Sin descripción registrada todavía.';
+      descEl.appendChild(pEmpty);
+    }
 
-  var sciKey = Object.keys(fields).find(function(k){ return k.indexOf('científico') !== -1 || k.indexOf('cientifico') !== -1; });
-  if (sciKey) {
-    sciEl.textContent = fields[sciKey].value;
-    sciEl.style.display = 'block';
-  }
+    // ----- 5. Ficha técnica (data-card) -----
+    var dataRowsEl = document.getElementById('dataCardRows');
+    var rows = [];
 
-  descriptionParagraphs.forEach(function(text){
-    var p = document.createElement('p');
-    p.textContent = text;
-    descEl.appendChild(p);
-  });
+    if (catPath.length) {
+      rows.push({ label: 'Categoría', value: catPath.join(' › ') });
+    }
+    if (sp.location) {
+      rows.push({ label: 'Ubicación', value: sp.location });
+    }
+    if (sp.date) {
+      var d = new Date(sp.date);
+      var fechaTexto = isNaN(d.getTime()) ? sp.date : d.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+      rows.push({ label: 'Fecha de observación', value: fechaTexto });
+    }
+    if (imgs.length) {
+      rows.push({ label: 'Fotos registradas', value: String(imgs.length) });
+    }
 
-  // Resto de campos (categoría, subcategoría, ubicación, etc.) van a la ficha técnica
-  var skipKeys = sciKey ? [sciKey] : [];
-  Object.keys(fields).forEach(function(key){
-    if (skipKeys.indexOf(key) !== -1) return;
-    var f = fields[key];
-    var row = document.createElement('div');
-    row.className = 'data-row';
-    row.innerHTML = '<span class="label">' + f.label + '</span><span class="value">' + f.value + '</span>';
-    dataRowsEl.appendChild(row);
-  });
-
-  if (!dataRowsEl.children.length) {
-    document.querySelector('.data-card').style.display = 'none';
-  }
-
-  // ----- 5. Lightbox -----
-  var lightbox = document.getElementById('lightbox');
-  var lightboxImg = document.getElementById('lightboxImg');
-  var lightboxTitle = document.getElementById('lightboxTitle');
-  var lightboxCounter = document.getElementById('lightboxCounter');
-  var lightboxThumbs = document.getElementById('lightboxThumbs');
-  var btnClose = document.getElementById('lightboxClose');
-  var btnPrev = document.getElementById('lightboxPrev');
-  var btnNext = document.getElementById('lightboxNext');
-
-  var currentIndex = 0;
-
-  function renderLightbox(){
-    if (!imgs.length) return;
-    lightboxImg.src = imgs[currentIndex];
-    lightboxImg.alt = titleText;
-    lightboxTitle.textContent = titleText;
-    lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imgs.length;
-
-    lightboxThumbs.querySelectorAll('img').forEach(function(t, i){
-      t.classList.toggle('active', i === currentIndex);
+    rows.forEach(function (r) {
+      var row = document.createElement('div');
+      row.className = 'data-row';
+      row.innerHTML = '<span class="label"></span><span class="value"></span>';
+      row.querySelector('.label').textContent = r.label;
+      row.querySelector('.value').textContent = r.value;
+      dataRowsEl.appendChild(row);
     });
 
-    var multi = imgs.length > 1;
-    btnPrev.style.display = multi ? 'flex' : 'none';
-    btnNext.style.display = multi ? 'flex' : 'none';
-    lightboxThumbs.style.display = multi ? 'flex' : 'none';
+    if (!dataRowsEl.children.length) {
+      document.querySelector('.data-card').style.display = 'none';
+    }
+
+    // ----- 6. Lightbox -----
+    initLightbox(imgs, titleText, heroEl);
   }
 
-  function openLightbox(startIndex){
-    currentIndex = startIndex || 0;
+  // ── LIGHTBOX (igual al del catálogo) ──
+  function initLightbox(imgs, titleText, heroEl) {
+    var lightbox = document.getElementById('lightbox');
+    var lightboxImg = document.getElementById('lightboxImg');
+    var lightboxTitle = document.getElementById('lightboxTitle');
+    var lightboxCounter = document.getElementById('lightboxCounter');
+    var lightboxThumbs = document.getElementById('lightboxThumbs');
+    var btnClose = document.getElementById('lightboxClose');
+    var btnPrev = document.getElementById('lightboxPrev');
+    var btnNext = document.getElementById('lightboxNext');
 
-    lightboxThumbs.innerHTML = '';
-    imgs.forEach(function(src, i){
-      var t = document.createElement('img');
-      t.src = src;
-      t.alt = titleText + ' ' + (i + 1);
-      t.addEventListener('click', function(){
-        currentIndex = i;
-        renderLightbox();
+    var currentIndex = 0;
+
+    function renderLightbox(){
+      if (!imgs.length) return;
+      lightboxImg.src = imgs[currentIndex];
+      lightboxImg.alt = titleText;
+      lightboxTitle.textContent = titleText;
+      lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imgs.length;
+
+      lightboxThumbs.querySelectorAll('img').forEach(function(t, i){
+        t.classList.toggle('active', i === currentIndex);
       });
-      lightboxThumbs.appendChild(t);
+
+      var multi = imgs.length > 1;
+      btnPrev.style.display = multi ? 'flex' : 'none';
+      btnNext.style.display = multi ? 'flex' : 'none';
+      lightboxThumbs.style.display = multi ? 'flex' : 'none';
+    }
+
+    function openLightbox(startIndex){
+      if (!imgs.length) return;
+      currentIndex = startIndex || 0;
+
+      lightboxThumbs.innerHTML = '';
+      imgs.forEach(function(src, i){
+        var t = document.createElement('img');
+        t.src = src;
+        t.alt = titleText + ' ' + (i + 1);
+        t.addEventListener('click', function(){
+          currentIndex = i;
+          renderLightbox();
+        });
+        lightboxThumbs.appendChild(t);
+      });
+
+      renderLightbox();
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox(){
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function showPrev(){
+      if (!imgs.length) return;
+      currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+      renderLightbox();
+    }
+
+    function showNext(){
+      if (!imgs.length) return;
+      currentIndex = (currentIndex + 1) % imgs.length;
+      renderLightbox();
+    }
+
+    heroEl.addEventListener('click', function(e){
+      var target = e.target.closest('[data-index]');
+      if (!target) return;
+      openLightbox(parseInt(target.getAttribute('data-index'), 10));
     });
 
-    renderLightbox();
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
+    btnClose.addEventListener('click', closeLightbox);
+    btnPrev.addEventListener('click', showPrev);
+    btnNext.addEventListener('click', showNext);
+
+    lightbox.addEventListener('click', function(e){
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', function(e){
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') showPrev();
+      if (e.key === 'ArrowRight') showNext();
+    });
   }
-
-  function closeLightbox(){
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function showPrev(){
-    if (!imgs.length) return;
-    currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
-    renderLightbox();
-  }
-
-  function showNext(){
-    if (!imgs.length) return;
-    currentIndex = (currentIndex + 1) % imgs.length;
-    renderLightbox();
-  }
-
-  heroEl.addEventListener('click', function(e){
-    var target = e.target.closest('[data-index]');
-    if (!target) return;
-    openLightbox(parseInt(target.getAttribute('data-index'), 10));
-  });
-
-  btnClose.addEventListener('click', closeLightbox);
-  btnPrev.addEventListener('click', showPrev);
-  btnNext.addEventListener('click', showNext);
-
-  lightbox.addEventListener('click', function(e){
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  document.addEventListener('keydown', function(e){
-    if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') showPrev();
-    if (e.key === 'ArrowRight') showNext();
-  });
 })();
 </script>
 

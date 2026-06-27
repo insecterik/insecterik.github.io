@@ -1026,7 +1026,7 @@
 
           // Especies directas de la subcategoría
           subSpecies.forEach(function (sp) {
-            html += '<a href="#" class="species-link" data-species-id="' + sp.id + '">' + sp.name + '</a>';
+            html += '<a href="especie.html?id=' + encodeURIComponent(sp.id) + '" class="species-link" data-species-id="' + sp.id + '">' + sp.name + '</a>';
           });
 
           // Sub-subcategorías (nivel 3)
@@ -1035,7 +1035,7 @@
             if (!gcSpecies.length) return;
             html += '<div class="subsubcat">' + (gc.icon || '') + ' ' + gc.name + '</div>';
             gcSpecies.forEach(function (sp) {
-              html += '<a href="#" class="species-link deep" data-species-id="' + sp.id + '">' + sp.name + '</a>';
+              html += '<a href="especie.html?id=' + encodeURIComponent(sp.id) + '" class="species-link deep" data-species-id="' + sp.id + '">' + sp.name + '</a>';
             });
           });
 
@@ -1047,7 +1047,7 @@
 
         // Especies directas de la categoría raíz (sin subcategoría)
         directSpecies.forEach(function (sp) {
-          html += '<a href="#" class="species-link" data-species-id="' + sp.id + '">' + sp.name + '</a>';
+          html += '<a href="especie.html?id=' + encodeURIComponent(sp.id) + '" class="species-link" data-species-id="' + sp.id + '">' + sp.name + '</a>';
         });
 
         html += '</div></div>'; // species-list + cat-group
@@ -1102,18 +1102,10 @@
       });
     });
 
-    // Click en especie individual → scroll a la tarjeta
+    // Click en especie individual → navega a su página de detalle (especie.html?id=...)
+    // El propio href ya apunta ahí; solo cerramos el sidebar en móvil antes de salir.
     document.querySelectorAll('.species-link').forEach(function (a) {
-      a.addEventListener('click', function (e) {
-        e.preventDefault();
-        var id = a.dataset.speciesId;
-        var sp = DB.species.find(function (s) { return s.id === id; });
-        if (!sp) return;
-        // Muestra solo esa especie en la galería
-        renderGallery([sp]);
-        highlightActive(a);
-        // Scroll al inicio de la galería en móvil
-        document.getElementById('gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      a.addEventListener('click', function () {
         closeSidebar();
       });
     });
@@ -1201,9 +1193,8 @@
 
       var h2 = document.createElement('h2');
       var a = document.createElement('a');
-      a.href = '#';
+      a.href = 'especie.html?id=' + encodeURIComponent(sp.id);
       a.textContent = sp.name;
-      a.addEventListener('click', function (e) { e.preventDefault(); });
       h2.appendChild(a);
       content.appendChild(h2);
 

@@ -1,0 +1,113 @@
+backend:
+  name: github
+  repo: insecterik/insecterik.github.io
+  branch: main
+  base_url: https://insecterik-cms-auth.thomm99gt.workers.dev
+
+site_url: https://insecterik.github.io
+display_url: https://insecterik.github.io
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+
+  # CATEGORÍAS PRINCIPALES
+  - name: "categorias"
+    label: "Categorías"
+    folder: "content/categorias"
+    create: true
+    slug: "{{slug}}"
+
+    fields:
+      - label: "Nombre"
+        name: "title"
+        widget: "string"
+
+      - label: "Descripción"
+        name: "descripcion"
+        widget: "text"
+        required: false
+
+      - label: "Imagen"
+        name: "imagen"
+        widget: "image"
+        required: false
+
+  # SUBCATEGORÍAS
+  - name: "subcategorias"
+    label: "Subcategorías"
+    folder: "content/subcategorias"
+    create: true
+    slug: "{{slug}}"
+
+    fields:
+      - label: "Nombre"
+        name: "title"
+        widget: "string"
+
+      - label: "Categoría Principal"
+        name: "categoria"
+        widget: "relation"
+        collection: "categorias"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+
+      - label: "Descripción"
+        name: "descripcion"
+        widget: "text"
+        required: false
+
+      - label: "Imagen"
+        name: "imagen"
+        widget: "image"
+        required: false
+
+  # ESPECIES
+  - name: "especies"
+    label: "Especies"
+    folder: "content/especies"
+    create: true
+    slug: "{{slug}}"
+
+    fields:
+
+      - label: "Nombre común"
+        name: "title"
+        widget: "string"
+
+      - label: "Nombre científico"
+        name: "cientifico"
+        widget: "string"
+        required: false
+
+      - label: "Subcategoría"
+        name: "subcategoria"
+        widget: "relation"
+        collection: "subcategorias"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+
+      - label: "Descripción"
+        name: "descripcion"
+        widget: "text"
+
+      - label: "Fecha de observación"
+        name: "fecha"
+        widget: "datetime"
+        required: false
+
+      - label: "Ubicación"
+        name: "ubicacion"
+        widget: "string"
+        required: false
+
+      - label: "Galería"
+        name: "imagenes"
+        widget: "list"
+        field:
+          label: "Imagen"
+          name: "imagen"
+          widget: "image"

@@ -1,7 +1,8 @@
 backend:
-     name: github
-     repo: insecterik/insecterik.github.io
-     branch: main
+  name: github
+  repo: insecterik/insecterik.github.io
+  branch: main
+  base_url: https://insecterik-cms-auth.thomm99gt.workers.dev
 
 site_url: https://insecterik.github.io
 display_url: https://insecterik.github.io

@@ -443,6 +443,11 @@
     </div>
   </div>
 
+  <div class="data-card" id="taxonomyCard" style="display:none; margin-bottom:18px;">
+    <h3>Clasificación</h3>
+    <div id="taxonomyRows"></div>
+  </div>
+
   <div class="data-card">
     <h3>Ficha técnica</h3>
     <div id="dataCardRows"></div>
@@ -590,40 +595,49 @@
     return;
   }
 
-  // ── CARGAR CATEGORÍAS, SUBCATEGORÍAS Y ESPECIES, IGUAL QUE EN index.html ──
-  Promise.all([
-    listMdFiles('content/categorias').then(fetchAndParseAll),
-    listMdFiles('content/subcategorias').then(fetchAndParseAll),
-    listMdFiles('content/especies').then(fetchAndParseAll)
-  ])
+  // ── CARGAR LOS 6 NIVELES (REINO → GRUPO → SUBGRUPO → CATEGORÍA → SUBCATEGORÍA) Y ESPECIES, IGUAL QUE EN index.html ──
+  var LEVELS = [
+    { folder: 'content/reinos',        parentFields: [] },
+    { folder: 'content/grupos',        parentFields: ['reino'] },
+    { folder: 'content/subgrupos',     parentFields: ['grupo', 'reino'] },
+    { folder: 'content/categorias',    parentFields: ['subgrupo', 'grupo', 'reino'] },
+    { folder: 'content/subcategorias', parentFields: ['categoria', 'subgrupo', 'grupo', 'reino'] }
+  ];
+  var SPECIES_PARENT_FIELDS = ['subcategoria', 'categoria', 'subgrupo', 'grupo', 'reino'];
+
+  var LEVEL_LABELS = ['Reino', 'Grupo Principal', 'Subgrupo', 'Categoría', 'Subcategoría'];
+
+  Promise.all(
+    LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
+      .concat([listMdFiles('content/especies').then(fetchAndParseAll)])
+  )
     .then(function (results) {
-      var rawCategorias    = results[0];
-      var rawSubcategorias = results[1];
-      var rawEspecies      = results[2];
+      var categories = [];
 
-      var categories = rawCategorias.map(function (c) {
-        return {
-          id: slugify(c.title),
-          parentId: null,
-          name: c.title || '(sin nombre)',
-          description: c.descripcion || '',
-          image: c.imagen || ''
-        };
-      });
-
-      rawSubcategorias.forEach(function (sc) {
-        categories.push({
-          id: slugify(sc.title),
-          parentId: slugify(sc.categoria),
-          name: sc.title || '(sin nombre)',
-          description: sc.descripcion || '',
-          image: sc.imagen || ''
+      LEVELS.forEach(function (lvl, idx) {
+        var rawItems = results[idx];
+        rawItems.forEach(function (item) {
+          var parentName = null;
+          for (var i = 0; i < lvl.parentFields.length; i++) {
+            if (item[lvl.parentFields[i]]) { parentName = item[lvl.parentFields[i]]; break; }
+          }
+          categories.push({
+            id: slugify(item.title),
+            parentId: parentName ? slugify(parentName) : null,
+            name: item.title || '(sin nombre)',
+            levelLabel: LEVEL_LABELS[idx],
+            description: item.descripcion || '',
+            image: item.imagen || ''
+          });
         });
       });
 
+      var rawEspecies = results[results.length - 1];
       var species = rawEspecies.map(function (sp) {
-        var catId = sp.subcategoria ? slugify(sp.subcategoria)
-                  : (sp.categoria ? slugify(sp.categoria) : null);
+        var catId = null;
+        for (var i = 0; i < SPECIES_PARENT_FIELDS.length; i++) {
+          if (sp[SPECIES_PARENT_FIELDS[i]]) { catId = slugify(sp[SPECIES_PARENT_FIELDS[i]]); break; }
+        }
 
         var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
                      : (sp.imagenes ? [sp.imagenes] : []);
@@ -654,12 +668,13 @@
       showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
     });
 
-  // ── HELPERS DE RUTA DE CATEGORÍA (igual lógica que index.html) ──
+  // ── HELPERS DE RUTA DE CATEGORÍA (igual lógica que index.html, soporta cualquier profundidad) ──
+  // Devuelve un array ordenado de raíz -> hoja, cada elemento: { name, levelLabel }
   function getCatPath(categories, catId) {
     var parts = [];
     var cur = categories.find(function (c) { return c.id === catId; });
     while (cur) {
-      parts.unshift(cur.name);
+      parts.unshift({ name: cur.name, levelLabel: cur.levelLabel });
       cur = cur.parentId ? categories.find(function (c) { return c.id === cur.parentId; }) : null;
     }
     return parts;
@@ -669,8 +684,8 @@
   function renderSpecies(sp, categories) {
     var titleText = capitalize(sp.name);
     var imgs = sp.photos || [];
-    var catPath = getCatPath(categories, sp.categoryId); // ej: ["mariposas", "diurnas"]
-    var rootCat = catPath.length ? catPath[0] : '';
+    var catPath = getCatPath(categories, sp.categoryId); // ej: [{name:'Animalia',levelLabel:'Reino'}, {name:'Aves',levelLabel:'Grupo Principal'}, ...]
+    var leafCat = catPath.length ? catPath[catPath.length - 1] : null; // nivel más específico, justo arriba de la especie
 
     // Título de pestaña, breadcrumb y encabezado
     document.getElementById('pageTitleTag').textContent = titleText + ' · Biodiversidad de Tibirita';
@@ -706,10 +721,10 @@
       heroEl.innerHTML = '<div class="species-main-photo" style="display:flex;align-items:center;justify-content:center;font-size:4rem;cursor:default;">🌿</div>';
     }
 
-    // ----- 2. Badge de categoría raíz -----
+    // ----- 2. Badge: nivel más específico justo arriba de la especie -----
     var badgeEl = document.getElementById('speciesBadge');
-    if (rootCat) {
-      badgeEl.textContent = rootCat;
+    if (leafCat) {
+      badgeEl.textContent = leafCat.name;
       badgeEl.style.display = 'inline-block';
     }
 
@@ -733,13 +748,27 @@
       descEl.appendChild(pEmpty);
     }
 
-    // ----- 5. Ficha técnica (data-card) -----
+    // ----- 5. Clasificación taxonómica: un renglón por cada nivel presente -----
+    var taxonomyCard = document.getElementById('taxonomyCard');
+    var taxonomyRowsEl = document.getElementById('taxonomyRows');
+
+    if (catPath.length) {
+      catPath.forEach(function (part) {
+        var row = document.createElement('div');
+        row.className = 'data-row';
+        row.innerHTML = '<span class="label"></span><span class="value"></span>';
+        row.querySelector('.label').textContent = part.levelLabel || 'Nivel';
+        row.querySelector('.value').textContent = part.name;
+        taxonomyRowsEl.appendChild(row);
+      });
+      taxonomyCard.style.display = 'block';
+    }
+
+    // ----- 6. Ficha técnica (data-card) -----
+    var dataCardEl = document.getElementById('dataCardRows').closest('.data-card');
     var dataRowsEl = document.getElementById('dataCardRows');
     var rows = [];
 
-    if (catPath.length) {
-      rows.push({ label: 'Categoría', value: catPath.join(' › ') });
-    }
     if (sp.location) {
       rows.push({ label: 'Ubicación', value: sp.location });
     }
@@ -762,10 +791,10 @@
     });
 
     if (!dataRowsEl.children.length) {
-      document.querySelector('.data-card').style.display = 'none';
+      dataCardEl.style.display = 'none';
     }
 
-    // ----- 6. Lightbox -----
+    // ----- 7. Lightbox -----
     initLightbox(imgs, titleText, heroEl);
   }
 

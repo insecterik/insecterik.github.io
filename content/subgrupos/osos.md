@@ -1,6 +1,6 @@
 ---
 title: mamiferos
 reino: Fauna
-grupo: mamiferos
+grupo: vertebrados
 descripcion: descripcion de los mamiferos
 ---

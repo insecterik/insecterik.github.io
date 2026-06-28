@@ -1,8 +1,8 @@
 ---
 title: osos negros pequeños
 reino: Fauna
-grupo: mamiferos
-subgrupo: osos
+grupo: vertebrados
+subgrupo: mamiferos
 categoria: osos negros
 descripcion: descripcion osos negros pequeños
 ---

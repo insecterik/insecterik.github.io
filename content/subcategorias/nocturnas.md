@@ -2,6 +2,6 @@
 title: nocturnas
 reino: Fauna
 grupo: Invertebrados
-subgrupo: mamiferos
+subgrupo: Insectos
 categoria: mariposas
 ---

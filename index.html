@@ -629,6 +629,12 @@
   .subcat-toggle.open .arrow{ transform:rotate(90deg); }
   .subcat-toggle:hover{ color:var(--verde-texto); background:#f5faf5; }
 
+  /* Indentación progresiva según profundidad (depth-1 = subcategoría directa, depth-4 = más profundo) */
+  .subcat-toggle.depth-1{ padding-left:32px; }
+  .subcat-toggle.depth-2{ padding-left:44px; font-size:12px; }
+  .subcat-toggle.depth-3{ padding-left:56px; font-size:11px; }
+  .subcat-toggle.depth-4{ padding-left:68px; font-size:11px; }
+
   .subspecies-list{
     max-height:0;
     overflow:hidden;
@@ -645,17 +651,11 @@
     border-top:1px solid #eef2f0;
     text-decoration:none;
   }
-  .subspecies-list .species-link.deep{ padding-left:58px; }
+  .subspecies-list .species-link.depth-1{ padding-left:46px; }
+  .subspecies-list .species-link.depth-2{ padding-left:58px; }
+  .subspecies-list .species-link.depth-3{ padding-left:70px; }
+  .subspecies-list .species-link.depth-4{ padding-left:82px; }
   .subspecies-list .species-link:hover{ color:var(--verde-texto); background:#eef7ee; }
-
-  .subsubcat{
-    padding:6px 20px 4px 46px;
-    font-size:10px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    color:var(--verde-brillante);
-  }
 
   /* Especie directa en species-list (sin subcat) */
   .species-list > .species-link{
@@ -903,44 +903,49 @@
   }
 
   // ── CARGA DE CONTENIDO DESDE content/*.md (vía GitHub) ──────
-  Promise.all([
-    listMdFiles('content/categorias').then(fetchAndParseAll),
-    listMdFiles('content/subcategorias').then(fetchAndParseAll),
-    listMdFiles('content/especies').then(fetchAndParseAll)
-  ])
+  // Niveles, de más general a más específico. El orden importa: define
+  // qué campo "padre" se prioriza si por error hay más de uno relleno.
+  var LEVELS = [
+    { folder: 'content/reinos',        parentFields: [] },
+    { folder: 'content/grupos',        parentFields: ['reino'] },
+    { folder: 'content/subgrupos',     parentFields: ['grupo', 'reino'] },
+    { folder: 'content/categorias',    parentFields: ['subgrupo', 'grupo', 'reino'] },
+    { folder: 'content/subcategorias', parentFields: ['categoria', 'subgrupo', 'grupo', 'reino'] }
+  ];
+  var SPECIES_PARENT_FIELDS = ['subcategoria', 'categoria', 'subgrupo', 'grupo', 'reino'];
+
+  Promise.all(
+    LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
+      .concat([listMdFiles('content/especies').then(fetchAndParseAll)])
+  )
     .then(function (results) {
-      var rawCategorias    = results[0]; // mariposas.md, mamiferos.md...
-      var rawSubcategorias = results[1]; // diurnas.md...
-      var rawEspecies      = results[2]; // monarca.md...
+      var categories = [];
 
-      // 1) Categorías raíz (nivel 1): vienen de content/categorias
-      var categories = rawCategorias.map(function (c) {
-        return {
-          id: slugify(c.title),
-          parentId: null,
-          name: c.title || '(sin nombre)',
-          description: c.descripcion || '',
-          image: c.imagen || ''
-        };
-      });
-
-      // 2) Subcategorías (nivel 2): vienen de content/subcategorias,
-      //    se vinculan a su categoría raíz por nombre (campo "categoria")
-      rawSubcategorias.forEach(function (sc) {
-        categories.push({
-          id: slugify(sc.title),
-          parentId: slugify(sc.categoria),
-          name: sc.title || '(sin nombre)',
-          description: sc.descripcion || '',
-          image: sc.imagen || ''
+      // Construye cada nivel de categorías (reinos, grupos, subgrupos, categorias, subcategorias)
+      LEVELS.forEach(function (lvl, idx) {
+        var rawItems = results[idx];
+        rawItems.forEach(function (item) {
+          var parentName = null;
+          for (var i = 0; i < lvl.parentFields.length; i++) {
+            if (item[lvl.parentFields[i]]) { parentName = item[lvl.parentFields[i]]; break; }
+          }
+          categories.push({
+            id: slugify(item.title),
+            parentId: parentName ? slugify(parentName) : null,
+            name: item.title || '(sin nombre)',
+            description: item.descripcion || '',
+            image: item.imagen || ''
+          });
         });
       });
 
-      // 3) Especies: vienen de content/especies,
-      //    se vinculan a su subcategoría (o categoría raíz si no tienen) por nombre
+      // Especies: último elemento del array de resultados
+      var rawEspecies = results[results.length - 1];
       var species = rawEspecies.map(function (sp) {
-        var catId = sp.subcategoria ? slugify(sp.subcategoria)
-                  : (sp.categoria ? slugify(sp.categoria) : null);
+        var catId = null;
+        for (var i = 0; i < SPECIES_PARENT_FIELDS.length; i++) {
+          if (sp[SPECIES_PARENT_FIELDS[i]]) { catId = slugify(sp[SPECIES_PARENT_FIELDS[i]]); break; }
+        }
 
         var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
                      : (sp.imagenes ? [sp.imagenes] : []);
@@ -965,6 +970,7 @@
       document.getElementById('gallery').innerHTML =
         '<p style="padding:40px;color:#888;grid-column:1/-1">No se pudo cargar el contenido desde GitHub. ' +
         'Revisa la consola del navegador (F12) para más detalles, y verifica que las carpetas ' +
+        '<code>content/reinos</code>, <code>content/grupos</code>, <code>content/subgrupos</code>, ' +
         '<code>content/categorias</code>, <code>content/subcategorias</code> y <code>content/especies</code> ' +
         'existan en el repositorio.</p>';
     });
@@ -1007,69 +1013,50 @@
       '<span class="cat-name">Todas las especies<span class="count">' + DB.species.length + '</span></span>' +
       '</button></div>';
 
-    // Categorías raíz con subcategorías y especies
-    DB.categories
-      .filter(function (c) { return !c.parentId; })
-      .forEach(function (root) {
-        var subs = DB.categories.filter(function (c) { return c.parentId === root.id; });
-        var directSpecies = DB.species.filter(function (s) { return s.categoryId === root.id; });
-        var totalCount = countSpeciesDeep(root.id);
-
-        html += '<div class="cat-group">';
-        html += '<button class="cat-toggle" data-id="' + root.id + '">' +
-          '<span class="cat-name">' + (root.icon || '') + ' ' + root.name +
-          '<span class="count">' + totalCount + '</span></span>' +
-          '<span class="arrow">▶</span>' +
-          '</button>';
-
-        html += '<div class="species-list">';
-
-        // Subcategorías
-        subs.forEach(function (sub) {
-          var subSpecies = DB.species.filter(function (s) { return s.categoryId === sub.id; });
-          var subSubs = DB.categories.filter(function (c) { return c.parentId === sub.id; });
-          var subTotal = countSpeciesDeep(sub.id);
-
-          // Sub-header como toggle
-          html += '<div class="subcat-group">';
-          html += '<button class="subcat-toggle" data-id="' + sub.id + '">' +
-            (sub.icon || '📁') + ' ' + sub.name +
-            '<span class="count">' + subTotal + '</span>' +
-            '<span class="arrow">▶</span>' +
-            '</button>';
-          html += '<div class="subspecies-list">';
-
-          // Especies directas de la subcategoría
-          subSpecies.forEach(function (sp) {
-            html += '<a href="especie.html?id=' + encodeURIComponent(sp.id) + '" class="species-link" data-species-id="' + sp.id + '">' + sp.name + '</a>';
-          });
-
-          // Sub-subcategorías (nivel 3)
-          subSubs.forEach(function (gc) {
-            var gcSpecies = DB.species.filter(function (s) { return s.categoryId === gc.id; });
-            if (!gcSpecies.length) return;
-            html += '<div class="subsubcat">' + (gc.icon || '') + ' ' + gc.name + '</div>';
-            gcSpecies.forEach(function (sp) {
-              html += '<a href="especie.html?id=' + encodeURIComponent(sp.id) + '" class="species-link deep" data-species-id="' + sp.id + '">' + sp.name + '</a>';
-            });
-          });
-
-          html += '</div></div>'; // subspecies-list + subcat-group
-
-          // Separador visual
-          html += '';
-        });
-
-        // Especies directas de la categoría raíz (sin subcategoría)
-        directSpecies.forEach(function (sp) {
-          html += '<a href="especie.html?id=' + encodeURIComponent(sp.id) + '" class="species-link" data-species-id="' + sp.id + '">' + sp.name + '</a>';
-        });
-
-        html += '</div></div>'; // species-list + cat-group
-      });
+    // Nodos raíz (sin padre) de cualquier nivel: reino, o grupo/subgrupo/categoría/subcategoría
+    // que no tenga ningún ancestro definido.
+    var roots = DB.categories.filter(function (c) { return !c.parentId; });
+    roots.forEach(function (root) {
+      html += renderCategoryNode(root, 0);
+    });
 
     container.innerHTML = html;
     bindSidebarEvents();
+  }
+
+  // Genera el HTML de un nodo de categoría (cualquier nivel) y recursivamente sus hijos.
+  // depth = 0 para nodos raíz, +1 por cada nivel de anidación (usado solo para clases CSS).
+  function renderCategoryNode(node, depth) {
+    var children = DB.categories.filter(function (c) { return c.parentId === node.id; });
+    var directSpecies = DB.species.filter(function (s) { return s.categoryId === node.id; });
+    var totalCount = countSpeciesDeep(node.id);
+
+    var toggleClass = depth === 0 ? 'cat-toggle' : 'subcat-toggle depth-' + Math.min(depth, 4);
+    var groupClass = depth === 0 ? 'cat-group' : 'subcat-group depth-' + Math.min(depth, 4);
+    var listClass = depth === 0 ? 'species-list' : 'subspecies-list';
+    var linkClass = depth === 0 ? 'species-link' : 'species-link deep depth-' + Math.min(depth, 4);
+
+    var html = '<div class="' + groupClass + '">';
+    html += '<button class="' + toggleClass + '" data-id="' + node.id + '">' +
+      (node.icon || '') + ' ' + node.name +
+      '<span class="count">' + totalCount + '</span>' +
+      '<span class="arrow">▶</span>' +
+      '</button>';
+
+    html += '<div class="' + listClass + '">';
+
+    // Hijos (recursivo, cualquier profundidad)
+    children.forEach(function (child) {
+      html += renderCategoryNode(child, depth + 1);
+    });
+
+    // Especies que pertenecen directamente a este nodo
+    directSpecies.forEach(function (sp) {
+      html += '<a href="especie.html?id=' + encodeURIComponent(sp.id) + '" class="' + linkClass + '" data-species-id="' + sp.id + '">' + sp.name + '</a>';
+    });
+
+    html += '</div></div>'; // lista + grupo
+    return html;
   }
 
   function bindSidebarEvents() {

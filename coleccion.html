@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitleTag">Colección &middot; Biodiversidad de Tibirita</title>
+
+<style>
+  :root{
+    --verde-oscuro:#1c3f3a;
+    --verde-header:#16332f;
+    --verde-brillante:#2ecc71;
+    --verde-texto:#1b5e20;
+    --crema:#f4f8f2;
+    --gris-texto:#5a6b66;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--crema);
+    color:#222;
+  }
+
+  a{ text-decoration:none; }
+
+  /* ===== HEADER ===== */
+  .top-header{
+    background:var(--verde-header);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 40px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+
+  .logo{
+    color:var(--verde-brillante);
+    font-weight:800;
+    font-size:22px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+
+  .top-nav{
+    display:flex;
+    align-items:center;
+    gap:28px;
+  }
+
+  .top-nav a{
+    color:#dfe9e6;
+    font-size:13px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    font-weight:600;
+  }
+
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--verde-brillante) !important;
+  }
+
+  /* ===== PAGE HEADER ===== */
+  .page-header{
+    max-width:1100px;
+    margin:50px auto 0;
+    padding:0 24px;
+  }
+
+  .page-header h1{
+    font-size:48px;
+    font-weight:800;
+    color:var(--verde-brillante);
+    margin:0 0 14px;
+  }
+
+  .page-header .description{
+    font-size:17px;
+    color:#3c4a46;
+    line-height:1.7;
+    max-width:760px;
+    margin:0 0 18px;
+  }
+
+  /* ===== BREADCRUMB ===== */
+  .breadcrumb{
+    max-width:1100px;
+    margin:0 auto 30px;
+    padding:0 24px;
+    font-size:13px;
+    color:var(--gris-texto);
+  }
+
+  .breadcrumb a{
+    color:var(--verde-texto);
+    font-weight:600;
+  }
+
+  /* ===== LISTA DE ESPECIES (estilo "ficha" con foto a la derecha) ===== */
+  .species-rows{
+    max-width:1100px;
+    margin:0 auto 70px;
+    padding:0 24px;
+  }
+
+  .species-row{
+    display:grid;
+    grid-template-columns:1fr 320px;
+    gap:28px;
+    align-items:center;
+    padding:32px 0;
+    border-top:1px solid #e1e9e5;
+  }
+
+  .species-row:first-child{ border-top:none; }
+
+  .species-row h2{
+    font-size:24px;
+    font-weight:800;
+    text-transform:uppercase;
+    color:#1c2624;
+    margin:0 0 4px;
+    padding-bottom:14px;
+    border-bottom:1px solid #e1e9e5;
+  }
+
+  .species-row .row-text{ padding-top:4px; }
+
+  .species-row .scientific{
+    font-size:14px;
+    font-style:italic;
+    color:var(--gris-texto);
+    margin:0 0 14px;
+  }
+
+  .species-row .discover-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:#1768d1;
+    font-weight:700;
+    font-size:15px;
+  }
+
+  .species-row .photo{
+    width:100%;
+    height:230px;
+    border-radius:14px;
+    overflow:hidden;
+    background:#dfe9e6;
+  }
+
+  .species-row .photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .species-row .photo.placeholder{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2.4rem;
+  }
+
+  @media (max-width:700px){
+    .species-row{ grid-template-columns:1fr; }
+    .species-row .photo{ height:200px; order:-1; }
+    .page-header h1{ font-size:34px; }
+  }
+
+  .empty-state{
+    padding:60px 24px;
+    text-align:center;
+    color:var(--gris-texto);
+    font-size:15px;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--gris-texto);
+    font-size:13px;
+    padding:24px;
+  }
+
+  @media (max-width:700px){
+    .top-header{ padding:14px 20px; }
+    .top-nav a{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-header">
+  <a class="logo" href="/">Tibirita Bio</a>
+  <div class="top-nav">
+    <a class="back-link" href="/">&#8592; Volver al catálogo</a>
+  </div>
+</div>
+
+<div class="page-header" id="pageHeader">
+  <h1 id="collectionTitle">Cargando colección&hellip;</h1>
+  <p class="description" id="collectionDescription"></p>
+</div>
+
+<div class="breadcrumb">
+  <a href="/">Inicio</a> &rsaquo; <a href="colecciones.html">Colecciones</a> &rsaquo; <span id="breadcrumbCurrent">&hellip;</span>
+</div>
+
+<div class="species-rows" id="speciesRows">
+  <div class="empty-state">Cargando especies&hellip;</div>
+</div>
+
+<footer>
+  Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  // ── CONFIG: mismo repo que usa index.html ──
+  var GH_USER   = 'insecterik';
+  var GH_REPO   = 'insecterik.github.io';
+  var GH_BRANCH = 'main';
+  var GH_API    = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/';
+  var GH_RAW    = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/';
+
+  // ── MINI PARSER DE FRONT MATTER YAML (igual al de index.html / especie.html) ──
+  function parseFrontMatter(raw) {
+    raw = raw.replace(/\r\n/g, '\n');
+    var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
+    if (!match) return {};
+    var lines = match[1].split('\n');
+    var data = {};
+    var currentKey = null;
+
+    lines.forEach(function (line) {
+      if (!line.trim()) return;
+
+      var listItem = /^\s*-\s+(.*)$/.exec(line);
+      if (listItem && currentKey) {
+        if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+        var itemText = listItem[1];
+        var nested = /^[A-Za-z0-9_]+:\s*(.*)$/.exec(itemText);
+        data[currentKey].push(cleanValue(nested ? nested[1] : itemText));
+        return;
+      }
+
+      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+      if (kv) {
+        var key = kv[1];
+        var val = kv[2].trim();
+        if (val === '') {
+          currentKey = key;
+          data[key] = [];
+        } else {
+          data[key] = cleanValue(val);
+          currentKey = null;
+        }
+      }
+    });
+
+    return data;
+  }
+
+  function cleanValue(v) {
+    v = v.trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      v = v.slice(1, -1);
+    }
+    return v;
+  }
+
+  function slugify(str) {
+    return (str || '')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
+
+  function capitalize(str) {
+    str = str || '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function listMdFiles(folder) {
+    return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
+      .then(function (r) {
+        if (!r.ok) throw new Error('No se pudo listar ' + folder + ' (HTTP ' + r.status + ')');
+        return r.json();
+      })
+      .then(function (items) {
+        return (items || [])
+          .filter(function (it) { return it.type === 'file' && /\.md$/i.test(it.name); })
+          .map(function (it) { return folder + '/' + it.name; });
+      });
+  }
+
+  function fetchAndParseAll(paths) {
+    return Promise.all(paths.map(function (path) {
+      return fetch(GH_RAW + path + '?v=' + Date.now())
+        .then(function (r) {
+          if (!r.ok) throw new Error('No se pudo leer ' + path);
+          return r.text();
+        })
+        .then(function (raw) {
+          var fm = parseFrontMatter(raw);
+          fm.__path = path;
+          return fm;
+        });
+    }));
+  }
+
+  function showError(message) {
+    document.getElementById('collectionTitle').textContent = 'No se encontró la colección';
+    document.getElementById('breadcrumbCurrent').textContent = 'No encontrada';
+    document.getElementById('speciesRows').innerHTML = '<div class="empty-state">' + message + '</div>';
+  }
+
+  // ── LEER ?id= DE LA URL ──
+  var params = new URLSearchParams(window.location.search);
+  var targetId = params.get('id');
+
+  if (!targetId) {
+    showError('No se especificó ninguna colección en la URL (falta el parámetro ?id=).');
+    return;
+  }
+
+  // ── CARGAR LA COLECCIÓN SOLICITADA + TODAS LAS ESPECIES ──
+  Promise.all([
+    listMdFiles('content/colecciones').then(fetchAndParseAll),
+    listMdFiles('content/especies').then(fetchAndParseAll)
+  ])
+    .then(function (results) {
+      var rawColecciones = results[0];
+      var rawEspecies = results[1];
+
+      var collections = rawColecciones.map(function (c) {
+        var especiesList = Array.isArray(c.especies) ? c.especies
+                          : (c.especies ? [c.especies] : []);
+        return {
+          id: slugify(c.title) + '-' + slugify(c.__path),
+          name: c.title || '(sin nombre)',
+          description: c.descripcion || '',
+          image: c.imagen || '',
+          especiesNames: especiesList // nombres tal como se escribieron en el campo "especie" de cada item
+        };
+      });
+
+      var species = rawEspecies.map(function (sp) {
+        var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
+                     : (sp.imagenes ? [sp.imagenes] : []);
+        return {
+          id: slugify(sp.title) + '-' + slugify(sp.__path),
+          name: sp.title || '(sin nombre)',
+          scientificName: sp.cientifico || '',
+          description: sp.descripcion || '',
+          photos: imagenes
+        };
+      });
+
+      var collection = collections.find(function (c) { return c.id === targetId; });
+
+      if (!collection) {
+        showError('La colección solicitada ya no existe o el enlace está desactualizado.');
+        return;
+      }
+
+      // Relacionar cada nombre guardado en la colección con la especie real (por nombre, normalizado)
+      var matchedSpecies = collection.especiesNames
+        .map(function (name) {
+          var slug = slugify(name);
+          return species.find(function (sp) { return slugify(sp.name) === slug; });
+        })
+        .filter(Boolean);
+
+      renderCollection(collection, matchedSpecies);
+    })
+    .catch(function (err) {
+      console.error(err);
+      showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+    });
+
+  function renderCollection(collection, species) {
+    document.getElementById('pageTitleTag').textContent = collection.name + ' · Biodiversidad de Tibirita';
+    document.getElementById('collectionTitle').textContent = collection.name;
+    document.getElementById('breadcrumbCurrent').textContent = collection.name;
+
+    var descEl = document.getElementById('collectionDescription');
+    if (collection.description) {
+      descEl.textContent = collection.description;
+    } else {
+      descEl.style.display = 'none';
+    }
+
+    var rowsEl = document.getElementById('speciesRows');
+
+    if (!species.length) {
+      rowsEl.innerHTML = '<div class="empty-state">Esta colección todavía no tiene especies asignadas.</div>';
+      return;
+    }
+
+    var html = '';
+    species.forEach(function (sp) {
+      var titleText = capitalize(sp.name);
+      var mainPhoto = sp.photos && sp.photos.length ? sp.photos[0] : null;
+
+      html += '<div class="species-row">';
+      html += '<div class="row-text">';
+      html += '<h2>' + titleText + '</h2>';
+      if (sp.scientificName) {
+        html += '<p class="scientific">' + sp.scientificName + '</p>';
+      }
+      html += '<a class="discover-link" href="especie.html?id=' + encodeURIComponent(sp.id) + '">Descubrir más &rsaquo;</a>';
+      html += '</div>';
+
+      if (mainPhoto) {
+        html += '<div class="photo"><img src="' + mainPhoto + '" alt="' + titleText + '"></div>';
+      } else {
+        html += '<div class="photo placeholder">🌿</div>';
+      }
+
+      html += '</div>';
+    });
+
+    rowsEl.innerHTML = html;
+  }
+})();
+</script>
+
+</body>
+</html>

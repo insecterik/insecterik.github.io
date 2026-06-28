@@ -2,8 +2,8 @@
 title: oso de anteojos
 cientifico: sonotrishia capensis
 reino: Fauna
-grupo: mamiferos
-subgrupo: osos
+grupo: vertebrados
+subgrupo: mamiferos
 categoria: osos negros
 subcategoria: osos negros pequeños
 descripcion: descripcion del osito

@@ -1,5 +1,5 @@
 ---
-title: mamiferos
+title: vertebrados
 reino: Fauna
-descripcion: descripcion de mamiferos
+descripcion: descripcion de vertebrados
 ---

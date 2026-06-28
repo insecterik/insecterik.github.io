@@ -296,3 +296,39 @@ collections:
           label: "Imagen"
           name: "imagen"
           widget: "image"
+
+  # COLECCIONES — listas manuales de especies (ej: "Especies en peligro", "Avistamientos 2026")
+  # Independiente de la jerarquía de Reino/Grupo/Subgrupo/Categoría/Subcategoría.
+  - name: "colecciones"
+    label: "Colecciones"
+    folder: "content/colecciones"
+    create: true
+    slug: "{{slug}}"
+
+    fields:
+      - label: "Nombre de la colección"
+        name: "title"
+        widget: "string"
+
+      - label: "Descripción"
+        name: "descripcion"
+        widget: "text"
+        required: false
+
+      - label: "Imagen de portada"
+        name: "imagen"
+        widget: "image"
+        required: false
+
+      - label: "Especies en esta colección"
+        name: "especies"
+        widget: "list"
+        required: false
+        field:
+          label: "Especie"
+          name: "especie"
+          widget: "relation"
+          collection: "especies"
+          search_fields: ["title"]
+          value_field: "title"
+          display_fields: ["title"]

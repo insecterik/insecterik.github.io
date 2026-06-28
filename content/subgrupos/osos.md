@@ -1,6 +1,6 @@
 ---
-title: osos
+title: mamiferos
 reino: Fauna
 grupo: mamiferos
-descripcion: descripcion de los osos
+descripcion: descripcion de los mamiferos
 ---

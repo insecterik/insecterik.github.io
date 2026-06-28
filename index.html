@@ -705,6 +705,33 @@
     pointer-events:none;
   }
 
+  /* ===== HERO NAV MOBILE ===== */
+  .hero-mobile-nav{
+    display:none;
+    gap:12px;
+    margin-bottom:28px;
+  }
+
+  .hero-mobile-nav a{
+    color:white;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.3);
+    padding:8px 20px;
+    border-radius:24px;
+    backdrop-filter:blur(4px);
+    transition:background .2s ease;
+  }
+
+  .hero-mobile-nav a:hover{
+    background:var(--verde-brillante);
+    color:var(--verde-header);
+    border-color:var(--verde-brillante);
+  }
+
   @media (max-width:700px){
     .top-header{ padding:14px 20px; }
     .top-nav{ gap:14px; }
@@ -714,6 +741,7 @@
     .hero .subtitle{ font-size:18px; }
     .hero-stats{ gap:14px 22px; font-size:14px; }
     .hero-stats strong{ font-size:18px; }
+    .hero-mobile-nav{ display:flex; }
 
     .sidebar{
       position:fixed;
@@ -756,6 +784,10 @@
 
 <div class="hero">
   <div class="hero-inner">
+    <div class="hero-mobile-nav">
+      <a href="colecciones.html">Colecciones</a>
+      <a href="#listas">Listas</a>
+    </div>
     <h1>Aprender,<br>Explorar, Valorar</h1>
     <p class="subtitle">la magnífica diversidad de la fauna de Tibirita, Cundinamarca</p>
     <div class="hero-stats" id="heroStats">

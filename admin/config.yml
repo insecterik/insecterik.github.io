@@ -12,7 +12,100 @@ public_folder: "/images/uploads"
 
 collections:
 
-  # CATEGORÍAS PRINCIPALES
+  # NIVEL 1 — REINO (Animalia, Plantae, Fungi...)
+  - name: "reinos"
+    label: "Reino"
+    folder: "content/reinos"
+    create: true
+    slug: "{{slug}}"
+
+    fields:
+      - label: "Nombre"
+        name: "title"
+        widget: "string"
+
+      - label: "Descripción"
+        name: "descripcion"
+        widget: "text"
+        required: false
+
+      - label: "Imagen"
+        name: "imagen"
+        widget: "image"
+        required: false
+
+  # NIVEL 2 — GRUPO PRINCIPAL (Aves, Mamíferos, Mariposas, Árboles, Helechos...)
+  - name: "grupos"
+    label: "Grupo Principal"
+    folder: "content/grupos"
+    create: true
+    slug: "{{slug}}"
+
+    fields:
+      - label: "Nombre"
+        name: "title"
+        widget: "string"
+
+      - label: "Reino"
+        name: "reino"
+        widget: "relation"
+        collection: "reinos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Descripción"
+        name: "descripcion"
+        widget: "text"
+        required: false
+
+      - label: "Imagen"
+        name: "imagen"
+        widget: "image"
+        required: false
+
+  # NIVEL 3 — SUBGRUPO
+  - name: "subgrupos"
+    label: "Subgrupo"
+    folder: "content/subgrupos"
+    create: true
+    slug: "{{slug}}"
+
+    fields:
+      - label: "Nombre"
+        name: "title"
+        widget: "string"
+
+      - label: "Reino"
+        name: "reino"
+        widget: "relation"
+        collection: "reinos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Grupo Principal"
+        name: "grupo"
+        widget: "relation"
+        collection: "grupos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Descripción"
+        name: "descripcion"
+        widget: "text"
+        required: false
+
+      - label: "Imagen"
+        name: "imagen"
+        widget: "image"
+        required: false
+
+  # NIVEL 4 — CATEGORÍA
   - name: "categorias"
     label: "Categorías"
     folder: "content/categorias"
@@ -24,6 +117,33 @@ collections:
         name: "title"
         widget: "string"
 
+      - label: "Reino"
+        name: "reino"
+        widget: "relation"
+        collection: "reinos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Grupo Principal"
+        name: "grupo"
+        widget: "relation"
+        collection: "grupos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Subgrupo"
+        name: "subgrupo"
+        widget: "relation"
+        collection: "subgrupos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
       - label: "Descripción"
         name: "descripcion"
         widget: "text"
@@ -34,7 +154,7 @@ collections:
         widget: "image"
         required: false
 
-  # SUBCATEGORÍAS
+  # NIVEL 5 — SUBCATEGORÍA
   - name: "subcategorias"
     label: "Subcategorías"
     folder: "content/subcategorias"
@@ -46,13 +166,41 @@ collections:
         name: "title"
         widget: "string"
 
-      - label: "Categoría Principal"
+      - label: "Reino"
+        name: "reino"
+        widget: "relation"
+        collection: "reinos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Grupo Principal"
+        name: "grupo"
+        widget: "relation"
+        collection: "grupos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Subgrupo"
+        name: "subgrupo"
+        widget: "relation"
+        collection: "subgrupos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Categoría"
         name: "categoria"
         widget: "relation"
         collection: "categorias"
         search_fields: ["title"]
         value_field: "title"
         display_fields: ["title"]
+        required: false
 
       - label: "Descripción"
         name: "descripcion"
@@ -64,7 +212,7 @@ collections:
         widget: "image"
         required: false
 
-  # ESPECIES
+  # NIVEL 6 — ESPECIES
   - name: "especies"
     label: "Especies"
     folder: "content/especies"
@@ -82,6 +230,42 @@ collections:
         widget: "string"
         required: false
 
+      - label: "Reino"
+        name: "reino"
+        widget: "relation"
+        collection: "reinos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Grupo Principal"
+        name: "grupo"
+        widget: "relation"
+        collection: "grupos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Subgrupo"
+        name: "subgrupo"
+        widget: "relation"
+        collection: "subgrupos"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Categoría"
+        name: "categoria"
+        widget: "relation"
+        collection: "categorias"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        required: false
+
       - label: "Subcategoría"
         name: "subcategoria"
         widget: "relation"
@@ -89,6 +273,7 @@ collections:
         search_fields: ["title"]
         value_field: "title"
         display_fields: ["title"]
+        required: false
 
       - label: "Descripción"
         name: "descripcion"

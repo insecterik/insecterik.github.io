@@ -644,7 +644,9 @@
   .subspecies-list.open{ max-height:2000px; }
 
   .subspecies-list .species-link{
-    display:block;
+    display:flex;
+    align-items:center;
+    gap:8px;
     padding:8px 20px 8px 46px;
     font-size:12px;
     color:#3c4a46;
@@ -659,7 +661,9 @@
 
   /* Especie directa en species-list (sin subcat) */
   .species-list > .species-link{
-    display:block;
+    display:flex;
+    align-items:center;
+    gap:8px;
     padding:9px 20px 9px 38px;
     font-size:13px;
     color:#3c4a46;
@@ -667,6 +671,18 @@
     text-decoration:none;
   }
   .species-list > .species-link:hover{ color:var(--verde-texto); background:#eef7ee; }
+
+  /* Puntito verde que identifica que el enlace es una especie (hoja del árbol) */
+  .species-link::before{
+    content:"";
+    display:inline-block;
+    width:6px;
+    height:6px;
+    min-width:6px;
+    border-radius:50%;
+    background:var(--verde-brillante);
+    flex-shrink:0;
+  }
 
   /* Filtro activo */
   .active-filter{

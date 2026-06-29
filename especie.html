@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitleTag">Especie &middot; Biodiversidad de Tibirita</title>
+<link rel="icon" type="image/png" href="images/uploads/favicon.png">
 
 
 <style>
@@ -39,13 +40,18 @@
     gap:12px;
   }
 
-  .logo{
+  .logo{ display:flex; align-items:center; gap:10px; }
+
+  .logo-img{ height:96px; width:96px; object-fit:contain; border-radius:6px; }
+
+  .logo-text{ display:flex; align-items:center; line-height:1; }
+
+    .logo{
     color:var(--verde-brillante);
     font-weight:800;
     font-size:22px;
     letter-spacing:1px;
-    text-transform:uppercase;
-  }
+    }
 
   .top-nav{
     display:flex;
@@ -421,7 +427,7 @@
 <body>
 
 <div class="top-header">
-  <a class="logo" href="/">Tibirita Bio</a>
+  <a class="logo" href="/"><img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img"><span class="logo-text">InsectErik</span></a>
   <div class="top-nav">
     <a class="back-link" href="/">&#8592; Volver al catálogo</a>
   </div>

@@ -1387,8 +1387,10 @@
 
   function loadMoreCards() {
     var gallery = document.getElementById('gallery');
-    var sentinel = document.getElementById('lazy-sentinel');
-    if (sentinel) sentinel.remove();
+
+    // Quitar botón anterior si existe
+    var oldBtn = document.getElementById('load-more-btn');
+    if (oldBtn) oldBtn.remove();
 
     var start = currentPage * PAGE_SIZE;
     var end = Math.min(start + PAGE_SIZE, currentSpecies.length);
@@ -1402,29 +1404,11 @@
 
     var remaining = currentSpecies.length - currentPage * PAGE_SIZE;
     if (remaining > 0) {
-      // Centinela invisible que dispara la carga al llegar al final
-      var sent = document.createElement('div');
-      sent.id = 'lazy-sentinel';
-      sent.style.cssText = 'grid-column:1/-1;height:1px;';
-      gallery.appendChild(sent);
-
-      // Botón "Cargar más" visible como fallback
       var loadBtn = document.createElement('button');
       loadBtn.id = 'load-more-btn';
       loadBtn.textContent = 'Cargar más (' + remaining + ' restantes)';
       loadBtn.onclick = function () { loadMoreCards(); };
       gallery.appendChild(loadBtn);
-
-      // Observer en el centinela
-      if ('IntersectionObserver' in window) {
-        var sentinel2 = new IntersectionObserver(function (entries) {
-          if (entries[0].isIntersecting) {
-            sentinel2.disconnect();
-            loadMoreCards();
-          }
-        }, { rootMargin: '300px' });
-        sentinel2.observe(sent);
-      }
     }
   }
 

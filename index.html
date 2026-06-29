@@ -1110,6 +1110,13 @@
         };
       });
 
+      // Ordenar por fecha descendente (más reciente primero)
+      species.sort(function (a, b) {
+        var da = a.date ? new Date(a.date) : new Date(0);
+        var db = b.date ? new Date(b.date) : new Date(0);
+        return db - da;
+      });
+
       DB = { categories: categories, species: species };
       renderAll();
     })

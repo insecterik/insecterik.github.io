@@ -105,6 +105,10 @@
   .hero{
     position:relative;
     width:100%;
+    background:url('images/uploads/portada.png');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
     color:white;
     padding:0 60px;
     min-height:88vh;
@@ -113,37 +117,19 @@
     overflow:hidden;
   }
 
-  /* Overlay oscuro encima del slider */
-  .hero::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-      linear-gradient(120deg, rgba(22,51,47,.82) 35%, rgba(20,41,37,.35) 100%);
-    pointer-events:none;
-    z-index:1;
-  }
-
-  .hero::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background-image:
-      radial-gradient(circle at 80% 30%, rgba(46,204,113,.15), transparent 60%);
-    pointer-events:none;
-    z-index:2;
-  }
-
   .hero-inner{
-    max-width:1200px;
-    margin:0 auto;
+    max-width:54%;
     width:100%;
     position:relative;
-    text-align:center;
+    text-align:left;
     display:flex;
     flex-direction:column;
-    align-items:center;
+    align-items:flex-start;
     z-index:3;
+  }
+
+  @media (max-width:900px){
+    .hero-inner{ max-width:100%; text-align:center; align-items:center; }
   }
 
   .hero h1{
@@ -817,7 +803,7 @@
     display:flex;
     gap:18px;
     margin-top:56px;
-    justify-content:center;
+    justify-content:flex-start;
   }
 
   .hero-social a{
@@ -850,40 +836,57 @@
     .logo-img{ height:70px; width:70px; }
   }
 
-  /* ===== HERO SLIDER FULLSCREEN ===== */
+  /* ===== HERO SLIDER ===== */
   .hero-slider-fs{
     position:absolute;
-    inset:0;
-    z-index:0;
+    inset:0;                /* ocupa el 100% del hero: top/right/bottom/left = 0 */
+    width:100%;
+    height:100%;
+    z-index:1;               /* detrás del texto (.hero-inner, z-index:3) y delante de la imagen de portada (background del .hero) */
     overflow:hidden;
+  }
+
+  .hero-slider-fs::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(22,51,47,.55);
+    z-index:2;               /* sobre las imágenes del slider para mantener la legibilidad del texto */
+    pointer-events:none;
   }
 
   .slider-track-fs{
     display:flex;
+    width:100%;
     height:100%;
     transition:transform .6s cubic-bezier(.4,0,.2,1);
     will-change:transform;
   }
 
   .slide-fs{
-    min-width:100%;
+    width:100%;
+    min-width:0;
+    max-width:100%;
     height:100%;
     position:relative;
     flex-shrink:0;
+    overflow:hidden;
   }
 
   .slide-fs img{
     width:100%;
+    max-width:100%;
     height:100%;
-    object-fit:cover;
+    object-fit:contain;
+    object-position:right center;
     display:block;
   }
 
-  /* Controles abajo a la izquierda, sobre el overlay */
+  /* Controles abajo a la izquierda del hero */
   .slider-controls-fs{
     position:absolute;
     bottom:44px;
-    left:0;
+    left:60px;
     display:flex;
     align-items:center;
     gap:12px;
@@ -922,8 +925,16 @@
     margin-right:1px;
   }
 
-  @media (max-width:700px){
-    .slider-controls-fs{ bottom:18px; left:0; gap:8px; }
+  @media (max-width:900px){
+    .slider-controls-fs{
+      position:relative;
+      bottom:auto; left:auto;
+      margin-top:24px;
+      gap:8px;
+      justify-content:flex-start;
+      align-self:flex-start;
+      width:100%;
+    }
     .slider-arrow{ font-size:32px; }
     .slider-counter-fs{ font-size:15px; }
     .slider-counter-fs strong{ font-size:22px; }
@@ -1688,6 +1699,7 @@
   // Ahora el orden es: [clon-último, 1, 2, 3, 4, clon-primero]
   // Empezamos en índice 1 (primer slide real)
   var current = 1;
+  var isAnimating = false;
   track.style.transition = 'none';
   track.style.transform  = 'translateX(-' + current * 100 + '%)';
 
@@ -1700,14 +1712,24 @@
   }
 
   function goTo(idx) {
+    if (isAnimating) return;   // evita solapar transiciones (mitad de una slide + mitad de otra)
+    isAnimating = true;
     track.style.transition = 'transform .6s cubic-bezier(.4,0,.2,1)';
     track.style.transform  = 'translateX(-' + idx * 100 + '%)';
     current = idx;
     updateCounter(idx);
+
+    // Red de seguridad: si por lo que sea transitionend no se dispara
+    // (común en algunos navegadores móviles), liberamos el bloqueo
+    // igualmente para que el slider no se quede "congelado".
+    clearTimeout(safetyTimer);
+    safetyTimer = setTimeout(function(){
+      finishTransition();
+    }, 700);
   }
 
-  // Cuando termina la transición, si estamos en un clon saltamos sin animación
-  track.addEventListener('transitionend', function(){
+  function finishTransition(){
+    if (!isAnimating) return;
     if (current === 0) {
       // Estamos en el clon del último → saltar al real último
       track.style.transition = 'none';
@@ -1719,21 +1741,43 @@
       current = 1;
       track.style.transform = 'translateX(-' + current * 100 + '%)';
     }
+    isAnimating = false;
+  }
+
+  var safetyTimer;
+
+  // Cuando termina la transición, si estamos en un clon saltamos sin animación
+  track.addEventListener('transitionend', function(e){
+    if (e.target !== track || e.propertyName !== 'transform') return;
+    clearTimeout(safetyTimer);
+    finishTransition();
   });
 
   prev.addEventListener('click', function(){ goTo(current - 1); resetAuto(); });
   next.addEventListener('click', function(){ goTo(current + 1); resetAuto(); });
 
-  // Swipe táctil
-  var startX = 0;
-  track.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
+  // Swipe táctil (distingue swipe horizontal de scroll vertical de la página)
+  var startX = 0, startY = 0, touching = false;
+  track.addEventListener('touchstart', function(e){
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    touching = true;
+    clearInterval(autoTimer);   // pausa el autoplay mientras el usuario toca
+  }, {passive:true});
+
   track.addEventListener('touchend', function(e){
-    var diff = startX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); resetAuto(); }
+    touching = false;
+    var diffX = startX - e.changedTouches[0].clientX;
+    var diffY = startY - e.changedTouches[0].clientY;
+    // Solo es swipe del slider si el movimiento horizontal domina claramente al vertical
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      goTo(diffX > 0 ? current + 1 : current - 1);
+    }
+    resetAuto();
   }, {passive:true});
 
   var autoTimer;
-  function startAuto(){ autoTimer = setInterval(function(){ goTo(current + 1); }, 5000); }
+  function startAuto(){ autoTimer = setInterval(function(){ if (!touching) goTo(current + 1); }, 5000); }
   function resetAuto(){ clearInterval(autoTimer); startAuto(); }
 
   updateCounter(1);

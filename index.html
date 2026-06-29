@@ -40,10 +40,19 @@
   }
 
   .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
     color:var(--verde-brillante);
     font-weight:800;
     font-size:22px;
     letter-spacing:1px;
+  }
+
+  .logo-text{
+    display:flex;
+    align-items:center;
+    line-height:1;
   }
 
   .top-nav{
@@ -810,6 +819,7 @@
     .hero-social{ gap:14px; margin-top:20px; }
     .hero-social a{ width:36px; height:36px; }
     .hero-social svg{ width:18px; height:18px; }
+    .logo-img{ height:70px; width:70px; }
   }
 
 </style>
@@ -820,7 +830,7 @@
   <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú de categorías"><span></span></button>
   <div class="logo">
     <img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img">
-    InsectErik
+    <div class="logo-text">InsectErik</div>
   </div>
   <div class="top-nav">
     <a href="colecciones.html">Colecciones</a>

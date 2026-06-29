@@ -776,6 +776,27 @@
   @media (min-width:701px){
     .menu-toggle{ display:none; }
   }
+  /* ===== CARGAR MÁS ===== */
+  #load-more-btn{
+    grid-column:1/-1;
+    display:block;
+    margin:24px auto 8px;
+    padding:12px 36px;
+    background:var(--verde-brillante);
+    color:#fff;
+    font-weight:700;
+    font-size:15px;
+    border:none;
+    border-radius:32px;
+    cursor:pointer;
+    transition:background .2s, transform .15s;
+    box-shadow:0 4px 14px rgba(46,204,113,.3);
+  }
+  #load-more-btn:hover{
+    background:var(--verde-texto);
+    transform:translateY(-2px);
+  }
+
   /* ===== LOGO IMG ===== */
   .logo-img{
     height:96px;
@@ -1251,6 +1272,162 @@
   }
 
   // ── GALERÍA ──────────────────────────────
+  var PAGE_SIZE = 6;
+  var currentSpecies = [];
+  var currentPage = 0;
+  var lazyObserver = null;
+
+  function buildCard(sp) {
+    var cat = DB.categories.find(function (c) { return c.id === sp.categoryId; });
+    var catPath = getCatPath(sp.categoryId);
+    var photos = sp.photos || [];
+
+    var card = document.createElement('div');
+    card.className = 'card';
+
+    var photoDiv = document.createElement('div');
+    photoDiv.className = 'card-photo';
+    if (photos.length) {
+      photoDiv.setAttribute('data-images', JSON.stringify(photos));
+      photoDiv.setAttribute('data-title', sp.name);
+      photoDiv.style.cursor = 'zoom-in';
+
+      var badge = document.createElement('div');
+      badge.className = 'badge';
+      badge.textContent = cat ? cat.name : '';
+      photoDiv.appendChild(badge);
+
+      if (photos.length > 1) {
+        var cnt = document.createElement('span');
+        cnt.className = 'photo-counter';
+        cnt.textContent = '📷 ' + photos.length;
+        photoDiv.appendChild(cnt);
+      }
+
+      var img = document.createElement('img');
+      img.alt = sp.name;
+      img.loading = 'lazy';
+      // data-src para lazy loading real; src vacío evita petición prematura
+      img.setAttribute('data-src', photos[0]);
+      img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3"%3E%3C/svg%3E';
+      img.style.background = '#e8f0ec';
+      photoDiv.appendChild(img);
+    } else {
+      photoDiv.style.display = 'flex';
+      photoDiv.style.alignItems = 'center';
+      photoDiv.style.justifyContent = 'center';
+      photoDiv.style.fontSize = '3rem';
+      photoDiv.textContent = cat ? (cat.icon || '🌿') : '🌿';
+      var badge2 = document.createElement('div');
+      badge2.className = 'badge';
+      badge2.textContent = cat ? cat.name : '';
+      photoDiv.insertBefore(badge2, photoDiv.firstChild);
+    }
+
+    var content = document.createElement('div');
+    content.className = 'card-content';
+
+    if (catPath) {
+      var subDiv = document.createElement('div');
+      subDiv.className = 'subcategoria';
+      subDiv.textContent = catPath;
+      content.appendChild(subDiv);
+    }
+
+    var h2 = document.createElement('h2');
+    var a = document.createElement('a');
+    a.href = 'especie.html?id=' + encodeURIComponent(sp.id);
+    a.textContent = sp.name;
+    h2.appendChild(a);
+    content.appendChild(h2);
+
+    if (sp.description) {
+      var desc = document.createElement('p');
+      desc.className = 'descripcion';
+      desc.textContent = sp.description;
+      content.appendChild(desc);
+    }
+
+    if (sp.scientificName) {
+      var sci = document.createElement('p');
+      sci.className = 'cientifico';
+      sci.textContent = sp.scientificName;
+      content.appendChild(sci);
+    }
+
+    card.appendChild(photoDiv);
+    card.appendChild(content);
+    return card;
+  }
+
+  function observeImages() {
+    if (!('IntersectionObserver' in window)) {
+      // Fallback: carga todo de inmediato
+      document.querySelectorAll('img[data-src]').forEach(function (img) {
+        img.src = img.getAttribute('data-src');
+      });
+      return;
+    }
+    if (lazyObserver) lazyObserver.disconnect();
+    lazyObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var img = entry.target;
+          img.src = img.getAttribute('data-src');
+          img.removeAttribute('data-src');
+          lazyObserver.unobserve(img);
+        }
+      });
+    }, { rootMargin: '200px' });
+
+    document.querySelectorAll('img[data-src]').forEach(function (img) {
+      lazyObserver.observe(img);
+    });
+  }
+
+  function loadMoreCards() {
+    var gallery = document.getElementById('gallery');
+    var sentinel = document.getElementById('lazy-sentinel');
+    if (sentinel) sentinel.remove();
+
+    var start = currentPage * PAGE_SIZE;
+    var end = Math.min(start + PAGE_SIZE, currentSpecies.length);
+
+    for (var i = start; i < end; i++) {
+      gallery.appendChild(buildCard(currentSpecies[i]));
+    }
+    currentPage++;
+    observeImages();
+    bindLightboxCards();
+
+    var remaining = currentSpecies.length - currentPage * PAGE_SIZE;
+    if (remaining > 0) {
+      // Centinela invisible que dispara la carga al llegar al final
+      var sent = document.createElement('div');
+      sent.id = 'lazy-sentinel';
+      sent.style.cssText = 'grid-column:1/-1;height:1px;';
+      gallery.appendChild(sent);
+
+      // Botón "Cargar más" visible como fallback
+      var loadBtn = document.createElement('button');
+      loadBtn.id = 'load-more-btn';
+      loadBtn.textContent = 'Cargar más (' + remaining + ' restantes)';
+      loadBtn.onclick = function () { loadMoreCards(); };
+      gallery.appendChild(loadBtn);
+
+      // Observer en el centinela
+      if ('IntersectionObserver' in window) {
+        var sentinel2 = new IntersectionObserver(function (entries) {
+          if (entries[0].isIntersecting) {
+            sentinel2.disconnect();
+            loadMoreCards();
+          }
+        }, { rootMargin: '300px' });
+        sentinel2.observe(sent);
+      }
+    }
+  }
+
   function renderGallery(species) {
     var gallery = document.getElementById('gallery');
     document.getElementById('totalCount').textContent = species.length + ' especie' + (species.length !== 1 ? 's' : '') + ' en total';
@@ -1261,93 +1438,10 @@
     }
 
     gallery.innerHTML = '';
-    species.forEach(function (sp) {
-      var cat = DB.categories.find(function (c) { return c.id === sp.categoryId; });
-      var catPath = getCatPath(sp.categoryId);
-      var photos = sp.photos || [];
-
-      var card = document.createElement('div');
-      card.className = 'card';
-
-      // Foto principal
-      var photoDiv = document.createElement('div');
-      photoDiv.className = 'card-photo';
-      if (photos.length) {
-        photoDiv.setAttribute('data-images', JSON.stringify(photos));
-        photoDiv.setAttribute('data-title', sp.name);
-        photoDiv.style.cursor = 'zoom-in';
-
-        var badge = document.createElement('div');
-        badge.className = 'badge';
-        badge.textContent = cat ? cat.name : '';
-        photoDiv.appendChild(badge);
-
-        // Contador de fotos
-        if (photos.length > 1) {
-          var cnt = document.createElement('span');
-          cnt.className = 'photo-counter';
-          cnt.textContent = '📷 ' + photos.length;
-          photoDiv.appendChild(cnt);
-        }
-
-        var img = document.createElement('img');
-        img.src = photos[0];
-        img.alt = sp.name;
-        img.loading = 'lazy';
-        photoDiv.appendChild(img);
-      } else {
-        // Placeholder sin foto
-        photoDiv.style.display = 'flex';
-        photoDiv.style.alignItems = 'center';
-        photoDiv.style.justifyContent = 'center';
-        photoDiv.style.fontSize = '3rem';
-        photoDiv.textContent = cat ? (cat.icon || '🌿') : '🌿';
-        var badge2 = document.createElement('div');
-        badge2.className = 'badge';
-        badge2.textContent = cat ? cat.name : '';
-        photoDiv.insertBefore(badge2, photoDiv.firstChild);
-      }
-
-      // Contenido de texto
-      var content = document.createElement('div');
-      content.className = 'card-content';
-
-      // Ruta de categoría (ej: Aves > Colibríes)
-      if (catPath) {
-        var subDiv = document.createElement('div');
-        subDiv.className = 'subcategoria';
-        subDiv.textContent = catPath;
-        content.appendChild(subDiv);
-      }
-
-      var h2 = document.createElement('h2');
-      var a = document.createElement('a');
-      a.href = 'especie.html?id=' + encodeURIComponent(sp.id);
-      a.textContent = sp.name;
-      h2.appendChild(a);
-      content.appendChild(h2);
-
-      if (sp.description) {
-        var desc = document.createElement('p');
-        desc.className = 'descripcion';
-        desc.textContent = sp.description;
-        content.appendChild(desc);
-      }
-
-      if (sp.scientificName) {
-        var sci = document.createElement('p');
-        sci.className = 'cientifico';
-        sci.textContent = sp.scientificName;
-        content.appendChild(sci);
-      }
-
-      card.appendChild(photoDiv);
-      card.appendChild(content);
-      gallery.appendChild(card);
-    });
-
-    // Re-bind lightbox en las nuevas tarjetas
-    bindLightboxCards();
+    currentSpecies = species;
+    currentPage = 0;
+    if (lazyObserver) { lazyObserver.disconnect(); lazyObserver = null; }
+    loadMoreCards();
   }
 
   // ── HELPERS ──────────────────────────────

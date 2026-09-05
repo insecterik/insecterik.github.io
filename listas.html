@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listas — Biodiversidad de Tibirita</title>
+<link rel="icon" type="image/png" href="images/uploads/favicon.png">
+
+<style>
+  :root{
+    --verde-oscuro:#1c3f3a;
+    --verde-header:#16332f;
+    --verde-brillante:#2ecc71;
+    --verde-texto:#1b5e20;
+    --crema:#f4f8f2;
+    --gris-texto:#5a6b66;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--crema);
+    color:#222;
+  }
+
+  a{ text-decoration:none; }
+
+  /* ── HEADER ── */
+  .top-header{
+    position:sticky; top:0; z-index:100;
+    background:var(--verde-header);
+    display:flex; align-items:center;
+    padding:0 24px; height:60px; gap:16px;
+  }
+
+  .logo{ display:flex; align-items:center; gap:10px; color:white; font-weight:700; font-size:20px; }
+  .logo-img{ height:36px; width:36px; object-fit:contain; border-radius:50%; }
+  .logo-text{ letter-spacing:.5px; }
+
+  .top-nav{
+    margin-left:auto; display:flex; align-items:center; gap:24px;
+  }
+  .top-nav a{
+    color:rgba(255,255,255,.8); font-size:15px; font-weight:500;
+    transition:color .2s;
+  }
+  .top-nav a:hover, .top-nav a.active{ color:#fff; }
+
+  /* ── PAGE HEADER ── */
+  .page-hero{
+    background:var(--verde-oscuro);
+    padding:48px 60px 40px;
+    color:white;
+  }
+  .page-hero h1{
+    margin:0 0 8px;
+    font-size:42px; font-weight:800; letter-spacing:-1px;
+  }
+  .page-hero p{
+    margin:0; font-size:18px; font-weight:300;
+    color:rgba(255,255,255,.75); max-width:520px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .page-body{
+    max-width:1200px; margin:0 auto;
+    padding:48px 24px 80px;
+  }
+
+  /* ── LISTA CARD ── */
+  .lista-block{
+    background:#fff;
+    border-radius:14px;
+    box-shadow:0 2px 12px rgba(0,0,0,.07);
+    margin-bottom:40px;
+    overflow:hidden;
+  }
+
+  .lista-header{
+    display:flex; align-items:center; gap:14px;
+    padding:22px 28px;
+    border-bottom:1px solid #eef2ee;
+    background:#fafcfa;
+  }
+
+  .lista-icon{
+    font-size:28px; line-height:1;
+    width:48px; height:48px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--crema); border-radius:12px;
+    flex-shrink:0;
+  }
+
+  .lista-header-text{ flex:1; min-width:0; }
+  .lista-header-text h2{
+    margin:0 0 3px; font-size:20px; font-weight:700; color:var(--verde-oscuro);
+  }
+  .lista-header-text p{
+    margin:0; font-size:13px; color:var(--gris-texto);
+  }
+
+  .lista-badge{
+    flex-shrink:0;
+    background:var(--verde-brillante); color:#fff;
+    font-size:13px; font-weight:700;
+    padding:5px 14px; border-radius:20px;
+    white-space:nowrap;
+  }
+
+  /* ── TABLA DE ESPECIES ── */
+  .lista-table{
+    width:100%;
+    border-collapse:collapse;
+  }
+
+  .lista-table th{
+    text-align:left;
+    padding:10px 28px;
+    font-size:11px; font-weight:700; letter-spacing:.8px;
+    text-transform:uppercase; color:var(--gris-texto);
+    border-bottom:1px solid #eef2ee;
+    background:#fafcfa;
+  }
+
+  .lista-table td{
+    padding:12px 28px;
+    border-bottom:1px solid #f0f4f0;
+    vertical-align:middle;
+  }
+
+  .lista-table tr:last-child td{ border-bottom:none; }
+
+  .lista-table tr:hover td{ background:#f7fbf7; }
+
+  .sp-thumb{
+    width:44px; height:44px;
+    border-radius:8px; object-fit:cover;
+    background:#e8f0e8;
+    display:block; flex-shrink:0;
+  }
+
+  .sp-thumb-placeholder{
+    width:44px; height:44px;
+    border-radius:8px;
+    background:#e8f0e8;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; flex-shrink:0;
+  }
+
+  .sp-name-col{ display:flex; align-items:center; gap:14px; }
+
+  .sp-name{
+    font-weight:600; font-size:15px; color:#1a2e1a;
+  }
+  .sp-sci{
+    font-size:12px; color:var(--gris-texto); font-style:italic; margin-top:2px;
+  }
+
+  .foto-count{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:13px; font-weight:600; color:var(--verde-texto);
+    background:#e8f5e9; padding:3px 10px; border-radius:12px;
+  }
+
+  .tag-completo{
+    display:inline-block;
+    font-size:11px; font-weight:700; letter-spacing:.4px;
+    color:#fff; background:var(--verde-brillante);
+    padding:3px 10px; border-radius:12px;
+    text-transform:uppercase;
+  }
+
+  .fecha-chip{
+    font-size:13px; color:var(--gris-texto);
+  }
+
+  .sin-foto-chip{
+    display:inline-block;
+    font-size:11px; font-weight:600;
+    color:#999; background:#f0f0f0;
+    padding:3px 10px; border-radius:12px;
+  }
+
+  .btn-ver{
+    display:inline-block;
+    padding:5px 14px;
+    background:var(--verde-brillante); color:#fff;
+    font-size:12px; font-weight:700; border-radius:20px;
+    transition:background .2s, transform .15s;
+    white-space:nowrap;
+  }
+  .btn-ver:hover{
+    background:var(--verde-texto); transform:translateY(-1px);
+  }
+
+  /* ── LOADING / EMPTY ── */
+  .lista-loading{
+    padding:40px 28px; text-align:center;
+    color:var(--gris-texto); font-size:15px;
+  }
+  .lista-loading .spinner{
+    display:inline-block; width:28px; height:28px;
+    border:3px solid #d0e8d0; border-top-color:var(--verde-brillante);
+    border-radius:50%; animation:spin .8s linear infinite;
+    margin-bottom:12px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .lista-empty{
+    padding:32px 28px; text-align:center;
+    color:#bbb; font-size:14px; font-style:italic;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:700px){
+    .page-hero{ padding:32px 20px 28px; }
+    .page-hero h1{ font-size:28px; }
+    .page-hero p{ font-size:15px; }
+    .page-body{ padding:24px 12px 60px; }
+    .lista-header{ padding:16px 16px; }
+    .lista-table th, .lista-table td{ padding:10px 14px; }
+    .col-foto, .col-extra{ display:none; }
+    .sp-thumb, .sp-thumb-placeholder{ width:36px; height:36px; font-size:16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="top-header">
+  <a href="/" class="logo">
+    <img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img">
+    <div class="logo-text">InsectErik</div>
+  </a>
+  <nav class="top-nav">
+    <a href="/">Inicio</a>
+    <a href="colecciones.html">Colecciones</a>
+    <a href="listas.html" class="active">Listas</a>
+  </nav>
+</div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <h1>Listas automáticas</h1>
+  <p>Exploración del catálogo generada en tiempo real desde los registros del proyecto.</p>
+</div>
+
+<!-- CONTENIDO -->
+<div class="page-body">
+
+  <!-- 1. Añadidas recientemente -->
+  <div class="lista-block" id="block-recientes">
+    <div class="lista-header">
+      <div class="lista-icon">🕐</div>
+      <div class="lista-header-text">
+        <h2>Añadidas recientemente</h2>
+        <p>Las últimas especies registradas en el catálogo, ordenadas por fecha de observación.</p>
+      </div>
+      <div class="lista-badge" id="badge-recientes">—</div>
+    </div>
+    <div class="lista-loading" id="loading-recientes">
+      <div class="spinner"></div><br>Cargando especies…
+    </div>
+    <table class="lista-table" id="table-recientes" style="display:none">
+      <thead>
+        <tr>
+          <th style="width:48px"></th>
+          <th>Especie</th>
+          <th class="col-extra">Fecha de observación</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="body-recientes"></tbody>
+    </table>
+    <div class="lista-empty" id="empty-recientes" style="display:none">No hay especies con fecha registrada aún.</div>
+  </div>
+
+  <!-- 2. Con más fotos -->
+  <div class="lista-block" id="block-fotos">
+    <div class="lista-header">
+      <div class="lista-icon">📷</div>
+      <div class="lista-header-text">
+        <h2>Con más fotos</h2>
+        <p>Las especies mejor documentadas fotográficamente en el catálogo.</p>
+      </div>
+      <div class="lista-badge" id="badge-fotos">—</div>
+    </div>
+    <div class="lista-loading" id="loading-fotos">
+      <div class="spinner"></div><br>Cargando especies…
+    </div>
+    <table class="lista-table" id="table-fotos" style="display:none">
+      <thead>
+        <tr>
+          <th style="width:48px"></th>
+          <th>Especie</th>
+          <th class="col-extra">Fotos registradas</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="body-fotos"></tbody>
+    </table>
+    <div class="lista-empty" id="empty-fotos" style="display:none">No hay especies con fotos aún.</div>
+  </div>
+
+  <!-- 3. Sin foto -->
+  <div class="lista-block" id="block-sinfoto">
+    <div class="lista-header">
+      <div class="lista-icon">❓</div>
+      <div class="lista-header-text">
+        <h2>Sin foto aún</h2>
+        <p>Especies registradas en el catálogo que todavía no tienen imagen.</p>
+      </div>
+      <div class="lista-badge" id="badge-sinfoto">—</div>
+    </div>
+    <div class="lista-loading" id="loading-sinfoto">
+      <div class="spinner"></div><br>Cargando especies…
+    </div>
+    <table class="lista-table" id="table-sinfoto" style="display:none">
+      <thead>
+        <tr>
+          <th style="width:48px"></th>
+          <th>Especie</th>
+          <th class="col-extra">Nombre científico</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="body-sinfoto"></tbody>
+    </table>
+    <div class="lista-empty" id="empty-sinfoto" style="display:none">¡Todas las especies tienen foto! 🎉</div>
+  </div>
+
+  <!-- 4. Taxonomía completa -->
+  <div class="lista-block" id="block-taxon">
+    <div class="lista-header">
+      <div class="lista-icon">🔬</div>
+      <div class="lista-header-text">
+        <h2>Con clasificación taxonómica completa</h2>
+        <p>Especies con los 8 niveles taxonómicos (Dominio → Especie) completamente documentados.</p>
+      </div>
+      <div class="lista-badge" id="badge-taxon">—</div>
+    </div>
+    <div class="lista-loading" id="loading-taxon">
+      <div class="spinner"></div><br>Cargando especies…
+    </div>
+    <table class="lista-table" id="table-taxon" style="display:none">
+      <thead>
+        <tr>
+          <th style="width:48px"></th>
+          <th>Especie</th>
+          <th class="col-extra">Familia</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="body-taxon"></tbody>
+    </table>
+    <div class="lista-empty" id="empty-taxon" style="display:none">Ninguna especie tiene la clasificación completa aún.</div>
+  </div>
+
+</div><!-- /page-body -->
+
+<script>
+(function(){
+  var GH_USER   = 'insecterik';
+  var GH_REPO   = 'insecterik.github.io';
+  var GH_BRANCH = 'main';
+  var GH_API    = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/';
+  var GH_RAW    = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/';
+
+  var TAXON_KEYS = ['dominio','reino_taxonomico','filo','clase','orden','familia','genero','especie_taxonomica'];
+
+  // ── PARSER FRONTMATTER (soporta objetos anidados un nivel) ──
+  function cleanValue(v){
+    v = v.trim();
+    if((v.startsWith('"')&&v.endsWith('"'))||(v.startsWith("'")&&v.endsWith("'"))) v = v.slice(1,-1);
+    return v;
+  }
+
+  function parseFrontMatter(raw){
+    raw = raw.replace(/\r\n/g,'\n');
+    var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
+    if(!match) return {};
+    var lines = match[1].split('\n');
+    var data = {}, currentKey = null, currentObj = null;
+    lines.forEach(function(line){
+      if(!line.trim()) return;
+      var indent = line.search(/\S/);
+      if(indent > 0 && currentKey){
+        var li = /^\s+-\s+(.*)$/.exec(line);
+        if(li){
+          if(!Array.isArray(data[currentKey])) data[currentKey] = [];
+          data[currentKey].push(cleanValue(li[1]));
+          currentObj = null; return;
+        }
+        var sk = /^\s+([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+        if(sk){
+          if(!currentObj || Array.isArray(data[currentKey])){ data[currentKey]={}; currentObj=data[currentKey]; }
+          currentObj[sk[1]] = sk[2].trim() ? cleanValue(sk[2]) : '';
+          return;
+        }
+      }
+      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+      if(kv){
+        currentKey = kv[1];
+        var val = kv[2].trim();
+        data[currentKey] = val === '' ? null : cleanValue(val);
+        currentObj = null; return;
+      }
+      var rl = /^\s*-\s+(.*)$/.exec(line);
+      if(rl && currentKey){
+        if(!Array.isArray(data[currentKey])) data[currentKey] = [];
+        data[currentKey].push(cleanValue(rl[1]));
+        currentObj = null;
+      }
+    });
+    Object.keys(data).forEach(function(k){ if(data[k]===null) data[k]=[]; });
+    return data;
+  }
+
+  function slugify(str){
+    return (str||'').toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  }
+
+  // ── CARGA DE DATOS ──
+  function listMdFiles(folder){
+    return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
+      .then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(files){
+        return Array.isArray(files)
+          ? files.filter(function(f){ return f.name.endsWith('.md'); }).map(function(f){ return f.path; })
+          : [];
+      });
+  }
+
+  function fetchAndParseAll(paths){
+    return Promise.all(paths.map(function(path){
+      return fetch(GH_RAW + path)
+        .then(function(r){ return r.ok ? r.text() : ''; })
+        .then(function(txt){
+          var d = parseFrontMatter(txt);
+          d.__path = path;
+          return d;
+        });
+    }));
+  }
+
+  // ── RENDER HELPERS ──
+  function thumb(sp){
+    var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes : (sp.imagenes ? [sp.imagenes] : []);
+    var first = imagenes[0] || '';
+    if(first){
+      var img = document.createElement('img');
+      img.className = 'sp-thumb';
+      img.src = GH_RAW + 'images/uploads/' + first.replace(/^.*[\\/]/,'');
+      img.alt = sp.title || '';
+      img.onerror = function(){ this.replaceWith(placeholder(sp)); };
+      return img;
+    }
+    return placeholder(sp);
+  }
+
+  function placeholder(sp){
+    var d = document.createElement('div');
+    d.className = 'sp-thumb-placeholder';
+    d.textContent = '🌿';
+    return d;
+  }
+
+  function nameCell(sp){
+    var wrap = document.createElement('div');
+    wrap.className = 'sp-name-col';
+    wrap.appendChild(thumb(sp));
+    var txt = document.createElement('div');
+    var nm = document.createElement('div');
+    nm.className = 'sp-name';
+    nm.textContent = sp.title || '(sin nombre)';
+    txt.appendChild(nm);
+    if(sp.cientifico){
+      var sci = document.createElement('div');
+      sci.className = 'sp-sci';
+      sci.textContent = sp.cientifico;
+      txt.appendChild(sci);
+    }
+    wrap.appendChild(txt);
+    return wrap;
+  }
+
+  function verBtn(sp){
+    var a = document.createElement('a');
+    a.className = 'btn-ver';
+    a.href = 'especie.html?id=' + encodeURIComponent(slugify(sp.title) + '-' + slugify(sp.__path));
+    a.textContent = 'Ver';
+    return a;
+  }
+
+  function showTable(id){
+    document.getElementById('loading-' + id).style.display = 'none';
+    document.getElementById('table-'   + id).style.display = 'table';
+  }
+
+  function showEmpty(id){
+    document.getElementById('loading-' + id).style.display = 'none';
+    document.getElementById('empty-'   + id).style.display = 'block';
+  }
+
+  function setBadge(id, n){
+    document.getElementById('badge-' + id).textContent = n + (n === 1 ? ' especie' : ' especies');
+  }
+
+  function addRow(tbody, cells){
+    var tr = document.createElement('tr');
+    cells.forEach(function(c){
+      var td = document.createElement('td');
+      if(typeof c === 'string') td.textContent = c;
+      else td.appendChild(c);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+
+  // ── LISTAS ──
+  function renderRecientes(species){
+    var dated = species.filter(function(sp){ return sp.fecha && String(sp.fecha).trim(); });
+    dated.sort(function(a,b){ return new Date(b.fecha) - new Date(a.fecha); });
+    setBadge('recientes', dated.length);
+    if(!dated.length){ showEmpty('recientes'); return; }
+    var tbody = document.getElementById('body-recientes');
+    dated.slice(0,20).forEach(function(sp){
+      var d = new Date(sp.fecha);
+      var fecha = isNaN(d.getTime()) ? sp.fecha
+        : d.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
+      var chip = document.createElement('span');
+      chip.className = 'fecha-chip';
+      chip.textContent = fecha;
+      addRow(tbody,[nameCell(sp), chip, verBtn(sp)]);
+    });
+    showTable('recientes');
+  }
+
+  function renderFotos(species){
+    var conFoto = species
+      .map(function(sp){
+        var imgs = Array.isArray(sp.imagenes) ? sp.imagenes : (sp.imagenes ? [sp.imagenes] : []);
+        sp.__nfotos = imgs.length;
+        return sp;
+      })
+      .filter(function(sp){ return sp.__nfotos > 0; });
+    conFoto.sort(function(a,b){ return b.__nfotos - a.__nfotos; });
+    setBadge('fotos', conFoto.length);
+    if(!conFoto.length){ showEmpty('fotos'); return; }
+    var tbody = document.getElementById('body-fotos');
+    conFoto.slice(0,20).forEach(function(sp){
+      var chip = document.createElement('span');
+      chip.className = 'foto-count';
+      chip.innerHTML = '📷 ' + sp.__nfotos;
+      addRow(tbody,[nameCell(sp), chip, verBtn(sp)]);
+    });
+    showTable('fotos');
+  }
+
+  function renderSinFoto(species){
+    var sin = species.filter(function(sp){
+      var imgs = Array.isArray(sp.imagenes) ? sp.imagenes : (sp.imagenes ? [sp.imagenes] : []);
+      return imgs.length === 0;
+    });
+    setBadge('sinfoto', sin.length);
+    if(!sin.length){ showEmpty('sinfoto'); return; }
+    var tbody = document.getElementById('body-sinfoto');
+    sin.forEach(function(sp){
+      var chip = document.createElement('span');
+      chip.className = 'sin-foto-chip';
+      chip.textContent = 'Sin foto';
+      var sci = document.createElement('span');
+      sci.className = 'sp-sci';
+      sci.style.fontStyle = 'italic';
+      sci.style.color = '#999';
+      sci.textContent = sp.cientifico || '—';
+      addRow(tbody,[nameCell(sp), sci, verBtn(sp)]);
+    });
+    showTable('sinfoto');
+  }
+
+  function renderTaxon(species){
+    var completas = species.filter(function(sp){
+      var tx = sp.taxonomia || {};
+      return TAXON_KEYS.every(function(k){ return tx[k] && tx[k].trim(); });
+    });
+    setBadge('taxon', completas.length);
+    if(!completas.length){ showEmpty('taxon'); return; }
+    var tbody = document.getElementById('body-taxon');
+    completas.forEach(function(sp){
+      var tx = sp.taxonomia || {};
+      var chip = document.createElement('span');
+      chip.className = 'tag-completo';
+      chip.textContent = tx.familia || 'Completa';
+      addRow(tbody,[nameCell(sp), chip, verBtn(sp)]);
+    });
+    showTable('taxon');
+  }
+
+  // ── MAIN ──
+  listMdFiles('content/especies')
+    .then(fetchAndParseAll)
+    .then(function(species){
+      renderRecientes(species);
+      renderFotos(species);
+      renderSinFoto(species);
+      renderTaxon(species);
+    })
+    .catch(function(err){
+      console.error(err);
+      ['recientes','fotos','sinfoto','taxon'].forEach(function(id){
+        document.getElementById('loading-'+id).innerHTML =
+          '<span style="color:#c00">Error al cargar los datos.</span>';
+      });
+    });
+
+})();
+</script>
+</body>
+</html>

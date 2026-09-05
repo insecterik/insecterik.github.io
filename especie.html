@@ -450,8 +450,13 @@
   </div>
 
   <div class="data-card" id="taxonomyCard" style="display:none; margin-bottom:18px;">
-    <h3>Clasificación</h3>
+    <h3>Clasificación del catálogo</h3>
     <div id="taxonomyRows"></div>
+  </div>
+
+  <div class="data-card" id="taxonCard" style="display:none; margin-bottom:18px;">
+    <h3>Clasificación taxonómica</h3>
+    <div id="taxonRows"></div>
   </div>
 
   <div class="data-card">
@@ -656,7 +661,8 @@
           description: sp.descripcion || '',
           location: sp.ubicacion || '',
           date: sp.fecha || '',
-          photos: imagenes
+          photos: imagenes,
+          taxonomia: sp.taxonomia || {}
         };
       });
 
@@ -770,7 +776,45 @@
       taxonomyCard.style.display = 'block';
     }
 
-    // ----- 6. Ficha técnica (data-card) -----
+    // ----- 6. Clasificacion taxonomica (8 niveles del campo taxonomia) -----
+    var taxonCard = document.getElementById('taxonCard');
+    var taxonRowsEl = document.getElementById('taxonRows');
+    var tx = sp.taxonomia || {};
+    var TAXON_LEVELS = [
+      { label: 'Dominio',         key: 'dominio' },
+      { label: 'Reino',           key: 'reino_taxonomico' },
+      { label: 'Filo / Division', key: 'filo' },
+      { label: 'Clase',           key: 'clase' },
+      { label: 'Orden',           key: 'orden' },
+      { label: 'Familia',         key: 'familia' },
+      { label: 'Genero',          key: 'genero' },
+      { label: 'Especie',         key: 'especie_taxonomica' }
+    ];
+    var hasAny = TAXON_LEVELS.some(function(l){ return tx[l.key]; });
+    if (hasAny) {
+      TAXON_LEVELS.forEach(function(level) {
+        var row = document.createElement('div');
+        row.className = 'data-row';
+        var lbl = document.createElement('span');
+        lbl.className = 'label';
+        lbl.textContent = level.label;
+        var val = document.createElement('span');
+        val.className = 'value';
+        if (tx[level.key]) {
+          val.textContent = tx[level.key];
+        } else {
+          val.textContent = '...';
+          val.style.color = '#bbb';
+          val.style.fontStyle = 'italic';
+        }
+        row.appendChild(lbl);
+        row.appendChild(val);
+        taxonRowsEl.appendChild(row);
+      });
+      taxonCard.style.display = 'block';
+    }
+
+    // ----- 7. Ficha tecnica (data-card) -----
     var dataCardEl = document.getElementById('dataCardRows').closest('.data-card');
     var dataRowsEl = document.getElementById('dataCardRows');
     var rows = [];

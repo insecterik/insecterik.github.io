@@ -1,2 +1,2 @@
 # Biodiversidad de Tibirita
-Proyecto para GitHub Pages + Decap CMS
+Proyecto para GitHub Pages + Decap CMS + Cloudflare

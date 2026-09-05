@@ -497,37 +497,76 @@
   var GH_API    = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/';
   var GH_RAW    = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/';
 
-  // ── MINI PARSER DE FRONT MATTER YAML (igual al de index.html) ──
+  // ── MINI PARSER DE FRONT MATTER YAML (soporta listas y objetos anidados un nivel) ──
   function parseFrontMatter(raw) {
     raw = raw.replace(/\r\n/g, '\n');
     var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
     if (!match) return {};
     var lines = match[1].split('\n');
     var data = {};
-    var currentKey = null;
+    var currentKey = null;   // clave de nivel raíz activa
+    var currentObj = null;   // si != null, estamos acumulando un objeto anidado
 
     lines.forEach(function (line) {
       if (!line.trim()) return;
 
-      var listItem = /^\s*-\s+(.*)$/.exec(line);
-      if (listItem && currentKey) {
-        if (!Array.isArray(data[currentKey])) data[currentKey] = [];
-        data[currentKey].push(cleanValue(listItem[1]));
+      var indent = line.search(/\S/);  // nº de espacios al inicio
+
+      // ── Línea indentada: hijo de la clave actual ──
+      if (indent > 0 && currentKey) {
+
+        // ¿Es un ítem de lista?  "  - valor"
+        var listItem = /^\s+-\s+(.*)$/.exec(line);
+        if (listItem) {
+          if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+          // Si el ítem tiene forma "campo: valor" (lista de objetos inline) lo dejamos como string
+          data[currentKey].push(cleanValue(listItem[1]));
+          currentObj = null;
+          return;
+        }
+
+        // ¿Es un sub-campo?  "  clave: valor"
+        var subKv = /^\s+([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+        if (subKv) {
+          // Inicializar objeto si hace falta
+          if (!currentObj || Array.isArray(data[currentKey])) {
+            data[currentKey] = {};
+            currentObj = data[currentKey];
+          }
+          var subVal = subKv[2].trim();
+          currentObj[subKv[1]] = subVal ? cleanValue(subVal) : '';
+          return;
+        }
+      }
+
+      // ── Línea raíz: "clave: valor" ──
+      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+      if (kv) {
+        currentKey = kv[1];
+        var val = kv[2].trim();
+        if (val === '') {
+          // Valor vacío: puede ser lista o objeto; lo decidiremos con la siguiente línea
+          data[currentKey] = null;
+          currentObj = null;
+        } else {
+          data[currentKey] = cleanValue(val);
+          currentObj = null;
+        }
         return;
       }
 
-      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
-      if (kv) {
-        var key = kv[1];
-        var val = kv[2].trim();
-        if (val === '') {
-          currentKey = key;
-          data[key] = [];
-        } else {
-          data[key] = cleanValue(val);
-          currentKey = null;
-        }
+      // ── Ítem de lista en raíz (sin clave, raro pero posible) ──
+      var rootList = /^\s*-\s+(.*)$/.exec(line);
+      if (rootList && currentKey) {
+        if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+        data[currentKey].push(cleanValue(rootList[1]));
+        currentObj = null;
       }
+    });
+
+    // Normalizar nulls a arrays vacíos para compatibilidad con código existente
+    Object.keys(data).forEach(function(k){
+      if (data[k] === null) data[k] = [];
     });
 
     return data;
@@ -662,7 +701,8 @@
           location: sp.ubicacion || '',
           date: sp.fecha || '',
           photos: imagenes,
-          taxonomia: sp.taxonomia || {}
+          taxonomia: sp.taxonomia || {},
+          autor: sp.autor || ''
         };
       });
 
@@ -826,6 +866,9 @@
       var d = new Date(sp.date);
       var fechaTexto = isNaN(d.getTime()) ? sp.date : d.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
       rows.push({ label: 'Fecha de observación', value: fechaTexto });
+    }
+    if (sp.autor) {
+      rows.push({ label: 'Autor / Observador', value: sp.autor });
     }
     if (imgs.length) {
       rows.push({ label: 'Fotos registradas', value: String(imgs.length) });

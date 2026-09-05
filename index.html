@@ -262,13 +262,43 @@
     flex-direction:column;
   }
 
+  .card-title-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:4px;
+  }
+
   .card h2{
-    margin:0 0 4px;
+    margin:0;
     font-size:19px;
+    flex:1;
+    min-width:0;
   }
 
   .card h2 a{
     color:var(--verde-texto);
+  }
+
+  .btn-leer-mas{
+    display:inline-block;
+    flex-shrink:0;
+    padding:4px 12px;
+    background:var(--verde-brillante, #2ecc71);
+    color:#fff;
+    font-size:12px;
+    font-weight:700;
+    border-radius:20px;
+    text-decoration:none;
+    white-space:nowrap;
+    transition:background .2s, transform .15s;
+    letter-spacing:.3px;
+  }
+
+  .btn-leer-mas:hover{
+    background:var(--verde-texto, #1a7a45);
+    transform:translateY(-1px);
   }
 
   .card .subcategoria{
@@ -1457,12 +1487,23 @@
       content.appendChild(subDiv);
     }
 
+    var titleRow = document.createElement('div');
+    titleRow.className = 'card-title-row';
+
     var h2 = document.createElement('h2');
     var a = document.createElement('a');
     a.href = 'especie.html?id=' + encodeURIComponent(sp.id);
     a.textContent = sp.name;
     h2.appendChild(a);
-    content.appendChild(h2);
+
+    var btnLeer = document.createElement('a');
+    btnLeer.href = 'especie.html?id=' + encodeURIComponent(sp.id);
+    btnLeer.className = 'btn-leer-mas';
+    btnLeer.textContent = 'Leer más';
+
+    titleRow.appendChild(h2);
+    titleRow.appendChild(btnLeer);
+    content.appendChild(titleRow);
 
     if (sp.description) {
       var desc = document.createElement('p');

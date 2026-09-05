@@ -89,8 +89,17 @@
     font-size:28px; line-height:1;
     width:48px; height:48px;
     display:flex; align-items:center; justify-content:center;
-    background:var(--crema); border-radius:12px;
+    background:#e8f5e9; border-radius:12px;
     flex-shrink:0;
+  }
+
+  .lista-icon svg{
+    width:26px; height:26px;
+    fill:none;
+    stroke:var(--verde-brillante);
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
   }
 
   .lista-header-text{ flex:1; min-width:0; }
@@ -253,7 +262,10 @@
   <!-- 1. Añadidas recientemente -->
   <div class="lista-block" id="block-recientes">
     <div class="lista-header">
-      <div class="lista-icon">🕐</div>
+      <div class="lista-icon">
+        <!-- reloj -->
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+      </div>
       <div class="lista-header-text">
         <h2>Añadidas recientemente</h2>
         <p>Las últimas especies registradas en el catálogo, ordenadas por fecha de observación.</p>
@@ -280,7 +292,10 @@
   <!-- 2. Con más fotos -->
   <div class="lista-block" id="block-fotos">
     <div class="lista-header">
-      <div class="lista-icon">📷</div>
+      <div class="lista-icon">
+        <!-- cámara -->
+        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
       <div class="lista-header-text">
         <h2>Con más fotos</h2>
         <p>Las especies mejor documentadas fotográficamente en el catálogo.</p>
@@ -307,7 +322,10 @@
   <!-- 3. Sin foto -->
   <div class="lista-block" id="block-sinfoto">
     <div class="lista-header">
-      <div class="lista-icon">❓</div>
+      <div class="lista-icon">
+        <!-- imagen rota -->
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
       <div class="lista-header-text">
         <h2>Sin foto aún</h2>
         <p>Especies registradas en el catálogo que todavía no tienen imagen.</p>
@@ -334,7 +352,9 @@
   <!-- 4. Taxonomía completa -->
   <div class="lista-block" id="block-taxon">
     <div class="lista-header">
-      <div class="lista-icon">🔬</div>
+      <div class="lista-icon">
+        <svg viewBox="0 0 24 24"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>
+      </div>
       <div class="lista-header-text">
         <h2>Con clasificación taxonómica completa</h2>
         <p>Especies con los 8 niveles taxonómicos (Dominio → Especie) completamente documentados.</p>
@@ -528,7 +548,7 @@
     setBadge('recientes', dated.length);
     if(!dated.length){ showEmpty('recientes'); return; }
     var tbody = document.getElementById('body-recientes');
-    dated.slice(0,20).forEach(function(sp){
+    dated.slice(0,10).forEach(function(sp){
       var d = new Date(sp.fecha);
       var fecha = isNaN(d.getTime()) ? sp.fecha
         : d.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
@@ -552,7 +572,7 @@
     setBadge('fotos', conFoto.length);
     if(!conFoto.length){ showEmpty('fotos'); return; }
     var tbody = document.getElementById('body-fotos');
-    conFoto.slice(0,20).forEach(function(sp){
+    conFoto.slice(0,5).forEach(function(sp){
       var chip = document.createElement('span');
       chip.className = 'foto-count';
       chip.innerHTML = '📷 ' + sp.__nfotos;

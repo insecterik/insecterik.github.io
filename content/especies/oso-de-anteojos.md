@@ -6,6 +6,10 @@ grupo: vertebrados
 subgrupo: mamiferos
 categoria: osos negros
 subcategoria: osos negros pequeños
+taxonomia:
+  dominio: dsf
+  reino_taxonomico: adfs
+  filo: adfs
 descripcion: descripcion del osito
 fecha: 2026-06-28T13:27:00.000-05:00
 ubicacion: la guajira

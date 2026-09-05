@@ -11,7 +11,7 @@ taxonomia:
   familia: asd
   genero: ads
   especie_taxonomica: ads
-descripcion: descripcion de la catleya
+descripcion: descripcion de la catleya afds
 fecha: 2026-06-29T13:42:00.000-05:00
 ubicacion: centro
 imagenes:

@@ -2,6 +2,10 @@
 title: catleya
 cientifico: catleyus
 reino: Flora
+grupo: vertebrados
+subgrupo: Insectos
+categoria: osos negros
+subcategoria: osos negros pequeños
 taxonomia:
   dominio: eukariota
   reino_taxonomico: vegetal

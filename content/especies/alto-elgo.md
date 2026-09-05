@@ -10,6 +10,7 @@ descripcion: Esta es la descripcion
 fecha: 2026-09-05T17:30:00.000-05:00
 ubicacion: Centro
 imagenes:
+  - /images/uploads/20260225_111458-3-.jpg
   - /images/uploads/1000066773.png
 autor: Thomas bernal
 ---

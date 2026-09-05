@@ -275,6 +275,54 @@ collections:
         display_fields: ["title"]
         required: false
 
+      - label: "Clasificación taxonómica"
+        name: "taxonomia"
+        widget: "object"
+        required: false
+        collapsed: true
+        summary: "Ver clasificación taxonómica"
+        fields:
+          - label: "Dominio"
+            name: "dominio"
+            widget: "string"
+            required: false
+            hint: "Ej: Eukaryota"
+          - label: "Reino"
+            name: "reino_taxonomico"
+            widget: "string"
+            required: false
+            hint: "Ej: Animalia"
+          - label: "Filo / División"
+            name: "filo"
+            widget: "string"
+            required: false
+            hint: "Ej: Arthropoda — en plantas se llama División"
+          - label: "Clase"
+            name: "clase"
+            widget: "string"
+            required: false
+            hint: "Ej: Insecta"
+          - label: "Orden"
+            name: "orden"
+            widget: "string"
+            required: false
+            hint: "Ej: Lepidoptera"
+          - label: "Familia"
+            name: "familia"
+            widget: "string"
+            required: false
+            hint: "Ej: Nymphalidae"
+          - label: "Género"
+            name: "genero"
+            widget: "string"
+            required: false
+            hint: "Ej: Morpho"
+          - label: "Especie"
+            name: "especie_taxonomica"
+            widget: "string"
+            required: false
+            hint: "Ej: Morpho peleides (solo el epíteto específico o el binomial completo)"
+
       - label: "Descripción"
         name: "descripcion"
         widget: "text"
@@ -296,7 +344,7 @@ collections:
           label: "Imagen"
           name: "imagen"
           widget: "image"
-
+          
       - label: "Autor / Observador"
         name: "autor"
         widget: "string"

@@ -5,6 +5,15 @@ reino: Fauna
 grupo: vertebrados
 subgrupo: aves
 subcategoria: voladoras
+taxonomia:
+  dominio: soy el dominio
+  reino_taxonomico: soy el reino
+  filo: cilanco
+  clase: artropodo
+  orden: insecto
+  familia: lepidoptero
+  genero: generito
+  especie_taxonomica: morpho
 descripcion: descripcion del carbonero rojo
 fecha: 2026-06-28T14:38:00.000-05:00
 ubicacion: centro

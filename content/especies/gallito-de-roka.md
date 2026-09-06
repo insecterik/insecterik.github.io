@@ -12,6 +12,10 @@ taxonomia:
 descripcion: deacripcion gallito de roca
 fecha: 2026-09-05T17:17:00.000-05:00
 ubicacion: centro
+vereda:
+  - GUSVITA
+  - BARBOSA
+  - RENQUIRA
 imagenes:
   - /images/uploads/images.jpg
 ---

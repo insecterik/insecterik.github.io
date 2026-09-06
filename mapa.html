@@ -149,8 +149,8 @@
     position:absolute;
     background:rgba(22,51,47,.92);
     color:#fff;
-    padding:6px 14px;
-    border-radius:8px;
+    padding:8px 12px;
+    border-radius:10px;
     font-size:13px; font-weight:600;
     pointer-events:none;
     opacity:0;
@@ -158,8 +158,42 @@
     white-space:nowrap;
     z-index:10;
     transform:translate(-50%, -130%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
   }
   .vereda-tooltip.visible{ opacity:1; }
+
+  .tooltip-fotos{
+    display:none;
+    gap:4px;
+  }
+  /* Los avatares de especies solo se muestran en dispositivos con hover real (PC) */
+  @media (hover:hover) and (pointer:fine){
+    .tooltip-fotos{ display:flex; }
+  }
+
+  .tooltip-foto{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid #fff;
+    background:#dfe9e6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    flex-shrink:0;
+  }
+
+  .tooltip-mas{
+    color:var(--verde-oscuro);
+    font-weight:900;
+    letter-spacing:1px;
+    font-size:11px;
+  }
 
   @media(max-width:700px){
     .page-layout{ grid-template-columns:1fr; }
@@ -403,7 +437,10 @@
 <polygon id="vereda-resguardo" data-vereda="RESGUARDO" points="132.1,212.1 132.1,213.7 132.5,215.3 132.5,216.1 132.5,218.1 132.9,222.1 136.1,223.3 138.9,222.5 141.7,223.7 144.5,223.7 149.3,222.1 152.5,220.1 155.3,218.5 156.1,217.7 160.9,214.9 163.7,211.7 166.5,209.3 168.1,207.7 168.5,208.1 167.7,204.9 168.9,205.3 168.5,203.3 165.3,205.3 152.5,204.5 151.3,203.7 148.9,207.3 139.3,207.3 134.5,203.3 133.7,204.9 134.1,206.9 134.1,208.1 132.5,212.1" fill="var(--verde-brillante)" fill-opacity="0" stroke="none" style="cursor:pointer;transition:fill-opacity 0.3s;" />
 </g></svg>
 
-      <div class="vereda-tooltip" id="tooltip"></div>
+      <div class="vereda-tooltip" id="tooltip">
+        <div class="tooltip-nombre" id="tooltipNombre"></div>
+        <div class="tooltip-fotos" id="tooltipFotos"></div>
+      </div>
     </div>
   </div>
 
@@ -423,6 +460,8 @@
   var nombre   = document.getElementById('veredaNombre');
   var especiesEl = document.getElementById('veredaEspecies');
   var tooltip  = document.getElementById('tooltip');
+  var tooltipNombre = document.getElementById('tooltipNombre');
+  var tooltipFotos  = document.getElementById('tooltipFotos');
   var lista    = document.getElementById('veredaLista');
 
   var VEREDAS = [
@@ -534,7 +573,8 @@
               title: fm.title || '(sin nombre)',
               cientifico: fm.cientifico || '',
               vereda: veredas,
-              imagenes: imagenes
+              imagenes: imagenes,
+              fecha: fm.fecha || ''
             };
           });
 
@@ -755,11 +795,52 @@
     seleccionar(this.value);
   });
 
+  // Últimas especies de una vereda, más recientes primero (por fecha de observación)
+  function ultimasEspeciesDeVereda(vereda){
+    return allSpecies
+      .filter(function(sp){ return sp.vereda.indexOf(vereda) !== -1; })
+      .sort(function(a, b){
+        var da = a.fecha ? new Date(a.fecha).getTime() : -Infinity;
+        var db = b.fecha ? new Date(b.fecha).getTime() : -Infinity;
+        return db - da;
+      });
+  }
+
+  function renderTooltipFotos(vereda){
+    tooltipFotos.innerHTML = '';
+    if (!allSpecies.length) return; // todavía no ha terminado de cargar
+
+    var especies = ultimasEspeciesDeVereda(vereda);
+    especies.slice(0, 3).forEach(function(sp){
+      if (sp.imagenes.length) {
+        var img = document.createElement('img');
+        img.className = 'tooltip-foto';
+        img.src = sp.imagenes[0];
+        img.alt = sp.title;
+        tooltipFotos.appendChild(img);
+      } else {
+        var placeholder = document.createElement('div');
+        placeholder.className = 'tooltip-foto';
+        placeholder.textContent = '🌿';
+        tooltipFotos.appendChild(placeholder);
+      }
+    });
+
+    if (especies.length > 3) {
+      var mas = document.createElement('div');
+      mas.className = 'tooltip-foto tooltip-mas';
+      mas.textContent = '•••';
+      tooltipFotos.appendChild(mas);
+    }
+  }
+
   // Hover en polígonos para tooltip
   document.querySelectorAll('#veredas-overlay polygon').forEach(function(poly){
     poly.addEventListener('mouseenter', function(e){
-      var conteo = textoConteo(poly.dataset.vereda);
-      tooltip.textContent = capitalize(poly.dataset.vereda) + (conteo ? ' — ' + conteo : '');
+      var vereda = poly.dataset.vereda;
+      var conteo = textoConteo(vereda);
+      tooltipNombre.textContent = capitalize(vereda) + (conteo ? ' — ' + conteo : '');
+      renderTooltipFotos(vereda);
       tooltip.classList.add('visible');
     });
     poly.addEventListener('mousemove', function(e){

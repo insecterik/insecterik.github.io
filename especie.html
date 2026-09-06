@@ -279,8 +279,8 @@
     border-radius:12px;
     overflow:hidden;
     background:var(--verde-oscuro);
-    aspect-ratio:210/230;
-    max-height:420px;
+    aspect-ratio:210/297;
+    max-height:480px;
   }
 
   .mapa-embed-wrap iframe{
@@ -723,7 +723,7 @@
           scientificName: sp.cientifico || '',
           description: sp.descripcion || '',
           location: sp.ubicacion || '',
-          vereda: sp.vereda || '',
+          vereda: Array.isArray(sp.vereda) ? sp.vereda.filter(Boolean) : (sp.vereda ? [sp.vereda] : []),
           date: sp.fecha || '',
           photos: imagenes,
           taxonomia: sp.taxonomia || {},
@@ -887,8 +887,9 @@
     if (sp.location) {
       rows.push({ label: 'Ubicación', value: sp.location });
     }
-    if (sp.vereda) {
-      rows.push({ label: 'Vereda', value: capitalize(sp.vereda.toLowerCase()) });
+    if (sp.vereda && sp.vereda.length) {
+      var veredaLabels = sp.vereda.map(function (v) { return capitalize(v.toLowerCase()); });
+      rows.push({ label: sp.vereda.length > 1 ? 'Veredas' : 'Vereda', value: veredaLabels.join(', ') });
     }
     if (sp.date) {
       var d = new Date(sp.date);
@@ -916,11 +917,11 @@
     }
 
     // ----- 7b. Mapa veredal: solo se muestra si la especie tiene una vereda asignada -----
-    if (sp.vereda) {
+    if (sp.vereda && sp.vereda.length) {
       var mapaCard = document.getElementById('mapaCard');
       var mapaEmbed = document.getElementById('mapaEmbed');
       var mapaVeredaLink = document.getElementById('mapaVeredaLink');
-      var veredaParam = encodeURIComponent(sp.vereda);
+      var veredaParam = encodeURIComponent(sp.vereda.join(','));
       mapaEmbed.src = 'mapa.html?embed=1&vereda=' + veredaParam;
       mapaVeredaLink.href = 'mapa.html?vereda=' + veredaParam;
       mapaCard.style.display = 'block';

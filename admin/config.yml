@@ -341,6 +341,7 @@ collections:
         name: "vereda"
         widget: "select"
         required: false
+        multiple: true
         options:
           - "SOATAMA"
           - "LAGUNA"

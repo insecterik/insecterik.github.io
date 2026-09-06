@@ -360,6 +360,8 @@
 
   var veredaCounts = {};    // { "RENQUIRA": 4, ... } — se llena de forma asíncrona
   var countsReady = false;
+  var embedFixedVeredas = [];    // en modo embebido, las veredas que nunca deben desmarcarse
+  var veredasSeleccionadas = []; // veredas actualmente resaltadas (una o varias)
 
   // ── CONTEO DE ESPECIES POR VEREDA (mismo repo que usa index.html / especie.html) ──
   var GH_USER   = 'insecterik';
@@ -370,8 +372,37 @@
 
   function matchVereda(raw){
     if(!raw) return null;
-    raw = raw.trim();
+    raw = raw.trim().replace(/^["']|["']$/g, '');
     return VEREDAS.find(function(v){ return v.toUpperCase() === raw.toUpperCase(); }) || null;
+  }
+
+  // Extrae una o varias veredas del front matter crudo de una especie.
+  // Soporta tanto "vereda: RENQUIRA" (valor único) como:
+  //   vereda:
+  //     - RENQUIRA
+  //     - GUSVITA
+  // (lista, generada al activar selección múltiple en el CMS)
+  function extractVeredas(raw){
+    var lines = raw.split(/\r?\n/);
+    var result = [];
+    for (var i = 0; i < lines.length; i++){
+      var kv = /^vereda:\s*(.*)$/.exec(lines[i]);
+      if (!kv) continue;
+      var val = kv[1].trim();
+      if (val){
+        var single = matchVereda(val);
+        if (single) result.push(single);
+      } else {
+        for (var j = i + 1; j < lines.length; j++){
+          var item = /^\s+-\s+(.*)$/.exec(lines[j]);
+          if (!item) break;
+          var v = matchVereda(item[1]);
+          if (v) result.push(v);
+        }
+      }
+      break;
+    }
+    return result;
   }
 
   function cargarConteoEspecies(){
@@ -387,10 +418,9 @@
       })
       .then(function(contents){
         contents.forEach(function(raw){
-          var m = /\n\s*vereda:\s*"?([^\n"]*)"?/.exec(raw);
-          if(!m) return;
-          var v = matchVereda(m[1]);
-          if(v) veredaCounts[v] = (veredaCounts[v] || 0) + 1;
+          extractVeredas(raw).forEach(function(v){
+            veredaCounts[v] = (veredaCounts[v] || 0) + 1;
+          });
         });
         countsReady = true;
         actualizarConteosEnUI();
@@ -412,9 +442,14 @@
       var countEl = b.querySelector('.vereda-btn-count');
       if(countEl) countEl.textContent = textoConteo(b.dataset.vereda);
     });
-    // Panel de info, si hay una vereda seleccionada
-    if(info.classList.contains('visible') && select.value){
-      especiesEl.textContent = textoConteo(select.value);
+    // Panel de info, si hay una o varias veredas seleccionadas
+    if(info.classList.contains('visible') && veredasSeleccionadas.length){
+      if (veredasSeleccionadas.length === 1) {
+        especiesEl.textContent = textoConteo(veredasSeleccionadas[0]);
+      } else {
+        var total = veredasSeleccionadas.reduce(function(sum, v){ return sum + (veredaCounts[v] || 0); }, 0);
+        especiesEl.textContent = total + (total === 1 ? ' especie' : ' especies');
+      }
     }
   }
 
@@ -442,6 +477,10 @@
   });
 
   function seleccionar(vereda){
+    seleccionarVarias(vereda ? [vereda] : []);
+  }
+
+  function seleccionarVarias(veredas){
     // Resetear todos los polígonos
     document.querySelectorAll('#veredas-overlay polygon').forEach(function(p){
       p.style.fillOpacity = '0';
@@ -451,27 +490,36 @@
       b.classList.remove('activa');
     });
 
-    if(!vereda){
+    veredasSeleccionadas = veredas || [];
+
+    if(!veredas || !veredas.length){
       info.classList.remove('visible');
       select.value = '';
       return;
     }
 
-    // Resaltar polígono
-    var slug = toSlug(vereda);
-    var poly = document.getElementById('vereda-' + slug);
-    if(poly) poly.style.fillOpacity = '0.5';
-
-    // Actualizar UI
-    nombre.textContent = capitalize(vereda);
-    especiesEl.textContent = textoConteo(vereda);
-    info.classList.add('visible');
-    select.value = vereda;
-
-    // Marcar botón activo
-    document.querySelectorAll('.vereda-btn').forEach(function(b){
-      if(b.dataset.vereda === vereda) b.classList.add('activa');
+    // Resaltar cada polígono correspondiente
+    veredas.forEach(function(vereda){
+      var slug = toSlug(vereda);
+      var poly = document.getElementById('vereda-' + slug);
+      if(poly) poly.style.fillOpacity = '0.5';
+      document.querySelectorAll('.vereda-btn').forEach(function(b){
+        if(b.dataset.vereda === vereda) b.classList.add('activa');
+      });
     });
+
+    // Actualizar panel de información
+    if(veredas.length === 1){
+      nombre.textContent = capitalize(veredas[0]);
+      especiesEl.textContent = textoConteo(veredas[0]);
+      select.value = veredas[0];
+    } else {
+      nombre.textContent = veredas.map(capitalize).join(', ');
+      var total = veredas.reduce(function(sum, v){ return sum + (veredaCounts[v] || 0); }, 0);
+      especiesEl.textContent = countsReady ? (total + (total === 1 ? ' especie' : ' especies')) : '';
+      select.value = '';
+    }
+    info.classList.add('visible');
   }
 
   // Evento del select
@@ -495,6 +543,7 @@
       tooltip.classList.remove('visible');
     });
     poly.addEventListener('click', function(){
+      if(embedFixedVeredas.length){ seleccionarVarias(embedFixedVeredas); return; }
       seleccionar(poly.dataset.vereda);
     });
   });
@@ -507,10 +556,15 @@
   }
   var veredaParam = urlParams.get('vereda');
   if (veredaParam) {
-    var veredaMatch = VEREDAS.find(function(v){
-      return v.toUpperCase() === veredaParam.toUpperCase();
-    });
-    if (veredaMatch) seleccionar(veredaMatch);
+    var candidatas = veredaParam.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    var veredasMatch = candidatas
+      .map(function(c){ return VEREDAS.find(function(v){ return v.toUpperCase() === c.toUpperCase(); }); })
+      .filter(Boolean);
+    if (veredasMatch.length) {
+      seleccionarVarias(veredasMatch);
+      // En modo embebido, estas veredas quedan fijas: ningún clic las desmarca
+      if (urlParams.get('embed') === '1') embedFixedVeredas = veredasMatch;
+    }
   }
 
   cargarConteoEspecies();

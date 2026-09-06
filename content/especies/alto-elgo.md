@@ -9,7 +9,10 @@ taxonomia:
 descripcion: Esta es la descripcion
 fecha: 2026-09-05T17:30:00.000-05:00
 ubicacion: Centro
-vereda: GUSVITA
+vereda:
+  - LAGUNA
+  - RENQUIRA
+  - FUGUNTÁ
 imagenes:
   - /images/uploads/20260225_111458-3-.jpg
   - /images/uploads/1000066773.png

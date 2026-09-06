@@ -190,6 +190,72 @@
     height:100%;
     width:auto;
   }
+  /* ── SECCIÓN: ESPECIES DE LA VEREDA SELECCIONADA ── */
+  .especies-vereda{
+    max-width:1100px;
+    margin:0 auto;
+    padding:36px 24px 60px;
+  }
+  .especies-vereda h2{
+    font-size:20px;
+    font-weight:800;
+    color:var(--verde-texto);
+    margin:0 0 20px;
+    text-transform:capitalize;
+  }
+  .especies-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(160px,1fr));
+    gap:16px;
+  }
+  .especie-card{
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,.07);
+    text-decoration:none;
+    color:inherit;
+    display:block;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .especie-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(0,0,0,.14);
+  }
+  .especie-card .foto,
+  .especie-card .foto-vacia{
+    width:100%;
+    aspect-ratio:4/3;
+    background:#dfe9e6;
+    object-fit:cover;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.8rem;
+  }
+  .especie-card .nombre{
+    padding:10px 12px 2px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--verde-texto);
+    text-transform:capitalize;
+  }
+  .especie-card .cientifico{
+    padding:0 12px 12px;
+    font-size:12px;
+    font-style:italic;
+    color:var(--gris-texto);
+  }
+  .especies-sentinel{ height:1px; }
+  .especies-vacio{
+    color:var(--gris-texto);
+    font-size:14px;
+  }
+  body.embed-mode .especies-vereda{ display:none !important; }
+
+  @media(max-width:700px){
+    .especies-vereda{ padding:28px 16px 48px; }
+  }
 </style>
 </head>
 <body>
@@ -343,6 +409,13 @@
 
 </div>
 
+<div class="especies-vereda" id="especiesVeredaSection" style="display:none;">
+  <h2 id="especiesVeredaTitulo">Especies</h2>
+  <div class="especies-grid" id="especiesGrid"></div>
+  <p class="especies-vacio" id="especiesVacio" style="display:none;">No hay especies registradas todavía en esta vereda.</p>
+  <div class="especies-sentinel" id="especiesSentinel"></div>
+</div>
+
 <script>
 (function(){
   var select   = document.getElementById('veredaSelect');
@@ -362,8 +435,9 @@
   var countsReady = false;
   var embedFixedVeredas = [];    // en modo embebido, las veredas que nunca deben desmarcarse
   var veredasSeleccionadas = []; // veredas actualmente resaltadas (una o varias)
+  var allSpecies = [];           // todas las especies cargadas, con su(s) vereda(s)
 
-  // ── CONTEO DE ESPECIES POR VEREDA (mismo repo que usa index.html / especie.html) ──
+  // ── CONTEO Y LISTADO DE ESPECIES POR VEREDA (mismo repo que usa index.html / especie.html) ──
   var GH_USER   = 'insecterik';
   var GH_REPO   = 'insecterik.github.io';
   var GH_BRANCH = 'main';
@@ -376,33 +450,62 @@
     return VEREDAS.find(function(v){ return v.toUpperCase() === raw.toUpperCase(); }) || null;
   }
 
-  // Extrae una o varias veredas del front matter crudo de una especie.
-  // Soporta tanto "vereda: RENQUIRA" (valor único) como:
-  //   vereda:
-  //     - RENQUIRA
-  //     - GUSVITA
-  // (lista, generada al activar selección múltiple en el CMS)
-  function extractVeredas(raw){
-    var lines = raw.split(/\r?\n/);
-    var result = [];
-    for (var i = 0; i < lines.length; i++){
-      var kv = /^vereda:\s*(.*)$/.exec(lines[i]);
-      if (!kv) continue;
-      var val = kv[1].trim();
-      if (val){
-        var single = matchVereda(val);
-        if (single) result.push(single);
-      } else {
-        for (var j = i + 1; j < lines.length; j++){
-          var item = /^\s+-\s+(.*)$/.exec(lines[j]);
-          if (!item) break;
-          var v = matchVereda(item[1]);
-          if (v) result.push(v);
+  // ── MINI PARSER DE FRONT MATTER YAML (igual al usado en especie.html: soporta listas) ──
+  function parseFrontMatter(raw) {
+    raw = raw.replace(/\r\n/g, '\n');
+    var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
+    if (!match) return {};
+    var lines = match[1].split('\n');
+    var data = {};
+    var currentKey = null;
+
+    lines.forEach(function (line) {
+      if (!line.trim()) return;
+      var indent = line.search(/\S/);
+
+      if (indent > 0 && currentKey) {
+        var listItem = /^\s+-\s+(.*)$/.exec(line);
+        if (listItem) {
+          if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+          data[currentKey].push(cleanValue(listItem[1]));
+          return;
         }
+        return; // no necesitamos sub-objetos aquí (taxonomía, etc.)
       }
-      break;
+
+      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+      if (kv) {
+        currentKey = kv[1];
+        var val = kv[2].trim();
+        data[currentKey] = val === '' ? null : cleanValue(val);
+        return;
+      }
+    });
+
+    Object.keys(data).forEach(function(k){ if (data[k] === null) data[k] = []; });
+    return data;
+  }
+
+  function cleanValue(v){
+    v = v.trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      v = v.slice(1, -1);
     }
-    return result;
+    return v;
+  }
+
+  // Slug idéntico al de especie.html, necesario para que el id coincida con el enlace ?id=
+  function slugifyId(str) {
+    return (str || '')
+      .toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
+
+  function capitalizeFirst(str){
+    str = str || '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   function cargarConteoEspecies(){
@@ -411,22 +514,44 @@
       .then(function(items){
         var files = (items || []).filter(function(it){ return it.type === 'file' && /\.md$/i.test(it.name); });
         return Promise.all(files.map(function(it){
+          var path = 'content/especies/' + it.name;
           return fetch(GH_RAW + it.name + '?v=' + Date.now())
             .then(function(r){ return r.ok ? r.text() : ''; })
-            .catch(function(){ return ''; });
+            .catch(function(){ return ''; })
+            .then(function(raw){ return { raw: raw, path: path }; });
         }));
       })
-      .then(function(contents){
-        contents.forEach(function(raw){
-          extractVeredas(raw).forEach(function(v){
+      .then(function(results){
+        allSpecies = results
+          .filter(function(res){ return res.raw; })
+          .map(function(res){
+            var fm = parseFrontMatter(res.raw);
+            var veredas = Array.isArray(fm.vereda) ? fm.vereda : (fm.vereda ? [fm.vereda] : []);
+            veredas = veredas.map(matchVereda).filter(Boolean);
+            var imagenes = Array.isArray(fm.imagenes) ? fm.imagenes : (fm.imagenes ? [fm.imagenes] : []);
+            return {
+              id: slugifyId(fm.title) + '-' + slugifyId(res.path),
+              title: fm.title || '(sin nombre)',
+              cientifico: fm.cientifico || '',
+              vereda: veredas,
+              imagenes: imagenes
+            };
+          });
+
+        allSpecies.forEach(function(sp){
+          sp.vereda.forEach(function(v){
             veredaCounts[v] = (veredaCounts[v] || 0) + 1;
           });
         });
+
         countsReady = true;
         actualizarConteosEnUI();
+
+        // Si ya había una vereda seleccionada (p. ej. por ?vereda= en la URL), refrescar su listado
+        if (veredasSeleccionadas.length) mostrarEspeciesDeVeredas(veredasSeleccionadas);
       })
       .catch(function(err){
-        console.error('No se pudo cargar el conteo de especies por vereda:', err);
+        console.error('No se pudo cargar el listado de especies por vereda:', err);
       });
   }
 
@@ -495,6 +620,7 @@
     if(!veredas || !veredas.length){
       info.classList.remove('visible');
       select.value = '';
+      mostrarEspeciesDeVeredas([]);
       return;
     }
 
@@ -520,6 +646,108 @@
       select.value = '';
     }
     info.classList.add('visible');
+
+    mostrarEspeciesDeVeredas(veredas);
+  }
+
+  // ── LISTADO DE ESPECIES DE LA(S) VEREDA(S) SELECCIONADA(S), CON CARGA POR LOTES DE 10 ──
+  var ESPECIES_POR_LOTE = 10;
+  var especiesFiltradasActuales = [];
+  var especiesMostradas = 0;
+  var especiesObserver = null;
+
+  function mostrarEspeciesDeVeredas(veredas){
+    if (document.body.classList.contains('embed-mode')) return; // no se muestra dentro del mapa embebido
+
+    var section  = document.getElementById('especiesVeredaSection');
+    var grid     = document.getElementById('especiesGrid');
+    var titulo   = document.getElementById('especiesVeredaTitulo');
+    var vacio    = document.getElementById('especiesVacio');
+    var sentinel = document.getElementById('especiesSentinel');
+
+    if (especiesObserver) { especiesObserver.disconnect(); especiesObserver = null; }
+
+    if (!veredas || !veredas.length) {
+      section.style.display = 'none';
+      grid.innerHTML = '';
+      return;
+    }
+
+    titulo.textContent = veredas.length === 1
+      ? 'Especies registradas en ' + capitalize(veredas[0])
+      : 'Especies registradas en ' + veredas.map(capitalize).join(', ');
+
+    especiesFiltradasActuales = allSpecies.filter(function(sp){
+      return sp.vereda.some(function(v){ return veredas.indexOf(v) !== -1; });
+    });
+    especiesMostradas = 0;
+    grid.innerHTML = '';
+    section.style.display = 'block';
+
+    if (!especiesFiltradasActuales.length) {
+      vacio.textContent = countsReady
+        ? 'No hay especies registradas todavía en esta vereda.'
+        : 'Cargando especies…';
+      vacio.style.display = 'block';
+      return;
+    }
+    vacio.style.display = 'none';
+
+    cargarSiguienteLoteEspecies();
+
+    especiesObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) cargarSiguienteLoteEspecies();
+      });
+    }, { rootMargin: '250px' });
+    especiesObserver.observe(sentinel);
+  }
+
+  function cargarSiguienteLoteEspecies(){
+    var grid = document.getElementById('especiesGrid');
+    var siguienteLote = especiesFiltradasActuales.slice(especiesMostradas, especiesMostradas + ESPECIES_POR_LOTE);
+    siguienteLote.forEach(function(sp){
+      grid.appendChild(crearEspecieCard(sp));
+    });
+    especiesMostradas += siguienteLote.length;
+    if (especiesMostradas >= especiesFiltradasActuales.length && especiesObserver) {
+      especiesObserver.disconnect();
+      especiesObserver = null;
+    }
+  }
+
+  function crearEspecieCard(sp){
+    var a = document.createElement('a');
+    a.className = 'especie-card';
+    a.href = 'especie.html?id=' + encodeURIComponent(sp.id);
+
+    var foto = document.createElement('div');
+    if (sp.imagenes.length) {
+      var img = document.createElement('img');
+      img.className = 'foto';
+      img.src = sp.imagenes[0];
+      img.alt = sp.title;
+      img.loading = 'lazy';
+      a.appendChild(img);
+    } else {
+      foto.className = 'foto-vacia';
+      foto.textContent = '🌿';
+      a.appendChild(foto);
+    }
+
+    var nombreEl = document.createElement('div');
+    nombreEl.className = 'nombre';
+    nombreEl.textContent = capitalizeFirst(sp.title);
+    a.appendChild(nombreEl);
+
+    if (sp.cientifico) {
+      var cientificoEl = document.createElement('div');
+      cientificoEl.className = 'cientifico';
+      cientificoEl.textContent = sp.cientifico;
+      a.appendChild(cientificoEl);
+    }
+
+    return a;
   }
 
   // Evento del select

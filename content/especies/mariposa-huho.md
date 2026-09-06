@@ -9,6 +9,8 @@ subcategoria: nocturnas
 descripcion: descripcion de la mariposa buho
 fecha: 2026-06-28T13:45:00.000-05:00
 ubicacion: centro
+vereda:
+  - RENQUIRA
 imagenes:
   - /images/uploads/20190306_081038.jpg
 ---

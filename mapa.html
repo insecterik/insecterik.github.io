@@ -112,6 +112,13 @@
     transition:background .2s;
   }
   .vereda-btn.activa .dot{ background:#fff; }
+  .vereda-btn-name{ flex:1; }
+  .vereda-btn-count{
+    font-size:11px; font-weight:600;
+    color:var(--gris-texto);
+    flex-shrink:0;
+  }
+  .vereda-btn.activa .vereda-btn-count{ color:rgba(255,255,255,.85); }
 
   /* ── MAPA ── */
   .mapa-wrap{
@@ -162,10 +169,27 @@
   }
 
   /* ── MODO EMBEBIDO (usado dentro de un iframe en especie.html) ── */
+  body.embed-mode{ overflow:hidden; height:100%; }
+  html:has(body.embed-mode){ overflow:hidden; height:100%; }
   body.embed-mode .top-header,
   body.embed-mode .panel{ display:none; }
-  body.embed-mode .page-layout{ grid-template-columns:1fr; min-height:auto; }
-  body.embed-mode .mapa-wrap{ padding:8px; }
+  body.embed-mode .page-layout{
+    grid-template-columns:1fr;
+    min-height:100vh;
+    height:100vh;
+    display:flex;
+  }
+  body.embed-mode .mapa-wrap{
+    padding:8px;
+    width:100%;
+    height:100%;
+  }
+  body.embed-mode .mapa-svg-container{
+    max-width:100%;
+    max-height:100%;
+    height:100%;
+    width:auto;
+  }
 </style>
 </head>
 <body>
@@ -213,6 +237,7 @@
     <div class="vereda-info" id="veredaInfo">
       <div class="badge">Vereda seleccionada</div>
       <h3 id="veredaNombre"></h3>
+      <p id="veredaEspecies" style="margin:0;font-size:13px;color:var(--gris-texto);"></p>
     </div>
 
     <div class="vereda-lista" id="veredaLista"></div>
@@ -309,7 +334,7 @@
 <polygon id="vereda-llanos" data-vereda="LLANOS" points="75.7,233.7 80.1,233.7 86.1,230.1 88.1,226.5 93.3,224.5 96.5,216.9 101.7,213.3 103.3,209.7 108.1,205.7 109.7,202.1 111.3,200.9 114.9,202.1 118.5,203.3 120.9,205.3 121.7,206.5 124.5,209.7 127.3,212.9 121.7,213.7 118.9,215.3 117.7,221.7 112.1,223.7 109.7,226.9 104.9,228.5 103.7,231.7 100.1,234.9 100.1,237.3 96.1,241.3 95.3,243.7 95.3,245.7 88.1,250.1 84.1,244.9 80.1,241.7 76.5,239.3 75.7,232.1 76.1,236.1" fill="var(--verde-brillante)" fill-opacity="0" stroke="none" style="cursor:pointer;transition:fill-opacity 0.3s;" />
 <polygon id="vereda-canadas" data-vereda="CAÑADAS" points="94.1,245.3 98.9,243.3 102.1,239.3 106.9,237.3 110.1,236.5 114.1,236.9 114.5,237.3 122.5,234.9 125.7,233.7 128.1,232.9 130.1,231.3 134.5,230.1 137.3,228.9 140.1,226.5 141.7,224.1 139.3,221.7 136.1,223.3 132.1,220.9 132.1,215.7 131.3,213.3 126.5,212.9 120.9,214.1 119.7,215.7 116.5,221.7 113.3,223.3 108.1,228.5 103.7,234.5 98.5,239.3 94.9,244.9" fill="var(--verde-brillante)" fill-opacity="0" stroke="none" style="cursor:pointer;transition:fill-opacity 0.3s;" />
 <polygon id="vereda-casco" data-vereda="CASCO" points="119.7,205.3 124.1,204.9 124.9,201.3 132.1,201.7 133.7,203.3 136.1,204.1 133.7,205.7 134.1,207.3 134.1,209.3 134.5,211.3 132.1,211.7 132.1,212.9 128.1,213.3 126.1,211.7 123.3,210.5 122.9,208.5 120.5,204.9" fill="var(--verde-brillante)" fill-opacity="0" stroke="none" style="cursor:pointer;transition:fill-opacity 0.3s;" />
-<polygon id="vereda-resguardo" data-vereda="RESGUARDO" points="162,200 172,192 178,200 180,215 175,225 168,232 158,230 152,222 150,210 155,205" fill="var(--verde-brillante)" fill-opacity="0" stroke="none" style="cursor:pointer;transition:fill-opacity 0.3s;" />
+<polygon id="vereda-resguardo" data-vereda="RESGUARDO" points="132.1,212.1 132.1,213.7 132.5,215.3 132.5,216.1 132.5,218.1 132.9,222.1 136.1,223.3 138.9,222.5 141.7,223.7 144.5,223.7 149.3,222.1 152.5,220.1 155.3,218.5 156.1,217.7 160.9,214.9 163.7,211.7 166.5,209.3 168.1,207.7 168.5,208.1 167.7,204.9 168.9,205.3 168.5,203.3 165.3,205.3 152.5,204.5 151.3,203.7 148.9,207.3 139.3,207.3 134.5,203.3 133.7,204.9 134.1,206.9 134.1,208.1 132.5,212.1" fill="var(--verde-brillante)" fill-opacity="0" stroke="none" style="cursor:pointer;transition:fill-opacity 0.3s;" />
 </g></svg>
 
       <div class="vereda-tooltip" id="tooltip"></div>
@@ -323,6 +348,7 @@
   var select   = document.getElementById('veredaSelect');
   var info     = document.getElementById('veredaInfo');
   var nombre   = document.getElementById('veredaNombre');
+  var especiesEl = document.getElementById('veredaEspecies');
   var tooltip  = document.getElementById('tooltip');
   var lista    = document.getElementById('veredaLista');
 
@@ -331,6 +357,66 @@
     "SAN ANTONIO","PÁRAMO","FUGUNTÁ","MEDIO QUEBRADAS",
     "BARBOSA","LLANOS","CAÑADAS","CASCO","RESGUARDO"
   ];
+
+  var veredaCounts = {};    // { "RENQUIRA": 4, ... } — se llena de forma asíncrona
+  var countsReady = false;
+
+  // ── CONTEO DE ESPECIES POR VEREDA (mismo repo que usa index.html / especie.html) ──
+  var GH_USER   = 'insecterik';
+  var GH_REPO   = 'insecterik.github.io';
+  var GH_BRANCH = 'main';
+  var GH_API    = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/content/especies?ref=' + GH_BRANCH;
+  var GH_RAW    = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/content/especies/';
+
+  function matchVereda(raw){
+    if(!raw) return null;
+    raw = raw.trim();
+    return VEREDAS.find(function(v){ return v.toUpperCase() === raw.toUpperCase(); }) || null;
+  }
+
+  function cargarConteoEspecies(){
+    fetch(GH_API)
+      .then(function(r){ if(!r.ok) throw new Error('No se pudo listar especies'); return r.json(); })
+      .then(function(items){
+        var files = (items || []).filter(function(it){ return it.type === 'file' && /\.md$/i.test(it.name); });
+        return Promise.all(files.map(function(it){
+          return fetch(GH_RAW + it.name + '?v=' + Date.now())
+            .then(function(r){ return r.ok ? r.text() : ''; })
+            .catch(function(){ return ''; });
+        }));
+      })
+      .then(function(contents){
+        contents.forEach(function(raw){
+          var m = /\n\s*vereda:\s*"?([^\n"]*)"?/.exec(raw);
+          if(!m) return;
+          var v = matchVereda(m[1]);
+          if(v) veredaCounts[v] = (veredaCounts[v] || 0) + 1;
+        });
+        countsReady = true;
+        actualizarConteosEnUI();
+      })
+      .catch(function(err){
+        console.error('No se pudo cargar el conteo de especies por vereda:', err);
+      });
+  }
+
+  function textoConteo(vereda){
+    if(!countsReady) return '';
+    var n = veredaCounts[vereda] || 0;
+    return n + (n === 1 ? ' especie' : ' especies');
+  }
+
+  function actualizarConteosEnUI(){
+    // Botones de la lista lateral
+    document.querySelectorAll('.vereda-btn').forEach(function(b){
+      var countEl = b.querySelector('.vereda-btn-count');
+      if(countEl) countEl.textContent = textoConteo(b.dataset.vereda);
+    });
+    // Panel de info, si hay una vereda seleccionada
+    if(info.classList.contains('visible') && select.value){
+      especiesEl.textContent = textoConteo(select.value);
+    }
+  }
 
   function toSlug(n){
     return n.toLowerCase()
@@ -350,7 +436,7 @@
     var btn = document.createElement('button');
     btn.className = 'vereda-btn';
     btn.dataset.vereda = v;
-    btn.innerHTML = '<span class="dot"></span>' + capitalize(v);
+    btn.innerHTML = '<span class="dot"></span><span class="vereda-btn-name">' + capitalize(v) + '</span><span class="vereda-btn-count"></span>';
     btn.addEventListener('click', function(){ seleccionar(v); });
     lista.appendChild(btn);
   });
@@ -378,6 +464,7 @@
 
     // Actualizar UI
     nombre.textContent = capitalize(vereda);
+    especiesEl.textContent = textoConteo(vereda);
     info.classList.add('visible');
     select.value = vereda;
 
@@ -395,7 +482,8 @@
   // Hover en polígonos para tooltip
   document.querySelectorAll('#veredas-overlay polygon').forEach(function(poly){
     poly.addEventListener('mouseenter', function(e){
-      tooltip.textContent = capitalize(poly.dataset.vereda);
+      var conteo = textoConteo(poly.dataset.vereda);
+      tooltip.textContent = capitalize(poly.dataset.vereda) + (conteo ? ' — ' + conteo : '');
       tooltip.classList.add('visible');
     });
     poly.addEventListener('mousemove', function(e){
@@ -424,6 +512,8 @@
     });
     if (veredaMatch) seleccionar(veredaMatch);
   }
+
+  cargarConteoEspecies();
 
 })();
 </script>

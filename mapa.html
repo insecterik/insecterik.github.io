@@ -160,6 +160,12 @@
     .mapa-wrap{ padding:16px; min-height:60vw; }
     .vereda-lista{ display:none; }
   }
+
+  /* ── MODO EMBEBIDO (usado dentro de un iframe en especie.html) ── */
+  body.embed-mode .top-header,
+  body.embed-mode .panel{ display:none; }
+  body.embed-mode .page-layout{ grid-template-columns:1fr; min-height:auto; }
+  body.embed-mode .mapa-wrap{ padding:8px; }
 </style>
 </head>
 <body>
@@ -404,6 +410,20 @@
       seleccionar(poly.dataset.vereda);
     });
   });
+
+  // ── Parámetros de URL: ?vereda=NOMBRE&embed=1 ──
+  // Permite abrir el mapa con una vereda ya resaltada (usado en especie.html vía iframe)
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('embed') === '1') {
+    document.body.classList.add('embed-mode');
+  }
+  var veredaParam = urlParams.get('vereda');
+  if (veredaParam) {
+    var veredaMatch = VEREDAS.find(function(v){
+      return v.toUpperCase() === veredaParam.toUpperCase();
+    });
+    if (veredaMatch) seleccionar(veredaMatch);
+  }
 
 })();
 </script>

@@ -275,6 +275,21 @@
     text-transform:capitalize;
   }
 
+  .mapa-embed-wrap{
+    border-radius:12px;
+    overflow:hidden;
+    background:var(--verde-oscuro);
+    aspect-ratio:210/230;
+    max-height:420px;
+  }
+
+  .mapa-embed-wrap iframe{
+    width:100%;
+    height:100%;
+    border:none;
+    display:block;
+  }
+
   .back-button{
     display:inline-flex;
     align-items:center;
@@ -463,6 +478,14 @@
     <h3>Ficha técnica</h3>
     <div id="dataCardRows"></div>
     <a class="back-button" href="/">&#8592; Ver más especies</a>
+  </div>
+
+  <div class="data-card" id="mapaCard" style="display:none; margin-top:18px; grid-column:1/-1;">
+    <h3>Ubicación en el mapa veredal</h3>
+    <div class="mapa-embed-wrap">
+      <iframe id="mapaEmbed" title="Mapa de veredas" loading="lazy"></iframe>
+    </div>
+    <a class="back-button" id="mapaVeredaLink" href="mapa.html">Ver mapa completo &#8594;</a>
   </div>
 </div>
 
@@ -699,6 +722,7 @@
           scientificName: sp.cientifico || '',
           description: sp.descripcion || '',
           location: sp.ubicacion || '',
+          vereda: sp.vereda || '',
           date: sp.fecha || '',
           photos: imagenes,
           taxonomia: sp.taxonomia || {},
@@ -862,6 +886,9 @@
     if (sp.location) {
       rows.push({ label: 'Ubicación', value: sp.location });
     }
+    if (sp.vereda) {
+      rows.push({ label: 'Vereda', value: capitalize(sp.vereda.toLowerCase()) });
+    }
     if (sp.date) {
       var d = new Date(sp.date);
       var fechaTexto = isNaN(d.getTime()) ? sp.date : d.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -885,6 +912,17 @@
 
     if (!dataRowsEl.children.length) {
       dataCardEl.style.display = 'none';
+    }
+
+    // ----- 7b. Mapa veredal: solo se muestra si la especie tiene una vereda asignada -----
+    if (sp.vereda) {
+      var mapaCard = document.getElementById('mapaCard');
+      var mapaEmbed = document.getElementById('mapaEmbed');
+      var mapaVeredaLink = document.getElementById('mapaVeredaLink');
+      var veredaParam = encodeURIComponent(sp.vereda);
+      mapaEmbed.src = 'mapa.html?embed=1&vereda=' + veredaParam;
+      mapaVeredaLink.href = 'mapa.html?vereda=' + veredaParam;
+      mapaCard.style.display = 'block';
     }
 
     // ----- 7. Lightbox -----

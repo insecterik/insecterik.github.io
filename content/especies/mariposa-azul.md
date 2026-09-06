@@ -8,6 +8,8 @@ categoria: mariposas
 descripcion: descrip de la mariposa azul
 fecha: 2026-06-28T13:33:00.000-05:00
 ubicacion: centro
+vereda:
+  - RENQUIRA
 imagenes:
   - /images/uploads/1000053270.png
   - /images/uploads/20260225_122547.jpg

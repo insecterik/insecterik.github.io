@@ -337,6 +337,27 @@ collections:
         widget: "string"
         required: false
 
+      - label: "Vereda"
+        name: "vereda"
+        widget: "select"
+        required: false
+        options:
+          - "SOATAMA"
+          - "LAGUNA"
+          - "SOCUATA"
+          - "GUSVITA"
+          - "RENQUIRA"
+          - "TEGUAVITA"
+          - "SAN ANTONIO"
+          - "PÁRAMO"
+          - "FUGUNTÁ"
+          - "MEDIO QUEBRADAS"
+          - "BARBOSA"
+          - "LLANOS"
+          - "CAÑADAS"
+          - "CASCO"
+          - "RESGUARDO"
+
       - label: "Galería"
         name: "imagenes"
         widget: "list"

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estadísticas &middot; Biodiversidad de Tibirita</title>
+<link rel="icon" type="image/png" href="images/uploads/favicon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+<style>
+  :root{
+    --verde-oscuro:#1c3f3a;
+    --verde-header:#16332f;
+    --verde-brillante:#2ecc71;
+    --verde-texto:#1b5e20;
+    --crema:#f4f8f2;
+    --gris-texto:#5a6b66;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--crema);
+    color:#222;
+  }
+
+  a{ text-decoration:none; }
+
+  /* ── HEADER (igual al de colecciones.html / listas.html) ── */
+  .top-header{
+    position:sticky; top:0; z-index:100;
+    background:var(--verde-header);
+    display:flex; align-items:center;
+    padding:0 24px; height:60px; gap:16px;
+  }
+  .logo{ display:flex; align-items:center; gap:10px; color:white; font-weight:700; font-size:20px; }
+  .logo-img{ height:36px; width:36px; object-fit:contain; border-radius:50%; }
+  .logo-text{ letter-spacing:.5px; }
+
+  .top-nav{
+    margin-left:auto; display:flex; align-items:center; gap:24px;
+  }
+  .top-nav a{
+    color:rgba(255,255,255,.8); font-size:15px; font-weight:500;
+    transition:color .2s;
+  }
+  .top-nav a:hover, .top-nav a.active{ color:#fff; }
+
+  /* ===== PAGE HEADER ===== */
+  .page-header{
+    max-width:1100px;
+    margin:50px auto 0;
+    padding:0 24px;
+  }
+
+  .page-header h1{
+    font-size:48px;
+    font-weight:800;
+    color:var(--verde-brillante);
+    margin:0 0 14px;
+  }
+
+  .page-header .description{
+    font-size:17px;
+    color:#3c4a46;
+    line-height:1.7;
+    max-width:760px;
+    margin:0 0 18px;
+  }
+
+  .breadcrumb{
+    max-width:1100px;
+    margin:0 auto 30px;
+    padding:0 24px;
+    font-size:13px;
+    color:var(--gris-texto);
+  }
+
+  .breadcrumb a{
+    color:var(--verde-texto);
+    font-weight:600;
+  }
+
+  /* ===== SUMMARY CARDS ===== */
+  .summary-cards{
+    max-width:1100px;
+    margin:0 auto 20px;
+    padding:0 24px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    gap:18px;
+  }
+
+  .summary-card{
+    background:#fff;
+    border-radius:14px;
+    padding:20px 22px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+  }
+
+  .summary-card .num{
+    font-size:32px;
+    font-weight:800;
+    color:var(--verde-texto);
+    line-height:1;
+  }
+
+  .summary-card .label{
+    margin-top:6px;
+    font-size:13px;
+    color:var(--gris-texto);
+  }
+
+  /* ===== CHARTS GRID ===== */
+  .charts-wrap{
+    max-width:1100px;
+    margin:20px auto 70px;
+    padding:0 24px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(420px, 1fr));
+    gap:26px;
+  }
+
+  .chart-card{
+    background:#fff;
+    border-radius:14px;
+    padding:22px 24px 16px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+  }
+
+  .chart-card.full{ grid-column:1 / -1; }
+
+  .chart-card h3{
+    margin:0 0 16px;
+    font-size:16px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:#1c2624;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+
+  .chart-toggle{
+    display:flex;
+    background:#eef2f0;
+    border-radius:20px;
+    padding:3px;
+    flex-shrink:0;
+  }
+
+  .chart-toggle button{
+    border:none;
+    background:transparent;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.3px;
+    text-transform:none;
+    padding:5px 12px;
+    border-radius:16px;
+    color:var(--gris-texto);
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+
+  .chart-toggle button.active{
+    background:var(--verde-brillante);
+    color:var(--verde-header);
+  }
+
+  .chart-card .chart-box{ position:relative; height:280px; }
+
+  .empty-state{
+    padding:60px 24px;
+    text-align:center;
+    color:var(--gris-texto);
+    font-size:15px;
+  }
+
+  footer{
+    background:var(--verde-header);
+    color:#cfd9d6;
+    text-align:center;
+    padding:24px;
+    font-size:13px;
+  }
+
+  @media (max-width:700px){
+    .top-header{
+      padding:8px 16px;
+      gap:10px;
+      height:auto;
+      min-height:56px;
+      flex-wrap:wrap;
+    }
+    .logo{ font-size:17px; }
+    .logo-img{ height:30px; width:30px; }
+    .top-nav{ gap:14px; }
+    .top-nav a{ font-size:13px; }
+    .page-header h1{ font-size:34px; }
+    .charts-wrap{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-header">
+  <a href="/" class="logo">
+    <img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img">
+    <div class="logo-text">InsectErik</div>
+  </a>
+  <nav class="top-nav">
+    <a href="/">Inicio</a>
+    <a href="colecciones.html">Colecciones</a>
+    <a href="listas.html">Listas</a>
+    <a href="estadisticas.html" class="active">Estadísticas</a>
+  </nav>
+</div>
+
+<div class="page-header">
+  <h1>Estadísticas</h1>
+  <p class="description">Un vistazo numérico al catálogo de biodiversidad de Tibirita: cuántas especies hay, de qué grupos, quién las ha aportado y cómo ha crecido el catálogo en el tiempo.</p>
+</div>
+
+<div class="breadcrumb">
+  <a href="/">Inicio</a> &rsaquo; <span>Estadísticas</span>
+</div>
+
+<div id="summaryCards" class="summary-cards"></div>
+
+<div id="chartsWrap" class="charts-wrap">
+  <div class="empty-state">Cargando datos&hellip;</div>
+</div>
+
+<footer>
+  Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  var GH_USER   = 'insecterik';
+  var GH_REPO   = 'insecterik.github.io';
+  var GH_BRANCH = 'main';
+  var GH_API    = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/';
+  var GH_RAW    = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/';
+
+  function parseFrontMatter(raw) {
+    raw = raw.replace(/\r\n/g, '\n');
+    var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
+    if (!match) return {};
+    var lines = match[1].split('\n');
+    var data = {};
+    var currentKey = null;
+    var currentParentKey = null;
+
+    lines.forEach(function (line) {
+      if (!line.trim()) return;
+
+      // clave anidada tipo "  dominio: eukariota" bajo "taxonomia:"
+      var nestedKv = /^\s{2,}([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+      if (nestedKv && currentParentKey) {
+        if (typeof data[currentParentKey] !== 'object' || Array.isArray(data[currentParentKey])) {
+          data[currentParentKey] = {};
+        }
+        data[currentParentKey][nestedKv[1]] = cleanValue(nestedKv[2]);
+        return;
+      }
+
+      var listItem = /^\s*-\s+(.*)$/.exec(line);
+      if (listItem && currentKey) {
+        if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+        var itemText = listItem[1];
+        var nested = /^[A-Za-z0-9_]+:\s*(.*)$/.exec(itemText);
+        data[currentKey].push(cleanValue(nested ? nested[1] : itemText));
+        return;
+      }
+
+      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+      if (kv) {
+        var key = kv[1];
+        var val = kv[2].trim();
+        currentParentKey = null;
+        if (val === '') {
+          currentKey = key;
+          currentParentKey = key;
+          data[key] = [];
+        } else {
+          data[key] = cleanValue(val);
+          currentKey = null;
+        }
+      }
+    });
+
+    return data;
+  }
+
+  function cleanValue(v) {
+    v = v.trim();
+    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+      v = v.slice(1, -1);
+    }
+    return v;
+  }
+
+  function listMdFiles(folder) {
+    return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
+      .then(function (r) {
+        if (!r.ok) throw new Error('No se pudo listar ' + folder);
+        return r.json();
+      })
+      .then(function (items) {
+        return (items || [])
+          .filter(function (it) { return it.type === 'file' && /\.md$/i.test(it.name); })
+          .map(function (it) { return folder + '/' + it.name; });
+      });
+  }
+
+  function fetchAndParseAll(paths) {
+    return Promise.all(paths.map(function (path) {
+      return fetch(GH_RAW + path + '?v=' + Date.now())
+        .then(function (r) { return r.text(); })
+        .then(function (raw) { return parseFrontMatter(raw); });
+    }));
+  }
+
+  function capitalize(str) {
+    str = (str || '').toString();
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function countBy(list, keyFn) {
+    var counts = {};
+    list.forEach(function (item) {
+      var key = keyFn(item) || 'Sin dato';
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return counts;
+  }
+
+  var PALETTE = ['#2ecc71', '#1c3f3a', '#5a6b66', '#7fb8a4', '#c9a227', '#3f7d5c', '#8ab4a1', '#d7dfda'];
+
+  function colorAt(i) { return PALETTE[i % PALETTE.length]; }
+
+  function showError(message) {
+    document.getElementById('chartsWrap').innerHTML = '<div class="empty-state">' + message + '</div>';
+  }
+
+  Promise.all([
+    listMdFiles('content/especies').then(fetchAndParseAll),
+    listMdFiles('content/colecciones').then(fetchAndParseAll).catch(function () { return []; })
+  ])
+    .then(function (results) {
+      renderStats(results[0], results[1]);
+    })
+    .catch(function (err) {
+      console.error(err);
+      showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+    });
+
+  function renderStats(species, colecciones) {
+    colecciones = colecciones || [];
+    if (!species.length) {
+      showError('Todavía no hay especies registradas.');
+      return;
+    }
+
+    // ── TARJETAS RESUMEN ──
+    var reinos = {};
+    species.forEach(function (sp) { reinos[sp.reino || 'Sin dato'] = true; });
+    var autores = {};
+    species.forEach(function (sp) { if (sp.autor) autores[sp.autor] = true; });
+
+    document.getElementById('summaryCards').innerHTML =
+      '<div class="summary-card"><div class="num">' + species.length + '</div><div class="label">Especies registradas</div></div>' +
+      '<div class="summary-card"><div class="num">' + Object.keys(reinos).length + '</div><div class="label">Reinos representados</div></div>' +
+      '<div class="summary-card"><div class="num">' + Object.keys(autores).length + '</div><div class="label">Colaboradores</div></div>' +
+      '<div class="summary-card"><div class="num">' + colecciones.length + '</div><div class="label">Colecciones</div></div>';
+
+    document.getElementById('chartsWrap').innerHTML =
+      '<div class="chart-card">' + cardHeader('Especies por reino', 'chartReino') + '<div class="chart-box"><canvas id="chartReino"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por grupo', 'chartGrupo') + '<div class="chart-box"><canvas id="chartGrupo"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por subgrupo', 'chartSubgrupo') + '<div class="chart-box"><canvas id="chartSubgrupo"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Aportes por colaborador', 'chartAutor') + '<div class="chart-box"><canvas id="chartAutor"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por colección', 'chartColecciones') + '<div class="chart-box"><canvas id="chartColecciones"></canvas></div></div>' +
+      '<div class="chart-card full">' + cardHeader('Catálogo en el tiempo', 'chartCrecimiento') + '<div class="chart-box"><canvas id="chartCrecimiento"></canvas></div></div>';
+
+    // ── POR REINO ──
+    var byReino = countBy(species, function (sp) { return capitalize(sp.reino); });
+    makeToggleChart('chartReino', Object.keys(byReino), Object.values(byReino), 'doughnut');
+
+    // ── POR GRUPO ──
+    var byGrupo = countBy(species, function (sp) { return capitalize(sp.grupo); });
+    makeToggleChart('chartGrupo', Object.keys(byGrupo), Object.values(byGrupo), 'bar');
+
+    // ── POR SUBGRUPO (ej: Insectos, Mariposas...) ──
+    var bySubgrupo = countBy(species, function (sp) { return capitalize(sp.subgrupo); });
+    makeToggleChart('chartSubgrupo', Object.keys(bySubgrupo), Object.values(bySubgrupo), 'bar');
+
+    // ── POR AUTOR ──
+    var byAutor = countBy(species, function (sp) { return sp.autor ? capitalize(sp.autor) : 'Sin autor'; });
+    makeToggleChart('chartAutor', Object.keys(byAutor), Object.values(byAutor), 'bar');
+
+    // ── POR COLECCIÓN ──
+    if (colecciones.length) {
+      var colLabels = colecciones.map(function (c) { return c.title || 'Sin título'; });
+      var colData = colecciones.map(function (c) { return Array.isArray(c.especies) ? c.especies.length : 0; });
+      makeToggleChart('chartColecciones', colLabels, colData, 'bar', 'Especies');
+    } else {
+      var colCanvas = document.getElementById('chartColecciones');
+      if (colCanvas) {
+        colCanvas.closest('.chart-card').innerHTML =
+          '<h3>Especies por colección</h3><p style="color:var(--gris-texto);font-size:14px;">Todavía no hay colecciones creadas.</p>';
+      }
+    }
+
+    // ── CATÁLOGO EN EL TIEMPO (por mes, según "fecha") ──
+    var withDate = species
+      .filter(function (sp) { return sp.fecha; })
+      .map(function (sp) { return new Date(sp.fecha); })
+      .filter(function (d) { return !isNaN(d.getTime()); })
+      .sort(function (a, b) { return a - b; });
+
+    if (withDate.length) {
+      var byMonth = {};
+      withDate.forEach(function (d) {
+        var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        byMonth[key] = (byMonth[key] || 0) + 1;
+      });
+      var months = Object.keys(byMonth).sort();
+      var acumulado = 0;
+      var acumData = months.map(function (m) { acumulado += byMonth[m]; return acumulado; });
+
+      makeToggleChart('chartCrecimiento', months, acumData, 'bar', 'Especies acumuladas');
+    } else {
+      document.getElementById('chartCrecimiento').closest('.chart-card').innerHTML =
+        '<h3>Catálogo en el tiempo</h3><p style="color:var(--gris-texto);font-size:14px;">Ninguna especie tiene el campo "fecha" válido todavía.</p>';
+    }
+  }
+
+  function cardHeader(title, canvasId) {
+    return '<h3>' + title +
+      '<span class="chart-toggle" data-for="' + canvasId + '">' +
+        '<button type="button" data-type="bar">Barras</button>' +
+        '<button type="button" data-type="doughnut">Dona</button>' +
+      '</span></h3>';
+  }
+
+  var activeCharts = {};
+
+  function buildChartConfig(type, labels, data, datasetLabel) {
+    var isDoughnut = type === 'doughnut';
+    return {
+      type: type,
+      data: {
+        labels: labels,
+        datasets: [{
+          label: datasetLabel || 'Total',
+          data: data,
+          backgroundColor: isDoughnut
+            ? labels.map(function (_, i) { return colorAt(i); })
+            : '#2ecc71'
+        }]
+      },
+      options: {
+        indexAxis: (!isDoughnut && data.length > 5) ? 'y' : 'x',
+        plugins: { legend: { display: isDoughnut, position: 'bottom' } },
+        scales: isDoughnut ? {} : {
+          x: { ticks: { precision: 0 } },
+          y: { ticks: { precision: 0 } }
+        }
+      }
+    };
+  }
+
+  function makeToggleChart(canvasId, labels, data, initialType, datasetLabel) {
+    var canvas = document.getElementById(canvasId);
+    var chart = new Chart(canvas, buildChartConfig(initialType, labels, data, datasetLabel));
+    activeCharts[canvasId] = chart;
+
+    var toggle = document.querySelector('.chart-toggle[data-for="' + canvasId + '"]');
+    if (!toggle) return;
+
+    var buttons = toggle.querySelectorAll('button');
+    buttons.forEach(function (btn) {
+      if (btn.dataset.type === initialType) btn.classList.add('active');
+      btn.addEventListener('click', function () {
+        var newType = btn.dataset.type;
+        buttons.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeCharts[canvasId].destroy();
+        activeCharts[canvasId] = new Chart(canvas, buildChartConfig(newType, labels, data, datasetLabel));
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -13,4 +13,5 @@ vereda:
 imagenes:
   - /images/uploads/1000053270.png
   - /images/uploads/20260225_122547.jpg
+autor: Jose buendia
 ---

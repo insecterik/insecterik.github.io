@@ -12,9 +12,9 @@ public_folder: "/images/uploads"
 
 collections:
 
-  # NIVEL 1 — REINO (Animalia, Plantae, Fungi...)
+  # NIVEL 1 — GRUPO GENERAL (Animalia, Plantae, Fungi...)
   - name: "reinos"
-    label: "Reino"
+    label: "Grupo General"
     folder: "content/reinos"
     create: true
     slug: "{{slug}}"
@@ -34,9 +34,9 @@ collections:
         widget: "image"
         required: false
 
-  # NIVEL 2 — GRUPO PRINCIPAL (Aves, Mamíferos, Mariposas, Árboles, Helechos...)
+  # NIVEL 2 — GRUPO BIOLÓGICO (Aves, Mamíferos, Mariposas, Árboles, Helechos...)
   - name: "grupos"
-    label: "Grupo Principal"
+    label: "Grupo Biológico"
     folder: "content/grupos"
     create: true
     slug: "{{slug}}"
@@ -46,7 +46,7 @@ collections:
         name: "title"
         widget: "string"
 
-      - label: "Reino"
+      - label: "Grupo General"
         name: "reino"
         widget: "relation"
         collection: "reinos"
@@ -65,9 +65,9 @@ collections:
         widget: "image"
         required: false
 
-  # NIVEL 3 — SUBGRUPO
+  # NIVEL 3 — GRUPO DE ORGANISMOS
   - name: "subgrupos"
-    label: "Subgrupo"
+    label: "Grupo de Organismos"
     folder: "content/subgrupos"
     create: true
     slug: "{{slug}}"
@@ -77,7 +77,7 @@ collections:
         name: "title"
         widget: "string"
 
-      - label: "Reino"
+      - label: "Grupo General"
         name: "reino"
         widget: "relation"
         collection: "reinos"
@@ -86,7 +86,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Grupo Principal"
+      - label: "Grupo Biológico"
         name: "grupo"
         widget: "relation"
         collection: "grupos"
@@ -105,9 +105,9 @@ collections:
         widget: "image"
         required: false
 
-  # NIVEL 4 — CATEGORÍA
+  # NIVEL 4 — GRUPO ESPECÍFICO
   - name: "categorias"
-    label: "Categorías"
+    label: "Grupo Específico"
     folder: "content/categorias"
     create: true
     slug: "{{slug}}"
@@ -117,7 +117,7 @@ collections:
         name: "title"
         widget: "string"
 
-      - label: "Reino"
+      - label: "Grupo General"
         name: "reino"
         widget: "relation"
         collection: "reinos"
@@ -126,7 +126,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Grupo Principal"
+      - label: "Grupo Biológico"
         name: "grupo"
         widget: "relation"
         collection: "grupos"
@@ -135,7 +135,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Subgrupo"
+      - label: "Grupo de Organismos"
         name: "subgrupo"
         widget: "relation"
         collection: "subgrupos"
@@ -154,9 +154,9 @@ collections:
         widget: "image"
         required: false
 
-  # NIVEL 5 — SUBCATEGORÍA
+  # NIVEL 5 — CATEGORÍA ESPECIE
   - name: "subcategorias"
-    label: "Subcategorías"
+    label: "Categoría Especie"
     folder: "content/subcategorias"
     create: true
     slug: "{{slug}}"
@@ -166,7 +166,7 @@ collections:
         name: "title"
         widget: "string"
 
-      - label: "Reino"
+      - label: "Grupo General"
         name: "reino"
         widget: "relation"
         collection: "reinos"
@@ -175,7 +175,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Grupo Principal"
+      - label: "Grupo Biológico"
         name: "grupo"
         widget: "relation"
         collection: "grupos"
@@ -184,7 +184,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Subgrupo"
+      - label: "Grupo de Organismos"
         name: "subgrupo"
         widget: "relation"
         collection: "subgrupos"
@@ -193,7 +193,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Categoría"
+      - label: "Grupo Específico"
         name: "categoria"
         widget: "relation"
         collection: "categorias"
@@ -230,7 +230,7 @@ collections:
         widget: "string"
         required: false
 
-      - label: "Reino"
+      - label: "Grupo General"
         name: "reino"
         widget: "relation"
         collection: "reinos"
@@ -239,7 +239,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Grupo Principal"
+      - label: "Grupo Biológico"
         name: "grupo"
         widget: "relation"
         collection: "grupos"
@@ -248,7 +248,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Subgrupo"
+      - label: "Grupo de Organismos"
         name: "subgrupo"
         widget: "relation"
         collection: "subgrupos"
@@ -257,7 +257,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Categoría"
+      - label: "Grupo Específico"
         name: "categoria"
         widget: "relation"
         collection: "categorias"
@@ -266,7 +266,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Subcategoría"
+      - label: "Categoría Especie"
         name: "subcategoria"
         widget: "relation"
         collection: "subcategorias"

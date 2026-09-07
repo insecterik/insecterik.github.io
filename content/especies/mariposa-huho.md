@@ -13,4 +13,5 @@ vereda:
   - RENQUIRA
 imagenes:
   - /images/uploads/20190306_081038.jpg
+autor: alejandro
 ---

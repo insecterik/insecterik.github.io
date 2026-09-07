@@ -15,4 +15,5 @@ fecha: 2026-06-28T13:27:00.000-05:00
 ubicacion: la guajira
 imagenes:
   - /images/uploads/1000053650.png
+autor: andrea
 ---

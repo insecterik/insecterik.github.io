@@ -484,7 +484,7 @@
   }
 
   .species-list.open{
-    max-height:1000px;
+    max-height:20000px;
   }
 
   .species-list a{
@@ -677,7 +677,7 @@
     transition:max-height .25s ease;
     background:#f9fcfa;
   }
-  .subspecies-list.open{ max-height:2000px; }
+  .subspecies-list.open{ max-height:20000px; }
 
   .subspecies-list .species-link{
     display:flex;
@@ -694,6 +694,42 @@
   .subspecies-list .species-link.depth-3{ padding-left:70px; }
   .subspecies-list .species-link.depth-4{ padding-left:82px; }
   .subspecies-list .species-link:hover{ color:var(--verde-texto); background:#eef7ee; }
+
+  /* ===== LÍNEAS GUÍA DE INDENTACIÓN (estilo árbol de VS Code) =====
+     Cada contenedor de hijos (species-list / subspecies-list) dibuja su propia
+     línea vertical; como están anidados unos dentro de otros, las líneas se
+     apilan automáticamente formando el "escalonado" típico de un árbol de
+     carpetas. La línea nace y muere justo con el contenido (gracias al
+     overflow:hidden del acordeón), así que solo se ve cuando el grupo está
+     abierto. */
+  .species-list{ position:relative; }
+  .species-list::before{
+    content:"";
+    position:absolute;
+    z-index:1;
+    top:0; bottom:0;
+    left:24px;
+    width:1px;
+    background:#c7d1cb;
+    pointer-events:none;
+  }
+
+  .subspecies-list{ position:relative; background:transparent; }
+  .subspecies-list::before{
+    content:"";
+    position:absolute;
+    z-index:1;
+    top:0; bottom:0;
+    width:1px;
+    background:#c7d1cb;
+    pointer-events:none;
+  }
+  .subcat-group.depth-1 > .subspecies-list::before{ left:36px; }
+  .subcat-group.depth-2 > .subspecies-list::before{ left:48px; }
+  .subcat-group.depth-3 > .subspecies-list::before{ left:60px; }
+  .subcat-group.depth-4 > .subspecies-list::before{ left:72px; }
+
+  .subcat-group{ background:transparent; }
 
   /* Especie directa en species-list (sin subcat) */
   .species-list > .species-link{

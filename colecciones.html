@@ -164,6 +164,61 @@
     font-size:15px;
   }
 
+  /* ===== GRID DE COLECCIONES (vista de listado, sin ?id=) ===== */
+  .collections-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+    gap:26px;
+  }
+
+  .collection-card{
+    display:block;
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+
+  .collection-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(0,0,0,.1);
+  }
+
+  .collection-card .cover{
+    width:100%;
+    height:170px;
+    background:#dfe9e6;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2.4rem;
+  }
+
+  .collection-card .cover img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .collection-card .card-body{ padding:16px 18px 20px; }
+
+  .collection-card h3{
+    margin:0 0 6px;
+    font-size:18px;
+    font-weight:800;
+    color:#1c2624;
+  }
+
+  .collection-card p{
+    margin:0;
+    font-size:13px;
+    color:var(--gris-texto);
+    line-height:1.5;
+  }
+
   footer{
     text-align:center;
     color:var(--gris-texto);
@@ -323,47 +378,60 @@
     document.getElementById('speciesRows').innerHTML = '<div class="empty-state">' + message + '</div>';
   }
 
+  function buildCollections(rawColecciones) {
+    return rawColecciones.map(function (c) {
+      var especiesList = Array.isArray(c.especies) ? c.especies
+                        : (c.especies ? [c.especies] : []);
+      return {
+        id: slugify(c.title) + '-' + slugify(c.__path),
+        name: c.title || '(sin nombre)',
+        description: c.descripcion || '',
+        image: c.imagen || '',
+        especiesNames: especiesList // nombres tal como se escribieron en el campo "especie" de cada item
+      };
+    });
+  }
+
+  function buildSpecies(rawEspecies) {
+    return rawEspecies.map(function (sp) {
+      var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
+                   : (sp.imagenes ? [sp.imagenes] : []);
+      return {
+        id: slugify(sp.title) + '-' + slugify(sp.__path),
+        name: sp.title || '(sin nombre)',
+        scientificName: sp.cientifico || '',
+        description: sp.descripcion || '',
+        photos: imagenes
+      };
+    });
+  }
+
   // ── LEER ?id= DE LA URL ──
   var params = new URLSearchParams(window.location.search);
   var targetId = params.get('id');
 
   if (!targetId) {
-    showError('No se especificó ninguna colección en la URL (falta el parámetro ?id=).');
+    // ── SIN id: mostrar el listado de todas las colecciones ──
+    listMdFiles('content/colecciones')
+      .then(fetchAndParseAll)
+      .then(function (rawColecciones) {
+        renderCollectionsList(buildCollections(rawColecciones));
+      })
+      .catch(function (err) {
+        console.error(err);
+        showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+      });
     return;
   }
 
-  // ── CARGAR LA COLECCIÓN SOLICITADA + TODAS LAS ESPECIES ──
+  // ── CON id: CARGAR LA COLECCIÓN SOLICITADA + TODAS LAS ESPECIES ──
   Promise.all([
     listMdFiles('content/colecciones').then(fetchAndParseAll),
     listMdFiles('content/especies').then(fetchAndParseAll)
   ])
     .then(function (results) {
-      var rawColecciones = results[0];
-      var rawEspecies = results[1];
-
-      var collections = rawColecciones.map(function (c) {
-        var especiesList = Array.isArray(c.especies) ? c.especies
-                          : (c.especies ? [c.especies] : []);
-        return {
-          id: slugify(c.title) + '-' + slugify(c.__path),
-          name: c.title || '(sin nombre)',
-          description: c.descripcion || '',
-          image: c.imagen || '',
-          especiesNames: especiesList // nombres tal como se escribieron en el campo "especie" de cada item
-        };
-      });
-
-      var species = rawEspecies.map(function (sp) {
-        var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
-                     : (sp.imagenes ? [sp.imagenes] : []);
-        return {
-          id: slugify(sp.title) + '-' + slugify(sp.__path),
-          name: sp.title || '(sin nombre)',
-          scientificName: sp.cientifico || '',
-          description: sp.descripcion || '',
-          photos: imagenes
-        };
-      });
+      var collections = buildCollections(results[0]);
+      var species = buildSpecies(results[1]);
 
       var collection = collections.find(function (c) { return c.id === targetId; });
 
@@ -386,6 +454,39 @@
       console.error(err);
       showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
     });
+
+  function renderCollectionsList(collections) {
+    document.getElementById('pageTitleTag').textContent = 'Colecciones · Biodiversidad de Tibirita';
+    document.getElementById('collectionTitle').textContent = 'Colecciones';
+    document.getElementById('collectionDescription').textContent = 'Explora las colecciones de especies observadas en Tibirita.';
+    document.getElementById('breadcrumbCurrent').textContent = 'Colecciones';
+
+    var rowsEl = document.getElementById('speciesRows');
+
+    if (!collections.length) {
+      rowsEl.innerHTML = '<div class="empty-state">Todavía no hay colecciones publicadas.</div>';
+      return;
+    }
+
+    var html = '<div class="collections-grid">';
+    collections.forEach(function (c) {
+      html += '<a class="collection-card" href="colecciones.html?id=' + encodeURIComponent(c.id) + '">';
+      if (c.image) {
+        html += '<div class="cover"><img src="' + c.image + '" alt="' + c.name + '"></div>';
+      } else {
+        html += '<div class="cover">🌿</div>';
+      }
+      html += '<div class="card-body">';
+      html += '<h3>' + c.name + '</h3>';
+      if (c.description) {
+        html += '<p>' + c.description + '</p>';
+      }
+      html += '</div></a>';
+    });
+    html += '</div>';
+
+    rowsEl.innerHTML = html;
+  }
 
   function renderCollection(collection, species) {
     document.getElementById('pageTitleTag').textContent = collection.name + ' · Biodiversidad de Tibirita';

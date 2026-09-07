@@ -9,4 +9,5 @@ vereda:
   - GUSVITA
 imagenes:
   - /images/uploads/tdcvc7jafjc5vg56ytakza4e7i.jpeg
+autor: pedro paramo
 ---

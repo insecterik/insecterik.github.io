@@ -18,4 +18,5 @@ vereda:
   - RENQUIRA
 imagenes:
   - /images/uploads/images.jpg
+autor: thomas arcadio
 ---

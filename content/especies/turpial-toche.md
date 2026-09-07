@@ -11,4 +11,5 @@ vereda:
   - SOCUATA
 imagenes:
   - /images/uploads/oip.webp
+autor: ricardo
 ---

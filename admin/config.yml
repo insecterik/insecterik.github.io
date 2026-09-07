@@ -154,9 +154,9 @@ collections:
         widget: "image"
         required: false
 
-  # NIVEL 5 — CATEGORÍA ESPECIE
+  # NIVEL 5 — CATEGORÍA MENOR
   - name: "subcategorias"
-    label: "Categoría Especie"
+    label: "Categoría Menor"
     folder: "content/subcategorias"
     create: true
     slug: "{{slug}}"
@@ -266,7 +266,7 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Categoría Especie"
+      - label: "Categoría Menor"
         name: "subcategoria"
         widget: "relation"
         collection: "subcategorias"

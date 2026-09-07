@@ -275,6 +275,31 @@
     text-transform:capitalize;
   }
 
+  .catalog-breadcrumb{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    font-size:14px;
+    line-height:1.4;
+  }
+
+  .catalog-breadcrumb .crumb{
+    text-transform:capitalize;
+    color:var(--verde-texto);
+    font-weight:600;
+  }
+
+  .catalog-breadcrumb .crumb:last-child{
+    color:#222;
+    font-weight:700;
+  }
+
+  .catalog-breadcrumb .sep{
+    color:var(--gris-texto);
+    font-size:13px;
+  }
+
   .mapa-embed-wrap{
     border-radius:12px;
     overflow:hidden;
@@ -466,13 +491,8 @@
   </div>
 
   <div class="data-card" id="taxonomyCard" style="display:none; margin-bottom:18px;">
-    <h3>Clasificación del catálogo</h3>
-    <div id="taxonomyRows"></div>
-  </div>
-
-  <div class="data-card" id="taxonCard" style="display:none; margin-bottom:18px;">
-    <h3>Clasificación taxonómica</h3>
-    <div id="taxonRows"></div>
+    <h3>Grupos y Categoría</h3>
+    <div id="taxonomyRows" class="catalog-breadcrumb"></div>
   </div>
 
   <div class="data-card">
@@ -679,7 +699,7 @@
   ];
   var SPECIES_PARENT_FIELDS = ['subcategoria', 'categoria', 'subgrupo', 'grupo', 'reino'];
 
-  var LEVEL_LABELS = ['Reino', 'Grupo Principal', 'Subgrupo', 'Categoría', 'Subcategoría'];
+  var LEVEL_LABELS = ['Grupo General', 'Grupo Biológico', 'Grupo de Organismos', 'Grupo Específico', 'Categoría Menor'];
 
   Promise.all(
     LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
@@ -825,58 +845,24 @@
       descEl.appendChild(pEmpty);
     }
 
-    // ----- 5. Clasificación taxonómica: un renglón por cada nivel presente -----
+    // ----- 5. Grupos y Categoría: una sola línea tipo ruta, con flechas entre niveles -----
     var taxonomyCard = document.getElementById('taxonomyCard');
     var taxonomyRowsEl = document.getElementById('taxonomyRows');
 
     if (catPath.length) {
-      catPath.forEach(function (part) {
-        var row = document.createElement('div');
-        row.className = 'data-row';
-        row.innerHTML = '<span class="label"></span><span class="value"></span>';
-        row.querySelector('.label').textContent = part.levelLabel || 'Nivel';
-        row.querySelector('.value').textContent = part.name;
-        taxonomyRowsEl.appendChild(row);
+      catPath.forEach(function (part, i) {
+        if (i > 0) {
+          var sep = document.createElement('span');
+          sep.className = 'sep';
+          sep.textContent = '→';
+          taxonomyRowsEl.appendChild(sep);
+        }
+        var crumb = document.createElement('span');
+        crumb.className = 'crumb';
+        crumb.textContent = part.name;
+        taxonomyRowsEl.appendChild(crumb);
       });
       taxonomyCard.style.display = 'block';
-    }
-
-    // ----- 6. Clasificacion taxonomica (8 niveles del campo taxonomia) -----
-    var taxonCard = document.getElementById('taxonCard');
-    var taxonRowsEl = document.getElementById('taxonRows');
-    var tx = sp.taxonomia || {};
-    var TAXON_LEVELS = [
-      { label: 'Dominio',         key: 'dominio' },
-      { label: 'Reino',           key: 'reino_taxonomico' },
-      { label: 'Filo / Division', key: 'filo' },
-      { label: 'Clase',           key: 'clase' },
-      { label: 'Orden',           key: 'orden' },
-      { label: 'Familia',         key: 'familia' },
-      { label: 'Genero',          key: 'genero' },
-      { label: 'Especie',         key: 'especie_taxonomica' }
-    ];
-    var hasAny = TAXON_LEVELS.some(function(l){ return tx[l.key]; });
-    if (hasAny) {
-      TAXON_LEVELS.forEach(function(level) {
-        var row = document.createElement('div');
-        row.className = 'data-row';
-        var lbl = document.createElement('span');
-        lbl.className = 'label';
-        lbl.textContent = level.label;
-        var val = document.createElement('span');
-        val.className = 'value';
-        if (tx[level.key]) {
-          val.textContent = tx[level.key];
-        } else {
-          val.textContent = '...';
-          val.style.color = '#bbb';
-          val.style.fontStyle = 'italic';
-        }
-        row.appendChild(lbl);
-        row.appendChild(val);
-        taxonRowsEl.appendChild(row);
-      });
-      taxonCard.style.display = 'block';
     }
 
     // ----- 7. Ficha tecnica (data-card) -----

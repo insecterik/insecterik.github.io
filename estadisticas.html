@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Estadísticas &middot; Biodiversidad de Tibirita</title>
 <link rel="icon" type="image/png" href="images/uploads/favicon.png">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="js/chart.umd.min.js"></script>
 
 <style>
   :root{
@@ -18,6 +18,11 @@
   }
 
   *{ box-sizing:border-box; }
+
+  html, body{
+    max-width:100%;
+    overflow-x:hidden;
+  }
 
   body{
     margin:0;
@@ -128,6 +133,7 @@
     border-radius:14px;
     padding:22px 24px 16px;
     box-shadow:0 2px 10px rgba(0,0,0,.06);
+    min-width:0;
   }
 
   .chart-card.full{ grid-column:1 / -1; }
@@ -140,6 +146,8 @@
     letter-spacing:.5px;
     color:#1c2624;
     display:flex;
+    flex-wrap:wrap;
+    row-gap:10px;
     align-items:center;
     justify-content:space-between;
     gap:12px;
@@ -172,7 +180,15 @@
     color:var(--verde-header);
   }
 
-  .chart-card .chart-box{ position:relative; height:280px; }
+  .chart-controls{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+  }
+
+  .chart-card .chart-box{ position:relative; height:280px; width:100%; }
 
   .empty-state{
     padding:60px 24px;
@@ -180,6 +196,70 @@
     color:var(--gris-texto);
     font-size:15px;
   }
+
+  /* ===== RANKING DE COLABORADORES ===== */
+  .ranking-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+
+  .ranking-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:10px 4px;
+    border-bottom:1px solid #eef2f0;
+  }
+
+  .ranking-item:last-child{ border-bottom:none; }
+
+  .ranking-rank{
+    flex-shrink:0;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:var(--verde-brillante);
+    color:var(--verde-header);
+    font-weight:800;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .ranking-name{
+    flex:1;
+    font-weight:600;
+    color:#1c2624;
+    word-break:break-word;
+  }
+
+  .ranking-count{
+    font-weight:800;
+    color:var(--verde-texto);
+    font-size:14px;
+    flex-shrink:0;
+  }
+
+  .ranking-extra{ margin-top:0; }
+
+  .ranking-toggle-btn{
+    display:block;
+    margin:16px auto 0;
+    border:none;
+    background:var(--verde-brillante);
+    color:var(--verde-header);
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.2px;
+    padding:9px 20px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:opacity .15s ease;
+  }
+
+  .ranking-toggle-btn:hover{ opacity:.85; }
 
   footer{
     background:var(--verde-header);
@@ -204,6 +284,21 @@
     .page-header h1{ font-size:34px; }
     .charts-wrap{ grid-template-columns:1fr; }
   }
+
+  @media (max-width:667px){
+    .page-header, .breadcrumb, .summary-cards, .charts-wrap{
+      padding-left:16px;
+      padding-right:16px;
+    }
+    .chart-card{ padding:18px 16px 14px; }
+    .chart-card h3{
+      font-size:14px;
+      justify-content:flex-start;
+    }
+    .chart-controls{ width:100%; justify-content:flex-start; }
+    .chart-card .chart-box{ height:240px; }
+    .summary-cards{ grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); }
+  }
 </style>
 </head>
 <body>
@@ -217,6 +312,7 @@
     <a href="/">Inicio</a>
     <a href="colecciones.html">Colecciones</a>
     <a href="listas.html">Listas</a>
+    <a href="mapa.html">Mapa</a>
     <a href="estadisticas.html" class="active">Estadísticas</a>
   </nav>
 </div>
@@ -382,11 +478,37 @@
       '<div class="summary-card"><div class="num">' + Object.keys(autores).length + '</div><div class="label">Colaboradores</div></div>' +
       '<div class="summary-card"><div class="num">' + colecciones.length + '</div><div class="label">Colecciones</div></div>';
 
+    // ── POR AUTOR ── se calcula antes de armar el HTML porque el encabezado
+    // de la tarjeta depende de si hay más de 100 colaboradores (para mostrar
+    // el toggle "Top 15 / Todos").
+    var byAutorCounts = countBy(species, function (sp) { return sp.autor ? capitalize(sp.autor) : 'Sin autor'; });
+    var autorEntries = Object.keys(byAutorCounts)
+      .map(function (k) { return [k, byAutorCounts[k]]; })
+      .sort(function (a, b) { return b[1] - a[1]; });
+    var manyAutores = autorEntries.length > 100;
+
+    // ── POR FAMILIA ── igual que autor: se calcula antes de armar el HTML
+    // porque el encabezado depende de si hay muchas familias distintas
+    // (para mostrar el toggle "Top 15 / Todas").
+    var speciesWithFamilia = species.filter(function (sp) {
+      return sp.taxonomia && typeof sp.taxonomia === 'object' && sp.taxonomia.familia;
+    });
+    var byFamiliaCounts = countBy(speciesWithFamilia, function (sp) { return capitalize(sp.taxonomia.familia); });
+    var familiaEntries = Object.keys(byFamiliaCounts)
+      .map(function (k) { return [k, byFamiliaCounts[k]]; })
+      .sort(function (a, b) { return b[1] - a[1]; });
+    var manyFamilias = familiaEntries.length > TOP_N_FAMILIA;
+
     document.getElementById('chartsWrap').innerHTML =
-      '<div class="chart-card">' + cardHeader('Especies por reino', 'chartReino') + '<div class="chart-box"><canvas id="chartReino"></canvas></div></div>' +
-      '<div class="chart-card">' + cardHeader('Especies por grupo', 'chartGrupo') + '<div class="chart-box"><canvas id="chartGrupo"></canvas></div></div>' +
-      '<div class="chart-card">' + cardHeader('Especies por subgrupo', 'chartSubgrupo') + '<div class="chart-box"><canvas id="chartSubgrupo"></canvas></div></div>' +
-      '<div class="chart-card">' + cardHeader('Aportes por colaborador', 'chartAutor') + '<div class="chart-box"><canvas id="chartAutor"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por grupo general', 'chartReino') + '<div class="chart-box"><canvas id="chartReino"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por grupo biológico', 'chartGrupo') + '<div class="chart-box"><canvas id="chartGrupo"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por grupo de organismos', 'chartSubgrupo') + '<div class="chart-box"><canvas id="chartSubgrupo"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por filo / división', 'chartFilo') + '<div class="chart-box"><canvas id="chartFilo"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por clase', 'chartClase') + '<div class="chart-box"><canvas id="chartClase"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por orden', 'chartOrden') + '<div class="chart-box"><canvas id="chartOrden"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Especies por familia', 'chartFamilia', manyFamilias) + '<div class="chart-box"><canvas id="chartFamilia"></canvas></div></div>' +
+      '<div class="chart-card">' + cardHeader('Aportes por colaborador', 'chartAutor', manyAutores) + '<div class="chart-box"><canvas id="chartAutor"></canvas></div></div>' +
+      '<div class="chart-card"><h3>Ranking de colaboradores</h3><div id="autorRankingList"></div></div>' +
       '<div class="chart-card">' + cardHeader('Especies por colección', 'chartColecciones') + '<div class="chart-box"><canvas id="chartColecciones"></canvas></div></div>' +
       '<div class="chart-card full">' + cardHeader('Catálogo en el tiempo', 'chartCrecimiento') + '<div class="chart-box"><canvas id="chartCrecimiento"></canvas></div></div>';
 
@@ -396,21 +518,44 @@
 
     // ── POR GRUPO ──
     var byGrupo = countBy(species, function (sp) { return capitalize(sp.grupo); });
-    makeToggleChart('chartGrupo', Object.keys(byGrupo), Object.values(byGrupo), 'bar');
+    makeToggleChart('chartGrupo', Object.keys(byGrupo), Object.values(byGrupo), 'doughnut');
 
     // ── POR SUBGRUPO (ej: Insectos, Mariposas...) ──
     var bySubgrupo = countBy(species, function (sp) { return capitalize(sp.subgrupo); });
-    makeToggleChart('chartSubgrupo', Object.keys(bySubgrupo), Object.values(bySubgrupo), 'bar');
+    makeToggleChart('chartSubgrupo', Object.keys(bySubgrupo), Object.values(bySubgrupo), 'doughnut');
 
-    // ── POR AUTOR ──
-    var byAutor = countBy(species, function (sp) { return sp.autor ? capitalize(sp.autor) : 'Sin autor'; });
-    makeToggleChart('chartAutor', Object.keys(byAutor), Object.values(byAutor), 'bar');
+    // ── CLASIFICACIÓN TAXONÓMICA (filo, clase, orden, familia) ──
+    // Filo y clase suelen tener pocas categorías -> dona por defecto.
+    renderTaxoChart(species, 'chartFilo', 'filo', 'filo / división', 'doughnut');
+    renderTaxoChart(species, 'chartClase', 'clase', 'clase', 'doughnut');
+    renderTaxoChart(species, 'chartOrden', 'orden', 'orden', 'doughnut');
+
+    // Familia suele tener muchas categorías distintas -> barras horizontales,
+    // con el mismo patrón "Top N / Todas" que colaboradores y altura dinámica
+    // del chart-box según cuántas barras se estén mostrando.
+    if (!familiaEntries.length) {
+      var famCanvas = document.getElementById('chartFamilia');
+      if (famCanvas) {
+        famCanvas.closest('.chart-card').innerHTML =
+          '<h3>Especies por familia</h3><p style="color:var(--gris-texto);font-size:14px;">' +
+          'Ninguna especie tiene el campo &quot;familia&quot; de la clasificación taxonómica registrado todavía.</p>';
+      }
+    } else {
+      makeRankedBarChart('chartFamilia', familiaEntries, manyFamilias, TOP_N_FAMILIA);
+    }
+
+    // ── POR AUTOR ── (puede haber muchos colaboradores -> barras es más legible;
+    // si son más de 100, se ofrece un toggle para ver solo el Top 15 o todos)
+    makeRankedBarChart('chartAutor', autorEntries, manyAutores, TOP_N_AUTORES);
+
+    // ── RANKING DE COLABORADORES (lista con Top 11 + botón para ver el resto) ──
+    renderAutorRanking('autorRankingList', autorEntries);
 
     // ── POR COLECCIÓN ──
     if (colecciones.length) {
       var colLabels = colecciones.map(function (c) { return c.title || 'Sin título'; });
       var colData = colecciones.map(function (c) { return Array.isArray(c.especies) ? c.especies.length : 0; });
-      makeToggleChart('chartColecciones', colLabels, colData, 'bar', 'Especies');
+      makeToggleChart('chartColecciones', colLabels, colData, 'doughnut', 'Especies');
     } else {
       var colCanvas = document.getElementById('chartColecciones');
       if (colCanvas) {
@@ -443,11 +588,39 @@
     }
   }
 
-  function cardHeader(title, canvasId) {
+  function renderTaxoChart(species, canvasId, field, fieldLabel, initialType) {
+    var canvas = document.getElementById(canvasId);
+    var withValue = species.filter(function (sp) {
+      return sp.taxonomia && typeof sp.taxonomia === 'object' && sp.taxonomia[field];
+    });
+
+    if (!withValue.length) {
+      if (canvas) {
+        canvas.closest('.chart-card').innerHTML =
+          '<h3>Especies por ' + fieldLabel + '</h3><p style="color:var(--gris-texto);font-size:14px;">' +
+          'Ninguna especie tiene el campo &quot;' + fieldLabel + '&quot; de la clasificación taxonómica registrado todavía.</p>';
+      }
+      return;
+    }
+
+    var counts = countBy(withValue, function (sp) { return capitalize(sp.taxonomia[field]); });
+    makeToggleChart(canvasId, Object.keys(counts), Object.values(counts), initialType);
+  }
+
+  function cardHeader(title, canvasId, withRangeToggle) {
+    var rangeToggle = withRangeToggle
+      ? '<span class="chart-toggle chart-range-toggle" data-for="' + canvasId + '">' +
+          '<button type="button" data-range="top">Top 15</button>' +
+          '<button type="button" data-range="all">Todos</button>' +
+        '</span>'
+      : '';
     return '<h3>' + title +
-      '<span class="chart-toggle" data-for="' + canvasId + '">' +
-        '<button type="button" data-type="bar">Barras</button>' +
-        '<button type="button" data-type="doughnut">Dona</button>' +
+      '<span class="chart-controls">' +
+        rangeToggle +
+        '<span class="chart-toggle" data-for="' + canvasId + '">' +
+          '<button type="button" data-type="bar">Barras</button>' +
+          '<button type="button" data-type="doughnut">Dona</button>' +
+        '</span>' +
       '</span></h3>';
   }
 
@@ -468,6 +641,8 @@
         }]
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         indexAxis: (!isDoughnut && data.length > 5) ? 'y' : 'x',
         plugins: { legend: { display: isDoughnut, position: 'bottom' } },
         scales: isDoughnut ? {} : {
@@ -497,6 +672,143 @@
         activeCharts[canvasId] = new Chart(canvas, buildChartConfig(newType, labels, data, datasetLabel));
       });
     });
+  }
+
+  var TOP_N_RANKING = 11;
+
+  function escapeHtml(str) {
+    return (str || '').toString()
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  // Muestra los primeros TOP_N_RANKING colaboradores como lista; si hay más,
+  // los agrega en una segunda lista oculta que se despliega con un botón.
+  function renderAutorRanking(containerId, entries) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!entries.length) {
+      container.innerHTML = '<p style="color:var(--gris-texto);font-size:14px;">No hay colaboradores registrados todavía.</p>';
+      return;
+    }
+
+    function buildItem(entry, index) {
+      return '<li class="ranking-item">' +
+        '<span class="ranking-rank">' + (index + 1) + '</span>' +
+        '<span class="ranking-name">' + escapeHtml(entry[0]) + '</span>' +
+        '<span class="ranking-count">' + entry[1] + '</span>' +
+      '</li>';
+    }
+
+    var topEntries = entries.slice(0, TOP_N_RANKING);
+    var restEntries = entries.slice(TOP_N_RANKING);
+
+    var html = '<ul class="ranking-list">' + topEntries.map(buildItem).join('') + '</ul>';
+
+    if (restEntries.length) {
+      var restHtml = restEntries
+        .map(function (entry, i) { return buildItem(entry, i + TOP_N_RANKING); })
+        .join('');
+      html += '<ul class="ranking-list ranking-extra" style="display:none;">' + restHtml + '</ul>' +
+        '<button type="button" class="ranking-toggle-btn">Ver ' + restEntries.length + ' colaboradores más</button>';
+    }
+
+    container.innerHTML = html;
+
+    if (restEntries.length) {
+      var btn = container.querySelector('.ranking-toggle-btn');
+      var extraList = container.querySelector('.ranking-extra');
+      var expanded = false;
+      btn.addEventListener('click', function () {
+        expanded = !expanded;
+        extraList.style.display = expanded ? 'block' : 'none';
+        btn.textContent = expanded
+          ? 'Ver menos'
+          : 'Ver ' + restEntries.length + ' colaboradores más';
+      });
+    }
+  }
+
+  var TOP_N_AUTORES = 15;
+  var TOP_N_FAMILIA = 15;
+
+  // Altura mínima del chart-box y píxeles adicionales por cada barra, para
+  // que las barras horizontales no se aprieten cuando hay muchas categorías.
+  var CHART_BOX_MIN_HEIGHT = 280;
+  var CHART_BOX_PX_PER_BAR = 26;
+
+  function setChartBoxHeight(canvas, type, length) {
+    var box = canvas && canvas.closest('.chart-box');
+    if (!box) return;
+    // Solo las barras horizontales necesitan crecer con la cantidad de
+    // categorías; para dona se vuelve a la altura fija definida en CSS.
+    box.style.height = type === 'bar'
+      ? Math.max(CHART_BOX_MIN_HEIGHT, length * CHART_BOX_PX_PER_BAR) + 'px'
+      : '';
+  }
+
+  // Igual que makeToggleChart, pero además soporta un segundo toggle
+  // "Top N / Todos" que solo aparece cuando hay muchas categorías, y ajusta
+  // la altura del chart-box según cuántas barras se estén mostrando.
+  // Se usa tanto para colaboradores como para familia.
+  function makeRankedBarChart(canvasId, entries, manyItems, topN) {
+    var canvas = document.getElementById(canvasId);
+
+    var fullLabels = entries.map(function (e) { return e[0]; });
+    var fullData = entries.map(function (e) { return e[1]; });
+    var topEntries = entries.slice(0, topN);
+    var topLabels = topEntries.map(function (e) { return e[0]; });
+    var topData = topEntries.map(function (e) { return e[1]; });
+
+    var state = {
+      type: 'bar',
+      range: manyItems ? 'top' : 'all' // sin toggle, siempre se ve todo
+    };
+
+    function currentData() {
+      return state.range === 'top' ? [topLabels, topData] : [fullLabels, fullData];
+    }
+
+    function draw() {
+      var ld = currentData();
+      if (activeCharts[canvasId]) activeCharts[canvasId].destroy();
+      activeCharts[canvasId] = new Chart(canvas, buildChartConfig(state.type, ld[0], ld[1]));
+      setChartBoxHeight(canvas, state.type, ld[0].length);
+    }
+
+    draw();
+
+    var typeToggle = document.querySelector('.chart-toggle[data-for="' + canvasId + '"]:not(.chart-range-toggle)');
+    if (typeToggle) {
+      var typeButtons = typeToggle.querySelectorAll('button');
+      typeButtons.forEach(function (btn) {
+        if (btn.dataset.type === state.type) btn.classList.add('active');
+        btn.addEventListener('click', function () {
+          state.type = btn.dataset.type;
+          typeButtons.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          draw();
+        });
+      });
+    }
+
+    if (manyItems) {
+      var rangeToggle = document.querySelector('.chart-range-toggle[data-for="' + canvasId + '"]');
+      if (rangeToggle) {
+        var rangeButtons = rangeToggle.querySelectorAll('button');
+        rangeButtons.forEach(function (btn) {
+          if (btn.dataset.range === state.range) btn.classList.add('active');
+          btn.addEventListener('click', function () {
+            state.range = btn.dataset.range;
+            rangeButtons.forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            draw();
+          });
+        });
+      }
+    }
   }
 })();
 </script>

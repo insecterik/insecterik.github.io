@@ -196,7 +196,19 @@
   }
 
   @media(max-width:700px){
-    .page-layout{ grid-template-columns:1fr; }
+    .top-header{
+      padding:8px 16px;
+      gap:10px;
+      height:auto;
+      min-height:56px;
+      flex-wrap:wrap;
+    }
+    .logo{ font-size:17px; }
+    .logo-img{ height:30px; width:30px; }
+    .top-nav{ gap:14px; }
+    .top-nav a{ font-size:13px; }
+
+    .page-layout{ grid-template-columns:1fr; min-height:calc(100vh - 56px); }
     .panel{ border-right:none; border-bottom:1px solid #e0ece0; padding:20px 16px; }
     .mapa-wrap{ padding:16px; min-height:60vw; }
     .vereda-lista{ display:none; }

@@ -188,6 +188,7 @@
   .section-title span{
     color:var(--gris-texto);
     font-size:14px;
+    margin-left:16px;
   }
 
   /* ===== GALLERY ===== */
@@ -382,6 +383,17 @@
   @media (max-width:700px){
     .photo-cta{ padding:32px 20px; }
     .photo-cta h2{ font-size:21px; }
+  }
+
+  @media (max-width:700px){
+    .section-title{
+      flex-direction:column;
+      align-items:flex-start;
+      gap:8px;
+    }
+    .section-title span{
+      margin-left:0;
+    }
   }
 
   /* ===== MENU TOGGLE (hamburguesa) ===== */

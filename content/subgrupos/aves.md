@@ -1,5 +1,5 @@
 ---
-title: aves
+title: Aves
 reino: Fauna
-grupo: vertebrados
+grupo: Vertebrados
 ---

@@ -7,9 +7,14 @@ subgrupo: Insectos
 categoria: Mariposas y Polillas
 subcategoria: Diurnas
 taxonomia:
-  dominio: ggg
-  reino_taxonomico: Ndnf
-  filo: Dn
+  dominio: ""
+  reino_taxonomico: Animalia
+  filo: Arthropoda
+  clase: Insecta
+  orden: Lepidoptera
+  familia: Riodinidae
+  genero: Rhetus
+  especie_taxonomica: Rhetus sp.
 descripcion: Esta es la descripcion
 fecha: 2026-09-12T12:43:00.000-05:00
 ubicacion: Vía El Alto de las imágenes

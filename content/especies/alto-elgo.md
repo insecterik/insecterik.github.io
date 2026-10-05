@@ -7,7 +7,7 @@ subgrupo: Insectos
 categoria: Mariposas y Polillas
 subcategoria: Diurnas
 taxonomia:
-  dominio: Nns
+  dominio: ggg
   reino_taxonomico: Ndnf
   filo: Dn
 descripcion: Esta es la descripcion

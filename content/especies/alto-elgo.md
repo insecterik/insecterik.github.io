@@ -1,20 +1,23 @@
 ---
-title: Alto elgo
-cientifico: Elron
+title: Mariposa azul metalizada
+cientifico: Rhetus sp.
+reino: Fauna
 grupo: Invertebrados
+subgrupo: Insectos
+categoria: Mariposas y Polillas
+subcategoria: Diurnas
 taxonomia:
   dominio: Nns
   reino_taxonomico: Ndnf
   filo: Dn
 descripcion: Esta es la descripcion
-fecha: 2026-09-05T17:30:00.000-05:00
-ubicacion: Centro
+fecha: 2026-09-12T12:43:00.000-05:00
+ubicacion: Vía El Alto de las imágenes
 vereda:
-  - LAGUNA
-  - RENQUIRA
-  - FUGUNTÁ
+  - CAÑADAS
 imagenes:
-  - /images/uploads/20260225_111458-3-.jpg
-  - /images/uploads/1000066773.png
-autor: Thomas bernal
+  - /images/uploads/mariposa-rhetus1.jpg
+  - /images/uploads/mariposa-rhetus2.jpg
+  - /images/uploads/mariposa-rhetus3.jpg
+autor: InsectErik
 ---

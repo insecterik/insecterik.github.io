@@ -964,7 +964,21 @@
             lbl.textContent = level.label;
             var val = document.createElement('span');
             val.className = 'value';
-            if (tx[level.key]) {
+            if (tx[level.key] && level.key === 'especie_taxonomica') {
+              // El valor de "Especie" va en cursiva, salvo las palabras sp y spp
+              val.style.fontStyle = 'italic';
+              tx[level.key].split(/(\bspp?\b\.?)/i).forEach(function (parte) {
+                if (!parte) return;
+                if (/^spp?\.?$/i.test(parte)) {
+                  var normal = document.createElement('span');
+                  normal.style.fontStyle = 'normal';
+                  normal.textContent = parte;
+                  val.appendChild(normal);
+                } else {
+                  val.appendChild(document.createTextNode(parte));
+                }
+              });
+            } else if (tx[level.key]) {
               val.textContent = tx[level.key];
             } else {
               val.textContent = '...';

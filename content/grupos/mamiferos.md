@@ -1,5 +1,5 @@
 ---
-title: vertebrados
+title: Vertebrados
 reino: Fauna
 descripcion: descripcion de vertebrados
 ---

@@ -1,7 +1,7 @@
 ---
-title: osos negros
+title: Mariposas diurnas
 reino: Fauna
-grupo: vertebrados
-subgrupo: mamiferos
-descripcion: descripcion de los osos negros
+grupo: Invertebrados
+subgrupo: Insectos
+descripcion: "descripción "
 ---

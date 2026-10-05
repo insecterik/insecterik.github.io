@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Biodiversidad de Tibirita </title>
+<title>InsectErik</title>
 <link rel="icon" type="image/png" href="images/uploads/favicon.png">
 
 <style>
@@ -1624,12 +1624,22 @@
     }
 
     if (sp.scientificName) {
-      var sci = document.createElement('p');
-      sci.className = 'cientifico';
-      sci.textContent = sp.scientificName;
-      content.appendChild(sci);
+  var sci = document.createElement('p');
+  sci.className = 'cientifico';
+  // Separa el texto dejando "sp", "sp.", "spp" y "spp." como partes aparte, sin cursiva
+  sp.scientificName.split(/(\bspp?\b\.?)/i).forEach(function (parte) {
+    if (!parte) return;
+    if (/^spp?\.?$/i.test(parte)) {
+      var normal = document.createElement('span');
+      normal.style.fontStyle = 'normal';
+      normal.textContent = parte;
+      sci.appendChild(normal);
+    } else {
+      sci.appendChild(document.createTextNode(parte));
     }
-
+  });
+  content.appendChild(sci);
+}
     card.appendChild(photoDiv);
     card.appendChild(content);
     return card;
@@ -1936,6 +1946,65 @@
   startAuto();
 })();
 </script>
+<style>
+  .sp-normal{ font-style:normal !important; }
+</style>
+<script>
+// ── REGLA GLOBAL: "sp" y "spp" nunca en cursiva ──
+(function () {
+  var TIENE_SP = /\bspp?\b/i;
+  var PARTIR   = /(\bspp?\b\.?)/i;
+  var ES_SP    = /^spp?\.?$/i;
+  var IGNORAR  = { SCRIPT:1, STYLE:1, TEXTAREA:1, CODE:1, PRE:1 };
 
+  function procesar(raiz) {
+    var walker = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var p = n.parentNode;
+        if (!p || p.nodeType !== 1) return NodeFilter.FILTER_REJECT;
+        if (IGNORAR[p.tagName] || p.classList.contains('sp-normal')) return NodeFilter.FILTER_REJECT;
+        if (!TIENE_SP.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
+        // Solo actúa si el texto realmente se está viendo en cursiva
+        if (getComputedStyle(p).fontStyle === 'normal') return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    var nodos = [];
+    while (walker.nextNode()) nodos.push(walker.currentNode);
+
+    nodos.forEach(function (n) {
+      var frag = document.createDocumentFragment();
+      n.nodeValue.split(PARTIR).forEach(function (parte) {
+        if (!parte) return;
+        if (ES_SP.test(parte)) {
+          var s = document.createElement('span');
+          s.className = 'sp-normal';
+          s.textContent = parte;
+          frag.appendChild(s);
+        } else {
+          frag.appendChild(document.createTextNode(parte));
+        }
+      });
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+
+  // Ejecuta al cargar y cada vez que el contenido cambie
+  // (tarjetas nuevas, filtros, "Cargar más", ficha de la especie, etc.)
+  var pendiente = false;
+  function programar() {
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(function () {
+      pendiente = false;
+      procesar(document.body);
+    });
+  }
+
+  new MutationObserver(programar).observe(document.body, { childList: true, subtree: true, characterData: true });
+  programar();
+})();
+</script>
 </body>
 </html>

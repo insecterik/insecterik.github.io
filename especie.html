@@ -1,1059 +1,1209 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitleTag">Especie &middot; Biodiversidad de Tibirita</title>
-<link rel="icon" type="image/png" href="images/uploads/favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Especie &middot; InsectErik</title>
+  <link rel="icon" type="image/png" href="images/uploads/favicon.png">
 
 
-<style>
-  :root{
-    --verde-oscuro:#1c3f3a;
-    --verde-header:#16332f;
-    --verde-brillante:#2ecc71;
-    --verde-texto:#1b5e20;
-    --crema:#f4f8f2;
-    --gris-texto:#5a6b66;
-  }
-
-  *{ box-sizing:border-box; }
-
-  body{
-    margin:0;
-    font-family:'Segoe UI', Arial, sans-serif;
-    background:var(--crema);
-    color:#222;
-  }
-
-  a{ text-decoration:none; }
-
-  /* ===== HEADER ===== */
-  .top-header{
-    background:var(--verde-header);
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:18px 40px;
-    flex-wrap:wrap;
-    gap:12px;
-  }
-
-  .logo{ display:flex; align-items:center; gap:10px; }
-
-  .logo-img{ height:96px; width:96px; object-fit:contain; border-radius:6px; }
-
-  .logo-text{ display:flex; align-items:center; line-height:1; }
-
-    .logo{
-    color:var(--verde-brillante);
-    font-weight:800;
-    font-size:22px;
-    letter-spacing:1px;
+  <style>
+    :root {
+      --verde-oscuro: #1c3f3a;
+      --verde-header: #16332f;
+      --verde-brillante: #2ecc71;
+      --verde-texto: #1b5e20;
+      --crema: #f4f8f2;
+      --gris-texto: #5a6b66;
     }
 
-  .top-nav{
-    display:flex;
-    align-items:center;
-    gap:28px;
-  }
-
-  .top-nav a{
-    color:#dfe9e6;
-    font-size:13px;
-    letter-spacing:.5px;
-    text-transform:uppercase;
-    font-weight:600;
-  }
-
-  .back-link{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    color:var(--verde-brillante) !important;
-  }
-
-  /* ===== BREADCRUMB ===== */
-  .breadcrumb{
-    max-width:1100px;
-    margin:24px auto 0;
-    padding:0 24px;
-    font-size:13px;
-    color:var(--gris-texto);
-  }
-
-  .breadcrumb a{
-    color:var(--verde-texto);
-    font-weight:600;
-  }
-
-  /* ===== HERO GALLERY ===== */
-  .species-hero{
-    max-width:1100px;
-    margin:18px auto 0;
-    padding:0 24px;
-    display:grid;
-    grid-template-columns:1.6fr 1fr;
-    gap:24px;
-  }
-
-  .species-main-photo{
-    position:relative;
-    height:440px;
-    border-radius:18px;
-    overflow:hidden;
-    background:#dfe9e6;
-    cursor:zoom-in;
-  }
-
-  .species-main-photo img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    transition:transform .3s ease;
-  }
-
-  .species-main-photo:hover img{
-    transform:scale(1.03);
-  }
-
-  .species-main-photo .zoom-hint{
-    position:absolute;
-    bottom:14px;
-    right:14px;
-    background:rgba(10,20,18,.65);
-    color:white;
-    font-size:12px;
-    padding:6px 12px;
-    border-radius:20px;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-
-  .species-thumbs-col{
-    display:grid;
-    grid-template-rows:repeat(2, 1fr);
-    gap:24px;
-  }
-
-  .species-thumbs-col .thumb{
-    position:relative;
-    border-radius:18px;
-    overflow:hidden;
-    background:#dfe9e6;
-    cursor:zoom-in;
-    height:208px;
-  }
-
-  .species-thumbs-col .thumb img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    transition:transform .3s ease;
-  }
-
-  .species-thumbs-col .thumb:hover img{
-    transform:scale(1.05);
-  }
-
-  .species-thumbs-col .thumb.more::after{
-    content:attr(data-more);
-    position:absolute;
-    inset:0;
-    background:rgba(10,20,18,.55);
-    color:white;
-    font-size:22px;
-    font-weight:700;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-
-  @media (max-width:780px){
-    .species-hero{
-      grid-template-columns:1fr;
+    * {
+      box-sizing: border-box;
     }
-    .species-main-photo{ height:300px; }
-    .species-thumbs-col{
-      grid-template-rows:none;
-      grid-template-columns:1fr 1fr;
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--crema);
+      color: #222;
     }
-    .species-thumbs-col .thumb{ height:140px; }
-  }
 
-  /* ===== INFO SECTION ===== */
-  .species-info{
-    max-width:1100px;
-    margin:36px auto 60px;
-    padding:0 24px;
-    display:grid;
-    grid-template-columns:2fr 1fr;
-    gap:32px;
-    align-items:start;
-  }
+    a {
+      text-decoration: none;
+    }
 
-  @media (max-width:780px){
-    .species-info{ grid-template-columns:1fr; }
-  }
+    /* ===== HEADER ===== */
+    .top-header {
+      background: var(--verde-header);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 40px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-  .species-badge{
-    display:inline-block;
-    background:var(--verde-brillante);
-    color:var(--verde-header);
-    padding:5px 14px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.5px;
-    text-transform:uppercase;
-    margin-bottom:14px;
-  }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  .species-title{
-    font-size:38px;
-    font-weight:800;
-    color:var(--verde-texto);
-    margin:0 0 4px;
-    text-transform:capitalize;
-  }
+    .logo-img {
+      height: 96px;
+      width: 96px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
 
-  .species-scientific{
-    font-size:16px;
-    font-style:italic;
-    color:var(--gris-texto);
-    margin:0 0 22px;
-  }
+    .logo-text {
+      display: flex;
+      align-items: center;
+      line-height: 1;
+    }
 
-  .species-description p{
-    font-size:16px;
-    line-height:1.7;
-    color:#3c4a46;
-    margin:0 0 16px;
-  }
+    .logo {
+      color: var(--verde-brillante);
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
 
-  /* ===== DATA CARD ===== */
-  .data-card{
-    background:white;
-    border-radius:16px;
-    box-shadow:0 4px 16px rgba(0,0,0,.08);
-    padding:22px 24px;
-  }
+    .top-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
 
-  .data-card h3{
-    margin:0 0 16px;
-    font-size:14px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    color:var(--verde-texto);
-    border-bottom:1px solid #eef2f0;
-    padding-bottom:12px;
-  }
+    .top-nav a {
+      color: #dfe9e6;
+      font-size: 13px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
 
-  .data-row{
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    padding:10px 0;
-    border-bottom:1px solid #f4f7f5;
-    font-size:14px;
-  }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--verde-brillante) !important;
+    }
 
-  .data-row:last-child{ border-bottom:none; }
+    /* ===== BREADCRUMB ===== */
+    .breadcrumb {
+      max-width: 1100px;
+      margin: 24px auto 0;
+      padding: 0 24px;
+      font-size: 13px;
+      color: var(--gris-texto);
+    }
 
-  .data-row .label{
-    color:var(--gris-texto);
-    font-weight:600;
-  }
+    .breadcrumb a {
+      color: var(--verde-texto);
+      font-weight: 600;
+    }
 
-  .data-row .value{
-    color:#222;
-    text-align:right;
-    text-transform:capitalize;
-  }
+    /* ===== HERO GALLERY ===== */
+    .species-hero {
+      max-width: 1100px;
+      margin: 18px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 24px;
+    }
 
-  .catalog-breadcrumb{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    gap:6px;
-    font-size:14px;
-    line-height:1.4;
-  }
+    .species-main-photo {
+      position: relative;
+      height: 440px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #dfe9e6;
+      cursor: zoom-in;
+    }
 
-  .catalog-breadcrumb .crumb{
-    text-transform:capitalize;
-    color:var(--verde-texto);
-    font-weight:600;
-  }
+    .species-main-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .3s ease;
+    }
 
-  .catalog-breadcrumb .crumb:last-child{
-    color:#222;
-    font-weight:700;
-  }
+    .species-main-photo:hover img {
+      transform: scale(1.03);
+    }
 
-  .catalog-breadcrumb .sep{
-    color:var(--gris-texto);
-    font-size:13px;
-  }
+    .species-main-photo .zoom-hint {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      background: rgba(10, 20, 18, .65);
+      color: white;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-  .mapa-embed-wrap{
-    border-radius:12px;
-    overflow:hidden;
-    background:var(--verde-oscuro);
-    aspect-ratio:210/297;
-    max-height:480px;
-  }
+    .species-thumbs-col {
+      display: grid;
+      grid-template-rows: repeat(2, 1fr);
+      gap: 24px;
+    }
 
-  .mapa-embed-wrap iframe{
-    width:100%;
-    height:100%;
-    border:none;
-    display:block;
-    overflow:hidden;
-  }
+    .species-thumbs-col .thumb {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #dfe9e6;
+      cursor: zoom-in;
+      height: 208px;
+    }
 
-  .back-button{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    margin-top:20px;
-    color:var(--verde-texto);
-    font-weight:700;
-    font-size:14px;
-  }
+    .species-thumbs-col .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .3s ease;
+    }
 
-  .back-button:hover{ text-decoration:underline; }
+    .species-thumbs-col .thumb:hover img {
+      transform: scale(1.05);
+    }
 
-  /* ===== FOOTER ===== */
-  footer{
-    background:var(--verde-header);
-    color:#cfd9d6;
-    text-align:center;
-    padding:24px;
-    font-size:13px;
-  }
+    .species-thumbs-col .thumb.more::after {
+      content: attr(data-more);
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 20, 18, .55);
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  /* ===== LIGHTBOX (igual al del catálogo) ===== */
-  .lightbox{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(10,20,18,.92);
-    z-index:100;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-  }
+    @media (max-width:780px) {
+      .species-hero {
+        grid-template-columns: 1fr;
+      }
 
-  .lightbox.open{ display:flex; }
+      .species-main-photo {
+        height: 300px;
+      }
 
-  .lightbox-box{
-    position:relative;
-    max-width:1000px;
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-  }
+      .species-thumbs-col {
+        grid-template-rows: none;
+        grid-template-columns: 1fr 1fr;
+      }
 
-  .lightbox-stage{
-    position:relative;
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
+      .species-thumbs-col .thumb {
+        height: 140px;
+      }
+    }
 
-  .lightbox-stage img{
-    max-width:100%;
-    max-height:75vh;
-    border-radius:10px;
-    box-shadow:0 10px 40px rgba(0,0,0,.4);
-    object-fit:contain;
-    background:#0e1f1c;
-  }
+    /* ===== INFO SECTION ===== */
+    .species-info {
+      max-width: 1100px;
+      margin: 36px auto 60px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
 
-  .lightbox-close{
-    position:absolute;
-    top:-44px;
-    right:0;
-    background:rgba(255,255,255,.12);
-    border:none;
-    color:white;
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    font-size:20px;
-    cursor:pointer;
-    line-height:1;
-  }
+    @media (max-width:780px) {
+      .species-info {
+        grid-template-columns: 1fr;
+      }
+    }
 
-  .lightbox-close:hover{ background:var(--verde-brillante); color:var(--verde-header); }
+    .species-badge {
+      display: inline-block;
+      background: var(--verde-brillante);
+      color: var(--verde-header);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
 
-  .lightbox-nav{
-    position:absolute;
-    top:50%;
-    transform:translateY(-50%);
-    background:rgba(255,255,255,.12);
-    border:none;
-    color:white;
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    font-size:20px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
+    .species-title {
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--verde-texto);
+      margin: 0 0 4px;
+      text-transform: capitalize;
+    }
 
-  .lightbox-nav:hover{ background:var(--verde-brillante); color:var(--verde-header); }
-  .lightbox-nav.prev{ left:-10px; }
-  .lightbox-nav.next{ right:-10px; }
+    .species-scientific {
+      font-size: 16px;
+      font-style: italic;
+      color: var(--gris-texto);
+      margin: 0 0 22px;
+    }
 
-  .lightbox-caption{
-    color:white;
-    text-align:center;
-    margin-top:16px;
-  }
+    .species-description p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #3c4a46;
+      margin: 0 0 16px;
+    }
 
-  .lightbox-caption .title{
-    font-size:18px;
-    font-weight:700;
-    margin:0 0 4px;
-    text-transform:capitalize;
-  }
+    /* ===== DATA CARD ===== */
+    .data-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+      padding: 22px 24px;
+    }
 
-  .lightbox-caption .counter{
-    font-size:13px;
-    color:#a9bdb8;
-    margin:0;
-  }
+    .data-card h3 {
+      margin: 0 0 16px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--verde-texto);
+      border-bottom: 1px solid #eef2f0;
+      padding-bottom: 12px;
+    }
 
-  .lightbox-thumbs{
-    display:flex;
-    gap:8px;
-    margin-top:16px;
-    flex-wrap:wrap;
-    justify-content:center;
-  }
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f4f7f5;
+      font-size: 14px;
+    }
 
-  .lightbox-thumbs img{
-    width:56px;
-    height:56px;
-    object-fit:cover;
-    border-radius:6px;
-    cursor:pointer;
-    opacity:.55;
-    border:2px solid transparent;
-    transition:opacity .15s ease, border-color .15s ease;
-  }
+    .data-row:last-child {
+      border-bottom: none;
+    }
 
-  .lightbox-thumbs img.active{
-    opacity:1;
-    border-color:var(--verde-brillante);
-  }
+    .data-row .label {
+      color: var(--gris-texto);
+      font-weight: 600;
+    }
 
-  @media (max-width:700px){
-    .lightbox-nav.prev{ left:0; }
-    .lightbox-nav.next{ right:0; }
-    .lightbox-stage img{ max-height:55vh; }
-  }
-</style>
+    .data-row .value {
+      color: #222;
+      text-align: right;
+      text-transform: capitalize;
+    }
+
+    .catalog-breadcrumb {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .catalog-breadcrumb .crumb {
+      text-transform: capitalize;
+      color: var(--verde-texto);
+      font-weight: 600;
+    }
+
+    .catalog-breadcrumb .crumb:last-child {
+      color: #222;
+      font-weight: 700;
+    }
+
+    .catalog-breadcrumb .sep {
+      color: var(--gris-texto);
+      font-size: 13px;
+    }
+
+    .mapa-embed-wrap {
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--verde-oscuro);
+      aspect-ratio: 210/297;
+      max-height: 480px;
+    }
+
+    .mapa-embed-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      overflow: hidden;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      color: var(--verde-texto);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .back-button:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--verde-header);
+      color: #cfd9d6;
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+    }
+
+    /* ===== LIGHTBOX (igual al del catálogo) ===== */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 20, 18, .92);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox-box {
+      position: relative;
+      max-width: 1000px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lightbox-stage {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-stage img {
+      max-width: 100%;
+      max-height: 75vh;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .4);
+      object-fit: contain;
+      background: #0e1f1c;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -44px;
+      right: 0;
+      background: rgba(255, 255, 255, .12);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .lightbox-close:hover {
+      background: var(--verde-brillante);
+      color: var(--verde-header);
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, .12);
+      border: none;
+      color: white;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-nav:hover {
+      background: var(--verde-brillante);
+      color: var(--verde-header);
+    }
+
+    .lightbox-nav.prev {
+      left: -10px;
+    }
+
+    .lightbox-nav.next {
+      right: -10px;
+    }
+
+    .lightbox-caption {
+      color: white;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .lightbox-caption .title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      text-transform: capitalize;
+    }
+
+    .lightbox-caption .counter {
+      font-size: 13px;
+      color: #a9bdb8;
+      margin: 0;
+    }
+
+    .lightbox-thumbs {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .lightbox-thumbs img {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      opacity: .55;
+      border: 2px solid transparent;
+      transition: opacity .15s ease, border-color .15s ease;
+    }
+
+    .lightbox-thumbs img.active {
+      opacity: 1;
+      border-color: var(--verde-brillante);
+    }
+
+    @media (max-width:700px) {
+      .lightbox-nav.prev {
+        left: 0;
+      }
+
+      .lightbox-nav.next {
+        right: 0;
+      }
+
+      .lightbox-stage img {
+        max-height: 55vh;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="top-header">
-  <a class="logo" href="/"><img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img"><span class="logo-text">InsectErik</span></a>
-  <div class="top-nav">
-    <a class="back-link" href="/">&#8592; Volver al catálogo</a>
-  </div>
-</div>
-
-<div class="breadcrumb" id="breadcrumb">
-  <a href="/">Catálogo</a> / <span id="breadcrumbCurrent">Cargando&hellip;</span>
-</div>
-
-<div class="species-hero" id="speciesHero"></div>
-
-<div class="species-info">
-  <div>
-    <div id="speciesTextBlock">
-      <span class="species-badge" id="speciesBadge" style="display:none;"></span>
-      <h1 class="species-title" id="speciesTitle">Cargando especie&hellip;</h1>
-      <p class="species-scientific" id="speciesScientific" style="display:none;"></p>
-      <div class="species-description" id="speciesDescription"></div>
+  <div class="top-header">
+    <a class="logo" href="/"><img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img"><span
+        class="logo-text">InsectErik</span></a>
+    <div class="top-nav">
+      <a class="back-link" href="/">&#8592; Volver al catálogo</a>
     </div>
   </div>
 
-  <div class="data-card" id="taxonomyCard" style="display:none; margin-bottom:18px;">
-    <h3>Grupos y Categoría</h3>
-    <div id="taxonomyRows" class="catalog-breadcrumb"></div>
+  <div class="breadcrumb" id="breadcrumb">
+    <a href="/">Catálogo</a> / <span id="breadcrumbCurrent">Cargando&hellip;</span>
   </div>
 
-  <div class="data-card" id="taxonCard" style="display:none; margin-bottom:18px;">
-    <h3>Clasificación taxonómica</h3>
-    <div id="taxonRows"></div>
-  </div>
+  <div class="species-hero" id="speciesHero"></div>
 
-  <div class="data-card">
-    <h3>Ficha técnica</h3>
-    <div id="dataCardRows"></div>
-    <a class="back-button" href="/">&#8592; Ver más especies</a>
-  </div>
-
-  <div class="data-card" id="mapaCard" style="display:none; margin-top:18px; grid-column:1/-1;">
-    <h3>Ubicación en el mapa veredal</h3>
-    <div class="mapa-embed-wrap">
-      <iframe id="mapaEmbed" title="Mapa de veredas" loading="lazy" scrolling="no"></iframe>
+  <div class="species-info">
+    <div>
+      <div id="speciesTextBlock">
+        <span class="species-badge" id="speciesBadge" style="display:none;"></span>
+        <h1 class="species-title" id="speciesTitle">Cargando especie&hellip;</h1>
+        <p class="species-scientific" id="speciesScientific" style="display:none;"></p>
+        <div class="species-description" id="speciesDescription"></div>
+      </div>
     </div>
-    <a class="back-button" id="mapaVeredaLink" href="mapa.html">Ver mapa completo &#8594;</a>
-  </div>
-</div>
 
-<footer>
-  Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
-</footer>
-
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-box">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">&times;</button>
-    <div class="lightbox-stage">
-      <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Anterior">&#8249;</button>
-      <img id="lightboxImg" src="" alt="">
-      <button class="lightbox-nav next" id="lightboxNext" aria-label="Siguiente">&#8250;</button>
+    <div class="data-card" id="taxonomyCard" style="display:none; margin-bottom:18px;">
+      <h3>Grupos y Categoría</h3>
+      <div id="taxonomyRows" class="catalog-breadcrumb"></div>
     </div>
-    <div class="lightbox-caption">
-      <p class="title" id="lightboxTitle"></p>
-      <p class="counter" id="lightboxCounter"></p>
+
+    <div class="data-card" id="taxonCard" style="display:none; margin-bottom:18px;">
+      <h3>Clasificación taxonómica</h3>
+      <div id="taxonRows"></div>
     </div>
-    <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+
+    <div class="data-card">
+      <h3>Ficha técnica</h3>
+      <div id="dataCardRows"></div>
+      <a class="back-button" href="/">&#8592; Ver más especies</a>
+    </div>
+
+    <div class="data-card" id="mapaCard" style="display:none; margin-top:18px; grid-column:1/-1;">
+      <h3>Ubicación en el mapa</h3>
+      <div class="mapa-embed-wrap">
+        <iframe id="mapaEmbed" title="Mapa de lugares" loading="lazy" scrolling="no"></iframe>
+      </div>
+      <a class="back-button" id="mapaVeredaLink" href="mapa.html">Ver mapa completo &#8594;</a>
+    </div>
   </div>
-</div>
 
-<script>
-(function(){
-  'use strict';
+  <footer>
+    Copyright © 2026 - InsectErik · Biodiversidad de Tibirita, Cundinamarca
+  </footer>
 
-  // ── CONFIG: mismo repo que usa index.html ──
-  var GH_USER   = 'insecterik';
-  var GH_REPO   = 'insecterik.github.io';
-  var GH_BRANCH = 'main';
-  var GH_API    = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/';
-  var GH_RAW    = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/';
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-box">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">&times;</button>
+      <div class="lightbox-stage">
+        <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Anterior">&#8249;</button>
+        <img id="lightboxImg" src="" alt="">
+        <button class="lightbox-nav next" id="lightboxNext" aria-label="Siguiente">&#8250;</button>
+      </div>
+      <div class="lightbox-caption">
+        <p class="title" id="lightboxTitle"></p>
+        <p class="counter" id="lightboxCounter"></p>
+      </div>
+      <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+    </div>
+  </div>
 
-  // ── MINI PARSER DE FRONT MATTER YAML (soporta listas y objetos anidados un nivel) ──
-  function parseFrontMatter(raw) {
-    raw = raw.replace(/\r\n/g, '\n');
-    var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
-    if (!match) return {};
-    var lines = match[1].split('\n');
-    var data = {};
-    var currentKey = null;   // clave de nivel raíz activa
-    var currentObj = null;   // si != null, estamos acumulando un objeto anidado
+  <script>
+    (function () {
+      'use strict';
 
-    lines.forEach(function (line) {
-      if (!line.trim()) return;
+      // ── CONFIG: mismo repo que usa index.html ──
+      var GH_USER = 'insecterik';
+      var GH_REPO = 'insecterik.github.io';
+      var GH_BRANCH = 'main';
+      var GH_API = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/';
+      var GH_RAW = 'https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + GH_BRANCH + '/';
 
-      var indent = line.search(/\S/);  // nº de espacios al inicio
+      // ── MINI PARSER DE FRONT MATTER YAML (soporta listas y objetos anidados un nivel) ──
+      function parseFrontMatter(raw) {
+        raw = raw.replace(/\r\n/g, '\n');
+        var match = /^---\s*\n([\s\S]*?)\n---/.exec(raw);
+        if (!match) return {};
+        var lines = match[1].split('\n');
+        var data = {};
+        var currentKey = null;   // clave de nivel raíz activa
+        var currentObj = null;   // si != null, estamos acumulando un objeto anidado
 
-      // ── Línea indentada: hijo de la clave actual ──
-      if (indent > 0 && currentKey) {
+        lines.forEach(function (line) {
+          if (!line.trim()) return;
 
-        // ¿Es un ítem de lista?  "  - valor"
-        var listItem = /^\s+-\s+(.*)$/.exec(line);
-        if (listItem) {
-          if (!Array.isArray(data[currentKey])) data[currentKey] = [];
-          // Si el ítem tiene forma "campo: valor" (lista de objetos inline) lo dejamos como string
-          data[currentKey].push(cleanValue(listItem[1]));
-          currentObj = null;
-          return;
-        }
+          var indent = line.search(/\S/);  // nº de espacios al inicio
 
-        // ¿Es un sub-campo?  "  clave: valor"
-        var subKv = /^\s+([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
-        if (subKv) {
-          // Inicializar objeto si hace falta
-          if (!currentObj || Array.isArray(data[currentKey])) {
-            data[currentKey] = {};
-            currentObj = data[currentKey];
+          // ── Línea indentada: hijo de la clave actual ──
+          if (indent > 0 && currentKey) {
+
+            // ¿Es un ítem de lista?  "  - valor"
+            var listItem = /^\s+-\s+(.*)$/.exec(line);
+            if (listItem) {
+              if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+              // Si el ítem tiene forma "campo: valor" (lista de objetos inline) lo dejamos como string
+              data[currentKey].push(cleanValue(listItem[1]));
+              currentObj = null;
+              return;
+            }
+
+            // ¿Es un sub-campo?  "  clave: valor"
+            var subKv = /^\s+([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+            if (subKv) {
+              // Inicializar objeto si hace falta
+              if (!currentObj || Array.isArray(data[currentKey])) {
+                data[currentKey] = {};
+                currentObj = data[currentKey];
+              }
+              var subVal = subKv[2].trim();
+              currentObj[subKv[1]] = subVal ? cleanValue(subVal) : '';
+              return;
+            }
           }
-          var subVal = subKv[2].trim();
-          currentObj[subKv[1]] = subVal ? cleanValue(subVal) : '';
-          return;
-        }
-      }
 
-      // ── Línea raíz: "clave: valor" ──
-      var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
-      if (kv) {
-        currentKey = kv[1];
-        var val = kv[2].trim();
-        if (val === '') {
-          // Valor vacío: puede ser lista o objeto; lo decidiremos con la siguiente línea
-          data[currentKey] = null;
-          currentObj = null;
-        } else {
-          data[currentKey] = cleanValue(val);
-          currentObj = null;
-        }
-        return;
-      }
+          // ── Línea raíz: "clave: valor" ──
+          var kv = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+          if (kv) {
+            currentKey = kv[1];
+            var val = kv[2].trim();
+            if (val === '') {
+              // Valor vacío: puede ser lista o objeto; lo decidiremos con la siguiente línea
+              data[currentKey] = null;
+              currentObj = null;
+            } else {
+              data[currentKey] = cleanValue(val);
+              currentObj = null;
+            }
+            return;
+          }
 
-      // ── Ítem de lista en raíz (sin clave, raro pero posible) ──
-      var rootList = /^\s*-\s+(.*)$/.exec(line);
-      if (rootList && currentKey) {
-        if (!Array.isArray(data[currentKey])) data[currentKey] = [];
-        data[currentKey].push(cleanValue(rootList[1]));
-        currentObj = null;
-      }
-    });
-
-    // Normalizar nulls a arrays vacíos para compatibilidad con código existente
-    Object.keys(data).forEach(function(k){
-      if (data[k] === null) data[k] = [];
-    });
-
-    return data;
-  }
-
-  function cleanValue(v) {
-    v = v.trim();
-    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
-      v = v.slice(1, -1);
-    }
-    return v;
-  }
-
-  function slugify(str) {
-    return (str || '')
-      .toString()
-      .trim()
-      .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  }
-
-  function capitalize(str) {
-    str = str || '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  function listMdFiles(folder) {
-    return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
-      .then(function (r) {
-        if (!r.ok) throw new Error('No se pudo listar ' + folder + ' (HTTP ' + r.status + ')');
-        return r.json();
-      })
-      .then(function (items) {
-        return (items || [])
-          .filter(function (it) { return it.type === 'file' && /\.md$/i.test(it.name); })
-          .map(function (it) { return folder + '/' + it.name; });
-      });
-  }
-
-  function fetchAndParseAll(paths) {
-    return Promise.all(paths.map(function (path) {
-      return fetch(GH_RAW + path + '?v=' + Date.now())
-        .then(function (r) {
-          if (!r.ok) throw new Error('No se pudo leer ' + path);
-          return r.text();
-        })
-        .then(function (raw) {
-          var fm = parseFrontMatter(raw);
-          fm.__path = path;
-          return fm;
+          // ── Ítem de lista en raíz (sin clave, raro pero posible) ──
+          var rootList = /^\s*-\s+(.*)$/.exec(line);
+          if (rootList && currentKey) {
+            if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+            data[currentKey].push(cleanValue(rootList[1]));
+            currentObj = null;
+          }
         });
-    }));
-  }
 
-  // ── ESTADO DE ERROR / "NO ENCONTRADO" ──
-  function showError(message) {
-    document.getElementById('speciesTitle').textContent = 'No se encontró la especie';
-    document.getElementById('breadcrumbCurrent').textContent = 'No encontrada';
-    document.getElementById('speciesHero').style.display = 'none';
-    document.querySelector('.data-card').style.display = 'none';
-    var descEl = document.getElementById('speciesDescription');
-    var p = document.createElement('p');
-    p.style.color = '#a33';
-    p.textContent = message;
-    descEl.appendChild(p);
-  }
+        // Normalizar nulls a arrays vacíos para compatibilidad con código existente
+        Object.keys(data).forEach(function (k) {
+          if (data[k] === null) data[k] = [];
+        });
 
-  // ── LEER ?id= DE LA URL ──
-  var params = new URLSearchParams(window.location.search);
-  var targetId = params.get('id');
+        return data;
+      }
 
-  if (!targetId) {
-    showError('No se especificó ninguna especie en la URL (falta el parámetro ?id=).');
-    return;
-  }
+      function cleanValue(v) {
+        v = v.trim();
+        if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+          v = v.slice(1, -1);
+        }
+        return v;
+      }
 
-  // ── CARGAR LOS 6 NIVELES (REINO → GRUPO → SUBGRUPO → CATEGORÍA → SUBCATEGORÍA) Y ESPECIES, IGUAL QUE EN index.html ──
-  var LEVELS = [
-    { folder: 'content/reinos',        parentFields: [] },
-    { folder: 'content/grupos',        parentFields: ['reino'] },
-    { folder: 'content/subgrupos',     parentFields: ['grupo', 'reino'] },
-    { folder: 'content/categorias',    parentFields: ['subgrupo', 'grupo', 'reino'] },
-    { folder: 'content/subcategorias', parentFields: ['categoria', 'subgrupo', 'grupo', 'reino'] }
-  ];
-  var SPECIES_PARENT_FIELDS = ['subcategoria', 'categoria', 'subgrupo', 'grupo', 'reino'];
+      function slugify(str) {
+        return (str || '')
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+      }
 
-  var LEVEL_LABELS = ['Grupo General', 'Grupo Biológico', 'Grupo de Organismos', 'Grupo Específico', 'Categoría Menor'];
+      function capitalize(str) {
+        str = str || '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
 
-  Promise.all(
-    LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
-      .concat([listMdFiles('content/especies').then(fetchAndParseAll)])
-  )
-    .then(function (results) {
-      var categories = [];
-
-      LEVELS.forEach(function (lvl, idx) {
-        var rawItems = results[idx];
-        rawItems.forEach(function (item) {
-          var parentName = null;
-          for (var i = 0; i < lvl.parentFields.length; i++) {
-            if (item[lvl.parentFields[i]]) { parentName = item[lvl.parentFields[i]]; break; }
-          }
-          categories.push({
-            id: slugify(item.title),
-            parentId: parentName ? slugify(parentName) : null,
-            name: item.title || '(sin nombre)',
-            levelLabel: LEVEL_LABELS[idx],
-            description: item.descripcion || '',
-            image: item.imagen || ''
+      function listMdFiles(folder) {
+        return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
+          .then(function (r) {
+            if (!r.ok) throw new Error('No se pudo listar ' + folder + ' (HTTP ' + r.status + ')');
+            return r.json();
+          })
+          .then(function (items) {
+            return (items || [])
+              .filter(function (it) { return it.type === 'file' && /\.md$/i.test(it.name); })
+              .map(function (it) { return folder + '/' + it.name; });
           });
-        });
-      });
+      }
 
-      var rawEspecies = results[results.length - 1];
-      var species = rawEspecies.map(function (sp) {
-        var catId = null;
-        for (var i = 0; i < SPECIES_PARENT_FIELDS.length; i++) {
-          if (sp[SPECIES_PARENT_FIELDS[i]]) { catId = slugify(sp[SPECIES_PARENT_FIELDS[i]]); break; }
-        }
+      function fetchAndParseAll(paths) {
+        return Promise.all(paths.map(function (path) {
+          return fetch(GH_RAW + path + '?v=' + Date.now())
+            .then(function (r) {
+              if (!r.ok) throw new Error('No se pudo leer ' + path);
+              return r.text();
+            })
+            .then(function (raw) {
+              var fm = parseFrontMatter(raw);
+              fm.__path = path;
+              return fm;
+            });
+        }));
+      }
 
-        var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
-                     : (sp.imagenes ? [sp.imagenes] : []);
+      // ── ESTADO DE ERROR / "NO ENCONTRADO" ──
+      function showError(message) {
+        document.getElementById('speciesTitle').textContent = 'No se encontró la especie';
+        document.getElementById('breadcrumbCurrent').textContent = 'No encontrada';
+        document.getElementById('speciesHero').style.display = 'none';
+        document.querySelector('.data-card').style.display = 'none';
+        var descEl = document.getElementById('speciesDescription');
+        var p = document.createElement('p');
+        p.style.color = '#a33';
+        p.textContent = message;
+        descEl.appendChild(p);
+      }
 
-        return {
-          id: slugify(sp.title) + '-' + slugify(sp.__path),
-          categoryId: catId,
-          name: sp.title || '(sin nombre)',
-          scientificName: sp.cientifico || '',
-          description: sp.descripcion || '',
-          location: sp.ubicacion || '',
-          vereda: Array.isArray(sp.vereda) ? sp.vereda.filter(Boolean) : (sp.vereda ? [sp.vereda] : []),
-          date: sp.fecha || '',
-          photos: imagenes,
-          taxonomia: sp.taxonomia || {},
-          autor: sp.autor || ''
-        };
-      });
+      // ── LEER ?id= DE LA URL ──
+      var params = new URLSearchParams(window.location.search);
+      var targetId = params.get('id');
 
-      var sp = species.find(function (s) { return s.id === targetId; });
-
-      if (!sp) {
-        showError('La especie solicitada ya no existe o el enlace está desactualizado.');
+      if (!targetId) {
+        showError('No se especificó ninguna especie en la URL (falta el parámetro ?id=).');
         return;
       }
 
-      renderSpecies(sp, categories);
-    })
-    .catch(function (err) {
-      console.error(err);
-      showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
-    });
+      // ── CARGAR LOS 6 NIVELES (REINO → GRUPO → SUBGRUPO → CATEGORÍA → SUBCATEGORÍA) Y ESPECIES, IGUAL QUE EN index.html ──
+      var LEVELS = [
+        { folder: 'content/reinos', parentFields: [] },
+        { folder: 'content/grupos', parentFields: ['reino'] },
+        { folder: 'content/subgrupos', parentFields: ['grupo', 'reino'] },
+        { folder: 'content/categorias', parentFields: ['subgrupo', 'grupo', 'reino'] },
+        { folder: 'content/subcategorias', parentFields: ['categoria', 'subgrupo', 'grupo', 'reino'] }
+      ];
+      var SPECIES_PARENT_FIELDS = ['subcategoria', 'categoria', 'subgrupo', 'grupo', 'reino'];
 
-  // ── HELPERS DE RUTA DE CATEGORÍA (igual lógica que index.html, soporta cualquier profundidad) ──
-  // Devuelve un array ordenado de raíz -> hoja, cada elemento: { name, levelLabel }
-  function getCatPath(categories, catId) {
-    var parts = [];
-    var cur = categories.find(function (c) { return c.id === catId; });
-    while (cur) {
-      parts.unshift({ name: cur.name, levelLabel: cur.levelLabel });
-      cur = cur.parentId ? categories.find(function (c) { return c.id === cur.parentId; }) : null;
-    }
-    return parts;
-  }
+      var LEVEL_LABELS = ['Grupo General', 'Grupo Biológico', 'Grupo de Organismos', 'Grupo Específico', 'Categoría Menor'];
 
-  // ── RENDER PRINCIPAL DE LA PÁGINA DE ESPECIE ──
-  function renderSpecies(sp, categories) {
-    var titleText = capitalize(sp.name);
-    var imgs = sp.photos || [];
-    var catPath = getCatPath(categories, sp.categoryId); // ej: [{name:'Animalia',levelLabel:'Reino'}, {name:'Aves',levelLabel:'Grupo Principal'}, ...]
-    var leafCat = catPath.length ? catPath[catPath.length - 1] : null; // nivel más específico, justo arriba de la especie
+      Promise.all(
+        LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
+          .concat([listMdFiles('content/especies').then(fetchAndParseAll)])
+      )
+        .then(function (results) {
+          var categories = [];
 
-    // Título de pestaña, breadcrumb y encabezado
-    document.getElementById('pageTitleTag').textContent = titleText + ' · Biodiversidad de Tibirita';
-    document.getElementById('breadcrumbCurrent').textContent = titleText;
-    document.getElementById('speciesTitle').textContent = titleText;
+          LEVELS.forEach(function (lvl, idx) {
+            var rawItems = results[idx];
+            rawItems.forEach(function (item) {
+              var parentName = null;
+              for (var i = 0; i < lvl.parentFields.length; i++) {
+                if (item[lvl.parentFields[i]]) { parentName = item[lvl.parentFields[i]]; break; }
+              }
+              categories.push({
+                id: slugify(item.title),
+                parentId: parentName ? slugify(parentName) : null,
+                name: item.title || '(sin nombre)',
+                levelLabel: LEVEL_LABELS[idx],
+                description: item.descripcion || '',
+                image: item.imagen || ''
+              });
+            });
+          });
 
-    // ----- 1. Galería principal (foto grande + miniaturas) -----
-    var heroEl = document.getElementById('speciesHero');
+          var rawEspecies = results[results.length - 1];
+          var species = rawEspecies.map(function (sp) {
+            var catId = null;
+            for (var i = 0; i < SPECIES_PARENT_FIELDS.length; i++) {
+              if (sp[SPECIES_PARENT_FIELDS[i]]) { catId = slugify(sp[SPECIES_PARENT_FIELDS[i]]); break; }
+            }
 
-    if (imgs.length) {
-      var mainHtml = '<div class="species-main-photo" data-index="0">' +
-                       '<img src="' + imgs[0] + '" alt="' + titleText + '">' +
-                       '<span class="zoom-hint">&#128269; Ver en grande</span>' +
-                     '</div>';
+            var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
+              : (sp.imagenes ? [sp.imagenes] : []);
 
-      var thumbsHtml = '';
-      if (imgs.length > 1) {
-        thumbsHtml += '<div class="species-thumbs-col">';
-        var maxThumbs = 2;
-        for (var i = 1; i < Math.min(imgs.length, maxThumbs + 1); i++) {
-          var isLastVisible = (i === maxThumbs) && (imgs.length > maxThumbs + 1);
-          thumbsHtml += '<div class="thumb' + (isLastVisible ? ' more' : '') + '"' +
-                          (isLastVisible ? ' data-more="+' + (imgs.length - maxThumbs) + '"' : '') +
-                          ' data-index="' + i + '">' +
-                          '<img src="' + imgs[i] + '" alt="' + titleText + ' ' + (i + 1) + '">' +
-                        '</div>';
+            return {
+              id: slugify(sp.title) + '-' + slugify(sp.__path),
+              categoryId: catId,
+              name: sp.title || '(sin nombre)',
+              scientificName: sp.cientifico || '',
+              description: sp.descripcion || '',
+              location: sp.ubicacion || '',
+              vereda: Array.isArray(sp.vereda) ? sp.vereda.filter(Boolean) : (sp.vereda ? [sp.vereda] : []),
+              date: sp.fecha || '',
+              photos: imagenes,
+              taxonomia: sp.taxonomia || {},
+              autor: sp.autor || ''
+            };
+          });
+
+          var sp = species.find(function (s) { return s.id === targetId; });
+
+          if (!sp) {
+            showError('La especie solicitada ya no existe o el enlace está desactualizado.');
+            return;
+          }
+
+          renderSpecies(sp, categories);
+        })
+        .catch(function (err) {
+          console.error(err);
+          showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+        });
+
+      // ── HELPERS DE RUTA DE CATEGORÍA (igual lógica que index.html, soporta cualquier profundidad) ──
+      // Devuelve un array ordenado de raíz -> hoja, cada elemento: { name, levelLabel }
+      function getCatPath(categories, catId) {
+        var parts = [];
+        var cur = categories.find(function (c) { return c.id === catId; });
+        while (cur) {
+          parts.unshift({ name: cur.name, levelLabel: cur.levelLabel });
+          cur = cur.parentId ? categories.find(function (c) { return c.id === cur.parentId; }) : null;
         }
-        thumbsHtml += '</div>';
+        return parts;
       }
 
-      heroEl.innerHTML = mainHtml + thumbsHtml;
-    } else {
-      heroEl.innerHTML = '<div class="species-main-photo" style="display:flex;align-items:center;justify-content:center;font-size:4rem;cursor:default;">🌿</div>';
-    }
+      // ── RENDER PRINCIPAL DE LA PÁGINA DE ESPECIE ──
+      function renderSpecies(sp, categories) {
+        var titleText = capitalize(sp.name);
+        var imgs = sp.photos || [];
+        var catPath = getCatPath(categories, sp.categoryId); // ej: [{name:'Animalia',levelLabel:'Reino'}, {name:'Aves',levelLabel:'Grupo Principal'}, ...]
+        var leafCat = catPath.length ? catPath[catPath.length - 1] : null; // nivel más específico, justo arriba de la especie
 
-    // ----- 2. Badge: nivel más específico justo arriba de la especie -----
-    var badgeEl = document.getElementById('speciesBadge');
-    if (leafCat) {
-      badgeEl.textContent = leafCat.name;
-      badgeEl.style.display = 'inline-block';
-    }
+        // Título de pestaña, breadcrumb y encabezado
+        document.getElementById('pageTitleTag').textContent = titleText + ' · Biodiversidad de Tibirita';
+        document.getElementById('breadcrumbCurrent').textContent = titleText;
+        document.getElementById('speciesTitle').textContent = titleText;
 
-    // ----- 3. Nombre científico -----
-    var sciEl = document.getElementById('speciesScientific');
-    if (sp.scientificName) {
-      sciEl.textContent = sp.scientificName;
-      sciEl.style.display = 'block';
-    }
+        // ----- 1. Galería principal (foto grande + miniaturas) -----
+        var heroEl = document.getElementById('speciesHero');
 
-    // ----- 4. Descripción -----
-    var descEl = document.getElementById('speciesDescription');
-    if (sp.description) {
-      var p = document.createElement('p');
-      p.textContent = sp.description;
-      descEl.appendChild(p);
-    } else {
-      var pEmpty = document.createElement('p');
-      pEmpty.style.color = '#8a9a95';
-      pEmpty.textContent = 'Sin descripción registrada todavía.';
-      descEl.appendChild(pEmpty);
-    }
+        if (imgs.length) {
+          var mainHtml = '<div class="species-main-photo" data-index="0">' +
+            '<img src="' + imgs[0] + '" alt="' + titleText + '">' +
+            '<span class="zoom-hint">&#128269; Ver en grande</span>' +
+            '</div>';
 
-    // ----- 5. Grupos y Categoría: una sola línea tipo ruta, con flechas, terminando en la especie -----
-    var taxonomyCard = document.getElementById('taxonomyCard');
-    var taxonomyRowsEl = document.getElementById('taxonomyRows');
+          var thumbsHtml = '';
+          if (imgs.length > 1) {
+            thumbsHtml += '<div class="species-thumbs-col">';
+            var maxThumbs = 2;
+            for (var i = 1; i < Math.min(imgs.length, maxThumbs + 1); i++) {
+              var isLastVisible = (i === maxThumbs) && (imgs.length > maxThumbs + 1);
+              thumbsHtml += '<div class="thumb' + (isLastVisible ? ' more' : '') + '"' +
+                (isLastVisible ? ' data-more="+' + (imgs.length - maxThumbs) + '"' : '') +
+                ' data-index="' + i + '">' +
+                '<img src="' + imgs[i] + '" alt="' + titleText + ' ' + (i + 1) + '">' +
+                '</div>';
+            }
+            thumbsHtml += '</div>';
+          }
 
-    var breadcrumbPath = catPath.map(function (part) { return part.name; });
-
-    if (catPath.length) {
-      breadcrumbPath.push(capitalize(sp.name));
-      breadcrumbPath.forEach(function (nombre, i) {
-        if (i > 0) {
-          var sep = document.createElement('span');
-          sep.className = 'sep';
-          sep.textContent = '→';
-          taxonomyRowsEl.appendChild(sep);
-        }
-        var crumb = document.createElement('span');
-        crumb.className = 'crumb';
-        crumb.textContent = nombre;
-        taxonomyRowsEl.appendChild(crumb);
-      });
-      taxonomyCard.style.display = 'block';
-    }
-
-    // ----- 6. Clasificacion taxonomica (8 niveles del campo taxonomia) -----
-    var taxonCard = document.getElementById('taxonCard');
-    var taxonRowsEl = document.getElementById('taxonRows');
-    var tx = sp.taxonomia || {};
-    var TAXON_LEVELS = [
-      { label: 'Dominio',         key: 'dominio' },
-      { label: 'Reino',           key: 'reino_taxonomico' },
-      { label: 'Filo / Division', key: 'filo' },
-      { label: 'Clase',           key: 'clase' },
-      { label: 'Orden',           key: 'orden' },
-      { label: 'Familia',         key: 'familia' },
-      { label: 'Genero',          key: 'genero' },
-      { label: 'Especie',         key: 'especie_taxonomica' }
-    ];
-    var hasAny = TAXON_LEVELS.some(function(l){ return tx[l.key]; });
-    if (hasAny) {
-      TAXON_LEVELS.forEach(function(level) {
-        var row = document.createElement('div');
-        row.className = 'data-row';
-        var lbl = document.createElement('span');
-        lbl.className = 'label';
-        lbl.textContent = level.label;
-        var val = document.createElement('span');
-        val.className = 'value';
-        if (tx[level.key]) {
-          val.textContent = tx[level.key];
+          heroEl.innerHTML = mainHtml + thumbsHtml;
         } else {
-          val.textContent = '...';
-          val.style.color = '#bbb';
-          val.style.fontStyle = 'italic';
+          heroEl.innerHTML = '<div class="species-main-photo" style="display:flex;align-items:center;justify-content:center;font-size:4rem;cursor:default;">🌿</div>';
         }
-        row.appendChild(lbl);
-        row.appendChild(val);
-        taxonRowsEl.appendChild(row);
-      });
-      taxonCard.style.display = 'block';
-    }
 
-    // ----- 7. Ficha tecnica (data-card) -----
-    var dataCardEl = document.getElementById('dataCardRows').closest('.data-card');
-    var dataRowsEl = document.getElementById('dataCardRows');
-    var rows = [];
+        // ----- 2. Badge: nivel más específico justo arriba de la especie -----
+        var badgeEl = document.getElementById('speciesBadge');
+        if (leafCat) {
+          badgeEl.textContent = leafCat.name;
+          badgeEl.style.display = 'inline-block';
+        }
 
-    if (sp.location) {
-      rows.push({ label: 'Ubicación', value: sp.location });
-    }
-    if (sp.vereda && sp.vereda.length) {
-      var veredaLabels = sp.vereda.map(function (v) { return capitalize(v.toLowerCase()); });
-      rows.push({ label: sp.vereda.length > 1 ? 'Veredas' : 'Vereda', value: veredaLabels.join(', ') });
-    }
-    if (sp.date) {
-      var d = new Date(sp.date);
-      var fechaTexto = isNaN(d.getTime()) ? sp.date : d.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
-      rows.push({ label: 'Fecha de observación', value: fechaTexto });
-    }
-    if (sp.autor) {
-      rows.push({ label: 'Autor / Observador', value: sp.autor });
-    }
-    if (imgs.length) {
-      rows.push({ label: 'Fotos registradas', value: String(imgs.length) });
-    }
+        // ----- 3. Nombre científico -----
+        var sciEl = document.getElementById('speciesScientific');
+        if (sp.scientificName) {
+          sciEl.textContent = '';
+          // Separa el texto dejando "sp", "sp.", "spp" y "spp." como partes aparte
+          sp.scientificName.split(/(\bspp?\b\.?)/i).forEach(function (parte) {
+            if (!parte) return;
+            if (/^spp?\.?$/i.test(parte)) {
+              var normal = document.createElement('span');
+              normal.style.fontStyle = 'normal';
+              normal.textContent = parte;
+              sciEl.appendChild(normal);
+            } else {
+              sciEl.appendChild(document.createTextNode(parte));
+            }
+          });
+          sciEl.style.display = 'block';
+        }
 
-    rows.forEach(function (r) {
-      var row = document.createElement('div');
-      row.className = 'data-row';
-      row.innerHTML = '<span class="label"></span><span class="value"></span>';
-      row.querySelector('.label').textContent = r.label;
-      row.querySelector('.value').textContent = r.value;
-      dataRowsEl.appendChild(row);
-    });
+        // ----- 4. Descripción -----
+        var descEl = document.getElementById('speciesDescription');
+        if (sp.description) {
+          var p = document.createElement('p');
+          p.textContent = sp.description;
+          descEl.appendChild(p);
+        } else {
+          var pEmpty = document.createElement('p');
+          pEmpty.style.color = '#8a9a95';
+          pEmpty.textContent = 'Sin descripción registrada todavía.';
+          descEl.appendChild(pEmpty);
+        }
 
-    if (!dataRowsEl.children.length) {
-      dataCardEl.style.display = 'none';
-    }
+        // ----- 5. Grupos y Categoría: una sola línea tipo ruta, con flechas, terminando en la especie -----
+        var taxonomyCard = document.getElementById('taxonomyCard');
+        var taxonomyRowsEl = document.getElementById('taxonomyRows');
 
-    // ----- 7b. Mapa veredal: solo se muestra si la especie tiene una vereda asignada -----
-    if (sp.vereda && sp.vereda.length) {
-      var mapaCard = document.getElementById('mapaCard');
-      var mapaEmbed = document.getElementById('mapaEmbed');
-      var mapaVeredaLink = document.getElementById('mapaVeredaLink');
-      var veredaParam = encodeURIComponent(sp.vereda.join(','));
-      mapaEmbed.src = 'mapa.html?embed=1&vereda=' + veredaParam;
-      mapaVeredaLink.href = 'mapa.html?vereda=' + veredaParam;
-      mapaCard.style.display = 'block';
-    }
+        var breadcrumbPath = catPath.map(function (part) { return part.name; });
 
-    // ----- 7. Lightbox -----
-    initLightbox(imgs, titleText, heroEl);
-  }
+        if (catPath.length) {
+          breadcrumbPath.push(capitalize(sp.name));
+          breadcrumbPath.forEach(function (nombre, i) {
+            if (i > 0) {
+              var sep = document.createElement('span');
+              sep.className = 'sep';
+              sep.textContent = '→';
+              taxonomyRowsEl.appendChild(sep);
+            }
+            var crumb = document.createElement('span');
+            crumb.className = 'crumb';
+            crumb.textContent = nombre;
+            taxonomyRowsEl.appendChild(crumb);
+          });
+          taxonomyCard.style.display = 'block';
+        }
 
-  // ── LIGHTBOX (igual al del catálogo) ──
-  function initLightbox(imgs, titleText, heroEl) {
-    var lightbox = document.getElementById('lightbox');
-    var lightboxImg = document.getElementById('lightboxImg');
-    var lightboxTitle = document.getElementById('lightboxTitle');
-    var lightboxCounter = document.getElementById('lightboxCounter');
-    var lightboxThumbs = document.getElementById('lightboxThumbs');
-    var btnClose = document.getElementById('lightboxClose');
-    var btnPrev = document.getElementById('lightboxPrev');
-    var btnNext = document.getElementById('lightboxNext');
+        // ----- 6. Clasificacion taxonomica (8 niveles del campo taxonomia) -----
+        var taxonCard = document.getElementById('taxonCard');
+        var taxonRowsEl = document.getElementById('taxonRows');
+        var tx = sp.taxonomia || {};
+        var TAXON_LEVELS = [
+          { label: 'Dominio', key: 'dominio' },
+          { label: 'Reino', key: 'reino_taxonomico' },
+          { label: 'Filo', key: 'filo' },
+          { label: 'Clase', key: 'clase' },
+          { label: 'Orden', key: 'orden' },
+          { label: 'Familia', key: 'familia' },
+          { label: 'Genero', key: 'genero' },
+          { label: 'Especie', key: 'especie_taxonomica' }
+        ];
+        var hasAny = TAXON_LEVELS.some(function (l) { return tx[l.key]; });
+        if (hasAny) {
+          TAXON_LEVELS.forEach(function (level) {
+            var row = document.createElement('div');
+            row.className = 'data-row';
+            var lbl = document.createElement('span');
+            lbl.className = 'label';
+            lbl.textContent = level.label;
+            var val = document.createElement('span');
+            val.className = 'value';
+            if (tx[level.key]) {
+              val.textContent = tx[level.key];
+            } else {
+              val.textContent = '...';
+              val.style.color = '#bbb';
+              val.style.fontStyle = 'italic';
+            }
+            row.appendChild(lbl);
+            row.appendChild(val);
+            taxonRowsEl.appendChild(row);
+          });
+          taxonCard.style.display = 'block';
+        }
 
-    var currentIndex = 0;
+        // ----- 7. Ficha tecnica (data-card) -----
+        var dataCardEl = document.getElementById('dataCardRows').closest('.data-card');
+        var dataRowsEl = document.getElementById('dataCardRows');
+        var rows = [];
 
-    function renderLightbox(){
-      if (!imgs.length) return;
-      lightboxImg.src = imgs[currentIndex];
-      lightboxImg.alt = titleText;
-      lightboxTitle.textContent = titleText;
-      lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imgs.length;
+        if (sp.location) {
+          rows.push({ label: 'Ubicación', value: sp.location });
+        }
+        if (sp.vereda && sp.vereda.length) {
+          var veredaLabels = sp.vereda.map(function (v) { return capitalize(v.toLowerCase()); });
+          rows.push({ label: sp.vereda.length > 1 ? 'Lugares' : 'Lugar', value: veredaLabels.join(', ') });
+        }
+        if (sp.date) {
+          var rawDate = String(sp.date).trim();
+          var isoDate = rawDate
+            .replace(/^(\d{4}-\d{2}-\d{2})[ T]/, '$1T')
+            .replace(/\s*([+-]\d{2})(\d{2})$/, '$1:$2');
+          var d = new Date(isoDate);
+          var tieneHora = /\d{1,2}:\d{2}/.test(rawDate);
+          var fechaTexto;
 
-      lightboxThumbs.querySelectorAll('img').forEach(function(t, i){
-        t.classList.toggle('active', i === currentIndex);
-      });
+          if (isNaN(d.getTime())) {
+            fechaTexto = sp.date;
+          } else {
+            var optsFecha = { year: 'numeric', month: 'long', day: 'numeric' };
+            if (tieneHora) optsFecha.timeZone = 'America/Bogota';
+            fechaTexto = d.toLocaleDateString('es-CO', optsFecha);
 
-      var multi = imgs.length > 1;
-      btnPrev.style.display = multi ? 'flex' : 'none';
-      btnNext.style.display = multi ? 'flex' : 'none';
-      lightboxThumbs.style.display = multi ? 'flex' : 'none';
-    }
+            if (tieneHora) {
+              var horaTexto = d.toLocaleTimeString('es-CO', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: 'America/Bogota'
+              });
+              fechaTexto += ', ' + horaTexto;
+            }
+          }
+          rows.push({ label: 'Fecha de observación', value: fechaTexto });
+        }
+        if (sp.autor) {
+          rows.push({ label: 'Autor / Observador', value: sp.autor });
+        }
+        if (imgs.length) {
+          rows.push({ label: 'Fotos registradas', value: String(imgs.length) });
+        }
 
-    function openLightbox(startIndex){
-      if (!imgs.length) return;
-      currentIndex = startIndex || 0;
-
-      lightboxThumbs.innerHTML = '';
-      imgs.forEach(function(src, i){
-        var t = document.createElement('img');
-        t.src = src;
-        t.alt = titleText + ' ' + (i + 1);
-        t.addEventListener('click', function(){
-          currentIndex = i;
-          renderLightbox();
+        rows.forEach(function (r) {
+          var row = document.createElement('div');
+          row.className = 'data-row';
+          row.innerHTML = '<span class="label"></span><span class="value"></span>';
+          row.querySelector('.label').textContent = r.label;
+          row.querySelector('.value').textContent = r.value;
+          dataRowsEl.appendChild(row);
         });
-        lightboxThumbs.appendChild(t);
+
+        if (!dataRowsEl.children.length) {
+          dataCardEl.style.display = 'none';
+        }
+
+        // ----- 7b. Mapa: solo se muestra si la especie tiene un lugar asignado -----
+        if (sp.vereda && sp.vereda.length) {
+          var mapaCard = document.getElementById('mapaCard');
+          var mapaEmbed = document.getElementById('mapaEmbed');
+          var mapaVeredaLink = document.getElementById('mapaVeredaLink');
+          var veredaParam = encodeURIComponent(sp.vereda.join(','));
+          mapaEmbed.src = 'mapa.html?embed=1&vereda=' + veredaParam;
+          mapaVeredaLink.href = 'mapa.html?vereda=' + veredaParam;
+          mapaCard.style.display = 'block';
+        }
+
+        // ----- 7. Lightbox -----
+        initLightbox(imgs, titleText, heroEl);
+      }
+
+      // ── LIGHTBOX (igual al del catálogo) ──
+      function initLightbox(imgs, titleText, heroEl) {
+        var lightbox = document.getElementById('lightbox');
+        var lightboxImg = document.getElementById('lightboxImg');
+        var lightboxTitle = document.getElementById('lightboxTitle');
+        var lightboxCounter = document.getElementById('lightboxCounter');
+        var lightboxThumbs = document.getElementById('lightboxThumbs');
+        var btnClose = document.getElementById('lightboxClose');
+        var btnPrev = document.getElementById('lightboxPrev');
+        var btnNext = document.getElementById('lightboxNext');
+
+        var currentIndex = 0;
+
+        function renderLightbox() {
+          if (!imgs.length) return;
+          lightboxImg.src = imgs[currentIndex];
+          lightboxImg.alt = titleText;
+          lightboxTitle.textContent = titleText;
+          lightboxCounter.textContent = (currentIndex + 1) + ' / ' + imgs.length;
+
+          lightboxThumbs.querySelectorAll('img').forEach(function (t, i) {
+            t.classList.toggle('active', i === currentIndex);
+          });
+
+          var multi = imgs.length > 1;
+          btnPrev.style.display = multi ? 'flex' : 'none';
+          btnNext.style.display = multi ? 'flex' : 'none';
+          lightboxThumbs.style.display = multi ? 'flex' : 'none';
+        }
+
+        function openLightbox(startIndex) {
+          if (!imgs.length) return;
+          currentIndex = startIndex || 0;
+
+          lightboxThumbs.innerHTML = '';
+          imgs.forEach(function (src, i) {
+            var t = document.createElement('img');
+            t.src = src;
+            t.alt = titleText + ' ' + (i + 1);
+            t.addEventListener('click', function () {
+              currentIndex = i;
+              renderLightbox();
+            });
+            lightboxThumbs.appendChild(t);
+          });
+
+          renderLightbox();
+          lightbox.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+          lightbox.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+
+        function showPrev() {
+          if (!imgs.length) return;
+          currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+          renderLightbox();
+        }
+
+        function showNext() {
+          if (!imgs.length) return;
+          currentIndex = (currentIndex + 1) % imgs.length;
+          renderLightbox();
+        }
+
+        heroEl.addEventListener('click', function (e) {
+          var target = e.target.closest('[data-index]');
+          if (!target) return;
+          openLightbox(parseInt(target.getAttribute('data-index'), 10));
+        });
+
+        btnClose.addEventListener('click', closeLightbox);
+        btnPrev.addEventListener('click', showPrev);
+        btnNext.addEventListener('click', showNext);
+
+        lightbox.addEventListener('click', function (e) {
+          if (e.target === lightbox) closeLightbox();
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (!lightbox.classList.contains('open')) return;
+          if (e.key === 'Escape') closeLightbox();
+          if (e.key === 'ArrowLeft') showPrev();
+          if (e.key === 'ArrowRight') showNext();
+        });
+      }
+    })();
+  </script>
+<style>
+  .sp-normal{ font-style:normal !important; }
+</style>
+<script>
+// ── REGLA GLOBAL: "sp" y "spp" nunca en cursiva ──
+(function () {
+  var TIENE_SP = /\bspp?\b/i;
+  var PARTIR   = /(\bspp?\b\.?)/i;
+  var ES_SP    = /^spp?\.?$/i;
+  var IGNORAR  = { SCRIPT:1, STYLE:1, TEXTAREA:1, CODE:1, PRE:1 };
+
+  function procesar(raiz) {
+    var walker = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var p = n.parentNode;
+        if (!p || p.nodeType !== 1) return NodeFilter.FILTER_REJECT;
+        if (IGNORAR[p.tagName] || p.classList.contains('sp-normal')) return NodeFilter.FILTER_REJECT;
+        if (!TIENE_SP.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
+        // Solo actúa si el texto realmente se está viendo en cursiva
+        if (getComputedStyle(p).fontStyle === 'normal') return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    var nodos = [];
+    while (walker.nextNode()) nodos.push(walker.currentNode);
+
+    nodos.forEach(function (n) {
+      var frag = document.createDocumentFragment();
+      n.nodeValue.split(PARTIR).forEach(function (parte) {
+        if (!parte) return;
+        if (ES_SP.test(parte)) {
+          var s = document.createElement('span');
+          s.className = 'sp-normal';
+          s.textContent = parte;
+          frag.appendChild(s);
+        } else {
+          frag.appendChild(document.createTextNode(parte));
+        }
       });
-
-      renderLightbox();
-      lightbox.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeLightbox(){
-      lightbox.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-
-    function showPrev(){
-      if (!imgs.length) return;
-      currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
-      renderLightbox();
-    }
-
-    function showNext(){
-      if (!imgs.length) return;
-      currentIndex = (currentIndex + 1) % imgs.length;
-      renderLightbox();
-    }
-
-    heroEl.addEventListener('click', function(e){
-      var target = e.target.closest('[data-index]');
-      if (!target) return;
-      openLightbox(parseInt(target.getAttribute('data-index'), 10));
-    });
-
-    btnClose.addEventListener('click', closeLightbox);
-    btnPrev.addEventListener('click', showPrev);
-    btnNext.addEventListener('click', showNext);
-
-    lightbox.addEventListener('click', function(e){
-      if (e.target === lightbox) closeLightbox();
-    });
-
-    document.addEventListener('keydown', function(e){
-      if (!lightbox.classList.contains('open')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') showPrev();
-      if (e.key === 'ArrowRight') showNext();
+      n.parentNode.replaceChild(frag, n);
     });
   }
+
+  // Ejecuta al cargar y cada vez que el contenido cambie
+  // (tarjetas nuevas, filtros, "Cargar más", ficha de la especie, etc.)
+  var pendiente = false;
+  function programar() {
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(function () {
+      pendiente = false;
+      procesar(document.body);
+    });
+  }
+
+  new MutationObserver(programar).observe(document.body, { childList: true, subtree: true, characterData: true });
+  programar();
 })();
 </script>
-
 </body>
+
 </html>

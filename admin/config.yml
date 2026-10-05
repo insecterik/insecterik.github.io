@@ -284,42 +284,42 @@ collections:
         fields:
           - label: "Dominio"
             name: "dominio"
-            widget: "string"
+            widget: "taxon"
             required: false
             hint: "Ej: Eukaryota"
           - label: "Reino"
             name: "reino_taxonomico"
-            widget: "string"
+            widget: "taxon"
             required: false
             hint: "Ej: Animalia"
           - label: "Filo / División"
             name: "filo"
-            widget: "string"
+            widget: "taxon"
             required: false
             hint: "Ej: Arthropoda — en plantas se llama División"
           - label: "Clase"
             name: "clase"
-            widget: "string"
+            widget: "taxon"
             required: false
             hint: "Ej: Insecta"
           - label: "Orden"
             name: "orden"
-            widget: "string"
+            widget: "taxon"
             required: false
             hint: "Ej: Lepidoptera"
           - label: "Familia"
             name: "familia"
-            widget: "string"
+            widget: "taxon"
             required: false
             hint: "Ej: Nymphalidae"
           - label: "Género"
             name: "genero"
-            widget: "string"
+            widget: "taxon"
             required: false
             hint: "Ej: Morpho"
           - label: "Especie"
             name: "especie_taxonomica"
-            widget: "string"
+            widget: "taxon"
             required: false
             hint: "Ej: Morpho peleides (solo el epíteto específico o el binomial completo)"
 
@@ -398,13 +398,11 @@ collections:
 
       - label: "Especies en esta colección"
         name: "especies"
-        widget: "list"
+        widget: "relation"
         required: false
-        field:
-          label: "Especie"
-          name: "especie"
-          widget: "relation"
-          collection: "especies"
-          search_fields: ["title"]
-          value_field: "title"
-          display_fields: ["title"]
+        multiple: true
+        collection: "especies"
+        search_fields: ["title"]
+        value_field: "title"
+        display_fields: ["title"]
+        options_length: 50

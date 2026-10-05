@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Especie &middot; InsectErik</title>
+  <title id="pageTitleTag">Especie &middot; InsectErik</title>
   <link rel="icon" type="image/png" href="images/uploads/favicon.png">
 
 
@@ -845,7 +845,7 @@
         var leafCat = catPath.length ? catPath[catPath.length - 1] : null; // nivel más específico, justo arriba de la especie
 
         // Título de pestaña, breadcrumb y encabezado
-        document.getElementById('pageTitleTag').textContent = titleText + ' · Biodiversidad de Tibirita';
+        document.getElementById('pageTitleTag').textContent = titleText + ' · InsectErik';
         document.getElementById('breadcrumbCurrent').textContent = titleText;
         document.getElementById('speciesTitle').textContent = titleText;
 
@@ -951,7 +951,7 @@
           { label: 'Clase', key: 'clase' },
           { label: 'Orden', key: 'orden' },
           { label: 'Familia', key: 'familia' },
-          { label: 'Genero', key: 'genero' },
+          { label: 'Género', key: 'genero' },
           { label: 'Especie', key: 'especie_taxonomica' }
         ];
         var hasAny = TAXON_LEVELS.some(function (l) { return tx[l.key]; });

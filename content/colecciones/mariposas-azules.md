@@ -1,7 +1,8 @@
 ---
-title: mariposas azules
+title: Mariposas azules
 imagen: /images/uploads/1000053270.png
 especies:
   - mariposa huho
   - mariposa azul
+  - Mariposa azul metalizada
 ---

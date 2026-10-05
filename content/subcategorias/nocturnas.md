@@ -1,7 +1,7 @@
 ---
-title: nocturnas
+title: Diurnas
 reino: Fauna
 grupo: Invertebrados
 subgrupo: Insectos
-categoria: mariposas
+categoria: Mariposas y Polillas
 ---

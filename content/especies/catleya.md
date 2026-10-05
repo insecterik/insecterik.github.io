@@ -7,14 +7,14 @@ subgrupo: Insectos
 categoria: osos negros
 subcategoria: osos negros pequeños
 taxonomia:
-  dominio: eukariota
-  reino_taxonomico: vegetal
-  filo: fulum
-  clase: as
-  orden: ds
-  familia: asd
-  genero: ads
-  especie_taxonomica: ads
+  dominio: ""
+  reino_taxonomico: Animalia
+  filo: Arthropoda
+  clase: Insecta
+  orden: Lepidoptera
+  familia: Riodinidae
+  genero: Rhetus
+  especie_taxonomica: ""
 descripcion: descripcion de la catleya afds
 fecha: 2026-06-29T13:42:00.000-05:00
 ubicacion: centro

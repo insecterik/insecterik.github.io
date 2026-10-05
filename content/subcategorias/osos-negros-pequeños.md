@@ -1,8 +1,8 @@
 ---
-title: osos negros pequeños
+title: Nocturnas
 reino: Fauna
-grupo: vertebrados
-subgrupo: mamiferos
-categoria: osos negros
-descripcion: descripcion osos negros pequeños
+grupo: Invertebrados
+subgrupo: Insectos
+categoria: Mariposas y Polillas
+descripcion: descripción
 ---

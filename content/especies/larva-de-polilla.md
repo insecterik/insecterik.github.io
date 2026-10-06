@@ -6,7 +6,7 @@ grupo: Invertebrados
 subgrupo: Insectos
 categoria: Mariposas y Polillas
 subcategoria: Nocturnas
-descripcion: Descripción
+descripcion: ""
 fecha: 2026-08-26T19:30:00.000-05:00
 ubicacion: Observada cerca a la Quebrada Los Carranza
 vereda:

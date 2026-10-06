@@ -6,8 +6,7 @@ grupo: Vertebrados
 subgrupo: Aves
 categoria: Aves
 subcategoria: Voladoras
-descripcion: |
-  Descripción
+descripcion: "\n"
 fecha: 2026-07-16T12:50:00.000-05:00
 vereda:
   - MEDIO QUEBRADAS

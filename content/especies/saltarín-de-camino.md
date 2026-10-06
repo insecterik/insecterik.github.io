@@ -13,5 +13,5 @@ vereda:
   - LAGUNA
 imagenes:
   - /images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-3-.jpeg
-autor: Roque Roa Martín
+autor: Roque Roa Martín - Blue Green
 ---

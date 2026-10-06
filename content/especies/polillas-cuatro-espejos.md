@@ -1,5 +1,5 @@
 ---
-title: Polillas Cuatro Espejos
+title: Polilla Cuatro Espejos
 cientifico: Rothschildia sp.
 reino: Fauna
 grupo: Invertebrados

@@ -326,6 +326,7 @@ collections:
       - label: "Descripción"
         name: "descripcion"
         widget: "text"
+        required: false
 
       - label: "Fecha de observación"
         name: "fecha"
@@ -405,4 +406,4 @@ collections:
         search_fields: ["title"]
         value_field: "title"
         display_fields: ["title"]
-        options_length: 50
+        options_length: 50s

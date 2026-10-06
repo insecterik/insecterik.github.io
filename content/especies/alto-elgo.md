@@ -15,7 +15,7 @@ taxonomia:
   familia: Riodinidae
   genero: Rhetus
   especie_taxonomica: Rhetus sp.
-descripcion: Esta es la descripcion
+descripcion: ""
 fecha: 2026-09-12T12:43:00.000-05:00
 ubicacion: Vía El Alto de las imágenes
 vereda:

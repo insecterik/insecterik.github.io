@@ -1281,6 +1281,7 @@
   function listMdFiles(folder) {
     return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
       .then(function (r) {
+        if (r.status === 404) return []; // carpeta aún no creada en el repo
         if (!r.ok) throw new Error('No se pudo listar ' + folder + ' (HTTP ' + r.status + ')');
         return r.json();
       })
@@ -1311,13 +1312,18 @@
   // Niveles, de más general a más específico. El orden importa: define
   // qué campo "padre" se prioriza si por error hay más de uno relleno.
   var LEVELS = [
-    { folder: 'content/reinos',        parentFields: [] },
-    { folder: 'content/grupos',        parentFields: ['reino'] },
-    { folder: 'content/subgrupos',     parentFields: ['grupo', 'reino'] },
-    { folder: 'content/categorias',    parentFields: ['subgrupo', 'grupo', 'reino'] },
-    { folder: 'content/subcategorias', parentFields: ['categoria', 'subgrupo', 'grupo', 'reino'] }
+    { key: 'reinos',        folder: 'content/reinos',        parentFields: [] },
+    { key: 'grupos',        folder: 'content/grupos',        parentFields: ['reino'] },
+    { key: 'subgrupos',     folder: 'content/subgrupos',     parentFields: ['grupo', 'reino'] },
+    { key: 'categorias',    folder: 'content/categorias',    parentFields: ['subgrupo', 'grupo', 'reino'] },
+    { key: 'subcategorias', folder: 'content/subcategorias', parentFields: ['categoria', 'subgrupo', 'grupo', 'reino'] }
   ];
   var SPECIES_PARENT_FIELDS = ['subcategoria', 'categoria', 'subgrupo', 'grupo', 'reino'];
+  // Campo "padre" -> nivel al que pertenece (los ids son únicos por nivel: "nivel:slug")
+  var FIELD_LEVEL = {
+    reino: 'reinos', grupo: 'grupos', subgrupo: 'subgrupos',
+    categoria: 'categorias', subcategoria: 'subcategorias'
+  };
 
   Promise.all(
     LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
@@ -1330,13 +1336,14 @@
       LEVELS.forEach(function (lvl, idx) {
         var rawItems = results[idx];
         rawItems.forEach(function (item) {
-          var parentName = null;
+          var parentId = null;
           for (var i = 0; i < lvl.parentFields.length; i++) {
-            if (item[lvl.parentFields[i]]) { parentName = item[lvl.parentFields[i]]; break; }
+            var pf = lvl.parentFields[i];
+            if (item[pf]) { parentId = FIELD_LEVEL[pf] + ':' + slugify(item[pf]); break; }
           }
           categories.push({
-            id: slugify(item.title),
-            parentId: parentName ? slugify(parentName) : null,
+            id: lvl.key + ':' + slugify(item.title),
+            parentId: parentId,
             name: item.title || '(sin nombre)',
             description: item.descripcion || '',
             image: item.imagen || ''
@@ -1349,7 +1356,8 @@
       var species = rawEspecies.map(function (sp) {
         var catId = null;
         for (var i = 0; i < SPECIES_PARENT_FIELDS.length; i++) {
-          if (sp[SPECIES_PARENT_FIELDS[i]]) { catId = slugify(sp[SPECIES_PARENT_FIELDS[i]]); break; }
+          var sf = SPECIES_PARENT_FIELDS[i];
+          if (sp[sf]) { catId = FIELD_LEVEL[sf] + ':' + slugify(sp[sf]); break; }
         }
 
         var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
@@ -1439,6 +1447,7 @@
   // Genera el HTML de un nodo de categoría (cualquier nivel) y recursivamente sus hijos.
   // depth = 0 para nodos raíz, +1 por cada nivel de anidación (usado solo para clases CSS).
   function renderCategoryNode(node, depth) {
+    if (depth > 6) return ''; // protección contra ciclos
     var children = DB.categories.filter(function (c) { return c.parentId === node.id; });
     var directSpecies = DB.species.filter(function (s) { return s.categoryId === node.id; });
     var totalCount = countSpeciesDeep(node.id);
@@ -1714,10 +1723,13 @@
   }
 
   // ── HELPERS ──────────────────────────────
-  function getAllDescendantIds(catId) {
+  function getAllDescendantIds(catId, seen) {
+    seen = seen || {};
+    if (seen[catId]) return []; // protección contra ciclos
+    seen[catId] = true;
     var ids = [catId];
     DB.categories.filter(function (c) { return c.parentId === catId; }).forEach(function (c) {
-      ids = ids.concat(getAllDescendantIds(c.id));
+      ids = ids.concat(getAllDescendantIds(c.id, seen));
     });
     return ids;
   }
@@ -1729,7 +1741,8 @@
   function getCatPath(catId) {
     var parts = [];
     var cur = DB.categories.find(function (c) { return c.id === catId; });
-    while (cur) {
+    var guard = 0;
+    while (cur && guard++ < 10) {
       parts.unshift(cur.name);
       cur = cur.parentId ? DB.categories.find(function (c) { return c.id === cur.parentId; }) : null;
     }

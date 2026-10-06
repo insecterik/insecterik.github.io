@@ -6,7 +6,7 @@ grupo: Invertebrados
 subgrupo: Insectos
 categoria: Mariposas y Polillas
 subcategoria: Diurnas
-descripcion: Descripción
+descripcion: ""
 fecha: 2026-05-11T16:40:00.000-05:00
 ubicacion: ""
 vereda:

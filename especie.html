@@ -1001,7 +1001,11 @@
           rows.push({ label: 'Ubicación', value: sp.location });
         }
         if (sp.vereda && sp.vereda.length) {
-          var veredaLabels = sp.vereda.map(function (v) { return capitalize(v.toLowerCase()); });
+          var veredaLabels = sp.vereda.map(function (v) {
+            var t = v.trim().toLowerCase();
+            if (/^casco\b/.test(t) && t.indexOf('urbano') === -1) t = 'casco urbano'; // registros antiguos guardados como "CASCO"
+            return t.split(' ').map(capitalize).join(' ');
+          });
           rows.push({ label: sp.vereda.length > 1 ? 'Lugares' : 'Lugar', value: veredaLabels.join(', ') });
         }
         if (sp.date) {

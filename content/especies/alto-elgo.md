@@ -4,8 +4,8 @@ cientifico: Rhetus sp.
 reino: Fauna
 grupo: Invertebrados
 subgrupo: Insectos
-categoria: Mariposas y Polillas
-subcategoria: Diurnas
+categoria: Lepidópteros
+subcategoria: Mariposas diurnas
 taxonomia:
   dominio: ""
   reino_taxonomico: Animalia

@@ -1353,12 +1353,21 @@
 
       // Especies: último elemento del array de resultados
       var rawEspecies = results[results.length - 1];
+      categories.forEach(function (c) {
+  if (c.parentId && !categories.some(function (p) { return p.id === c.parentId; })) {
+    console.warn('Categoría huérfana:', c.name, '→ padre no encontrado:', c.parentId);
+  }
+});
       var species = rawEspecies.map(function (sp) {
         var catId = null;
         for (var i = 0; i < SPECIES_PARENT_FIELDS.length; i++) {
           var sf = SPECIES_PARENT_FIELDS[i];
           if (sp[sf]) { catId = FIELD_LEVEL[sf] + ':' + slugify(sp[sf]); break; }
         }
+        if (!categories.some(function (c) { return c.id === catId; })) {
+  console.warn('Sin categoría válida:', sp.title, '| id leído:', catId,
+    '| campos:', sp.reino, sp.grupo, sp.subgrupo, sp.categoria, sp.subcategoria);
+}
 
         var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
                      : (sp.imagenes ? [sp.imagenes] : []);

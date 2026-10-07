@@ -5,7 +5,7 @@ reino: Fauna
 grupo: Vertebrados
 subgrupo: Aves
 categoria: Aves
-subcategoria: Voladoras
+subcategoria: Aves voladoras
 fecha: 2026-08-02T17:30:00.000-05:00
 ubicacion: Tomada en la zona urbana cerca a la Plaza de Toros.
 vereda:

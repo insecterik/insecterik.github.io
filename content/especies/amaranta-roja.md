@@ -4,8 +4,8 @@ cientifico: Heliconius clysonymus
 reino: Fauna
 grupo: Invertebrados
 subgrupo: Insectos
-categoria: Mariposas y Polillas
-subcategoria: Diurnas
+categoria: Lepidópteros
+subcategoria: Mariposas diurnas
 descripcion: Tomada cerca a La Chorrera
 fecha: 2026-08-04T13:09:00.000-05:00
 vereda:

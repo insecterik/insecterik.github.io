@@ -1,5 +1,5 @@
 ---
-title: Acuáticos
+title: Mamíferos Acuáticos
 reino: Fauna
 grupo: Vertebrados
 subgrupo: Mamíferos

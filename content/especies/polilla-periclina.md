@@ -4,8 +4,8 @@ cientifico: Periclina sp.
 reino: Fauna
 grupo: Invertebrados
 subgrupo: Insectos
-categoria: Mariposas y Polillas
-subcategoria: Nocturnas
+categoria: Lepidópteros
+subcategoria: Mariposas nocturnas o Polillas
 descripcion: ""
 fecha: 2026-09-16T07:00:00.000-05:00
 vereda:

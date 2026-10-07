@@ -4,8 +4,8 @@ cientifico: Dione glycera
 reino: Fauna
 grupo: Invertebrados
 subgrupo: Insectos
-categoria: Mariposas y Polillas
-subcategoria: Diurnas
+categoria: Lepidópteros
+subcategoria: Mariposas diurnas
 descripcion: ""
 fecha: 2026-05-11T16:40:00.000-05:00
 ubicacion: ""

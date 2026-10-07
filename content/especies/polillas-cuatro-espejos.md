@@ -4,8 +4,8 @@ cientifico: Rothschildia sp.
 reino: Fauna
 grupo: Invertebrados
 subgrupo: Insectos
-categoria: Mariposas y Polillas
-subcategoria: Nocturnas
+categoria: Lepidópteros
+subcategoria: Mariposas nocturnas o Polillas
 descripcion: ""
 fecha: 2026-09-02T14:23:00.000-05:00
 vereda:

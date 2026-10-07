@@ -6,6 +6,7 @@ grupo: Invertebrados
 subgrupo: Arácnidos
 categoria: Arácnidos
 fecha: 2026-08-04T10:00:00.000-05:00
+ubicacion: Tomada cerca a La Chorrera
 vereda:
   - LAGUNA
 imagenes:

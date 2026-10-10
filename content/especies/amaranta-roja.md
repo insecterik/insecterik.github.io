@@ -15,5 +15,4 @@ vereda:
   - LAGUNA
 autores:
   - Roque Roa Martín - Blue Green
-  - thoamas bernal
 ---

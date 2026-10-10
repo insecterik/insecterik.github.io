@@ -1038,7 +1038,7 @@
           rows.push({ label: 'Fecha de observación', value: fechaTexto });
         }
         if (sp.autores && sp.autores.length) {
-          rows.push({ label: 'Autores / Observadores', value: sp.autores.join(', ') });
+          rows.push({ label: sp.autores.length > 1 ? 'Autores / Observadores' : 'Autor / Observador', value: sp.autores, lista: true });
         }
         if (imgs.length) {
           rows.push({ label: 'Fotos registradas', value: String(imgs.length) });
@@ -1049,7 +1049,17 @@
           row.className = 'data-row';
           row.innerHTML = '<span class="label"></span><span class="value"></span>';
           row.querySelector('.label').textContent = r.label;
-          row.querySelector('.value').textContent = r.value;
+          var valueEl = row.querySelector('.value');
+          if (r.lista && Array.isArray(r.value)) {
+            valueEl.style.textTransform = 'none';
+            r.value.forEach(function (nombre) {
+              var linea = document.createElement('div');
+              linea.textContent = nombre;
+              valueEl.appendChild(linea);
+            });
+          } else {
+            valueEl.textContent = r.value;
+          }
           dataRowsEl.appendChild(row);
         });
 

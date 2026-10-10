@@ -430,6 +430,24 @@
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
+  // Devuelve la lista de autores de una especie (campo nuevo "autores" o el antiguo "autor"),
+  // sin vacíos ni repetidos, con la primera letra en mayúscula.
+  function getAutores(sp) {
+    var raw = Array.isArray(sp.autores) ? sp.autores
+      : (sp.autores ? [sp.autores] : (sp.autor ? [sp.autor] : []));
+    var vistos = {};
+    var out = [];
+    raw.forEach(function (a) {
+      var nombre = capitalize(String(a || '').trim());
+      if (!nombre) return;
+      var k = nombre.toLowerCase();
+      if (vistos[k]) return;
+      vistos[k] = true;
+      out.push(nombre);
+    });
+    return out;
+  }
+
   function countBy(list, keyFn) {
     var counts = {};
     list.forEach(function (item) {
@@ -470,7 +488,7 @@
     var reinos = {};
     species.forEach(function (sp) { reinos[sp.reino || 'Sin dato'] = true; });
     var autores = {};
-    species.forEach(function (sp) { if (sp.autor) autores[sp.autor] = true; });
+    species.forEach(function (sp) { getAutores(sp).forEach(function (a) { autores[a.toLowerCase()] = true; }); });
 
     document.getElementById('summaryCards').innerHTML =
       '<div class="summary-card"><div class="num">' + species.length + '</div><div class="label">Especies registradas</div></div>' +
@@ -481,7 +499,13 @@
     // ── POR AUTOR ── se calcula antes de armar el HTML porque el encabezado
     // de la tarjeta depende de si hay más de 100 colaboradores (para mostrar
     // el toggle "Top 15 / Todos").
-    var byAutorCounts = countBy(species, function (sp) { return sp.autor ? capitalize(sp.autor) : 'Sin autor'; });
+    // Cada autor suma 1 por cada especie en la que aparece (una especie puede tener varios).
+    var byAutorCounts = {};
+    species.forEach(function (sp) {
+      var lista = getAutores(sp);
+      if (!lista.length) lista = ['Sin autor'];
+      lista.forEach(function (a) { byAutorCounts[a] = (byAutorCounts[a] || 0) + 1; });
+    });
     var autorEntries = Object.keys(byAutorCounts)
       .map(function (k) { return [k, byAutorCounts[k]]; })
       .sort(function (a, b) { return b[1] - a[1]; });

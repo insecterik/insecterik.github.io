@@ -807,7 +807,8 @@
               date: sp.fecha || '',
               photos: imagenes,
               taxonomia: sp.taxonomia || {},
-              autor: sp.autor || ''
+              autores: Array.isArray(sp.autores) ? sp.autores.filter(Boolean)
+                : (sp.autores ? [sp.autores] : (sp.autor ? [sp.autor] : []))
             };
           });
 
@@ -1036,8 +1037,8 @@
           }
           rows.push({ label: 'Fecha de observación', value: fechaTexto });
         }
-        if (sp.autor) {
-          rows.push({ label: 'Autor / Observador', value: sp.autor });
+        if (sp.autores && sp.autores.length) {
+          rows.push({ label: 'Autores / Observadores', value: sp.autores.join(', ') });
         }
         if (imgs.length) {
           rows.push({ label: 'Fotos registradas', value: String(imgs.length) });

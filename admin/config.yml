@@ -368,11 +368,15 @@ collections:
           name: "imagen"
           widget: "image"
           
-      - label: "Autor / Observador"
-        name: "autor"
-        widget: "string"
+      - label: "Autores / Observadores"
+        name: "autores"
+        widget: "list"
         required: false
-        hint: "Nombre de quien registró o fotografió la especie"
+        hint: "Una o más personas que registraron o fotografiaron la especie. Usa \"Agregar\" para añadir otra."
+        field:
+          label: "Nombre"
+          name: "nombre"
+          widget: "string"
 
   # COLECCIONES — listas manuales de especies (ej: "Especies en peligro", "Avistamientos 2026")
   # Independiente de la jerarquía de Reino/Grupo/Subgrupo/Categoría/Subcategoría.

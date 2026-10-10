@@ -13,5 +13,5 @@ ubicacion: Tomada cerca a La Chorrera
 vereda:
   - LAGUNA
 autores:
-  - Luis Miguel Martín Montenegro
+  - Roque Roa Martín - Blue Green
 ---

@@ -1,4 +1,7 @@
 ---
+imagenes:
+  - /images/uploads/large.jpg
+autor: Alejandro Arturo Bernal Muñoz
 title: Mariposa saltarina
 cientifico: Urbanus sp.
 reino: Fauna
@@ -10,7 +13,6 @@ descripcion: ""
 fecha: 2026-09-16T13:19:00.000-05:00
 vereda:
   - CASCO
-imagenes:
-  - /images/uploads/large.jpg
-autor: Alejandro Arturo Bernal Muñoz
+autores:
+  - Roque Roa Martín - Blue Green
 ---

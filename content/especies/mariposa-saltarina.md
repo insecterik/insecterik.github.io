@@ -14,5 +14,5 @@ fecha: 2026-09-16T13:19:00.000-05:00
 vereda:
   - CASCO
 autores:
-  - Roque Roa Martín - Blue Green
+  - Alejandro Arturo Bernal Muñoz
 ---

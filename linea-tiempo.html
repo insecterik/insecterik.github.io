@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Línea de tiempo y calendario · InsectErik</title>
+<link rel="icon" type="image/png" href="images/uploads/favicon.png">
+<style>
+  :root{
+    --verde-oscuro:#1c3f3a;
+    --verde-header:#16332f;
+    --verde-brillante:#2ecc71;
+    --verde-texto:#1b5e20;
+    --crema:#f4f8f2;
+    --gris-texto:#5a6b66;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html, body{
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--crema);
+    color:#222;
+  }
+
+  a{ text-decoration:none; }
+
+  .top-header{
+    position:sticky; top:0; z-index:100;
+    background:var(--verde-header);
+    display:flex; align-items:center;
+    padding:0 24px; height:60px; gap:16px;
+  }
+  .logo{ display:flex; align-items:center; gap:10px; color:white; font-weight:700; font-size:20px; }
+  .logo-img{ height:36px; width:36px; object-fit:contain; border-radius:50%; }
+  .logo-text{ letter-spacing:.5px; }
+
+  .top-nav{
+    margin-left:auto; display:flex; align-items:center; gap:24px;
+  }
+  .top-nav a{
+    color:rgba(255,255,255,.8); font-size:15px; font-weight:500;
+    transition:color .2s;
+  }
+  .top-nav a:hover, .top-nav a.active{ color:#fff; }
+
+  .timeline-page{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 24px 64px;
+  }
+
+  .page-header{ margin:50px auto 0; }
+  .page-header h1{
+    font-size:48px;
+    font-weight:800;
+    color:var(--verde-brillante);
+    margin:0 0 14px;
+  }
+  .page-header .description{
+    font-size:17px;
+    color:#3c4a46;
+    line-height:1.7;
+    max-width:780px;
+    margin:0 0 18px;
+  }
+
+  .timeline-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:20px 0 6px;
+  }
+
+  .breadcrumb{
+    margin:0 0 30px;
+    font-size:13px;
+    color:var(--gris-texto);
+  }
+  .breadcrumb a{ color:var(--verde-texto); font-weight:600; }
+
+  .timeline-summary{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
+    gap:16px;
+    margin:0 0 24px;
+  }
+  .timeline-stat{
+    background:#fff;
+    border:1px solid var(--ie-border, #e1e9e5);
+    border-radius:16px;
+    padding:18px 20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+  }
+  .timeline-stat strong{
+    display:block;
+    font-size:30px;
+    line-height:1;
+    color:var(--verde-texto);
+    margin-bottom:8px;
+  }
+  .timeline-stat span{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+    color:var(--gris-texto);
+  }
+
+  .timeline-card{
+    background:#fff;
+    border:1px solid var(--ie-border, #e1e9e5);
+    border-radius:20px;
+    padding:24px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+    margin-bottom:24px;
+  }
+
+  .section-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-bottom:18px;
+  }
+  .section-head h2{
+    margin:0 0 4px;
+    font-size:21px;
+    color:#1c2624;
+  }
+  .section-head p{
+    margin:0;
+    color:var(--gris-texto);
+    font-size:13px;
+    line-height:1.5;
+  }
+
+  .year-chips, .month-chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+  }
+  .year-chip, .month-chip{
+    border:1px solid var(--ie-border, #e1e9e5);
+    background:var(--ie-surface-soft, #f6faf7);
+    color:var(--gris-texto);
+    border-radius:999px;
+    padding:7px 12px;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .year-chip:hover, .month-chip:hover{
+    border-color:var(--verde-brillante);
+    color:var(--verde-texto);
+  }
+  .year-chip.is-active, .month-chip.is-active{
+    background:var(--verde-brillante);
+    border-color:var(--verde-brillante);
+    color:var(--verde-header);
+  }
+
+  .calendar-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(135px, 1fr));
+    gap:10px;
+  }
+
+  .cal-month{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:3px;
+    min-height:112px;
+    padding:14px;
+    border:1px solid var(--ie-border, #e1e9e5);
+    border-radius:14px;
+    background:var(--ie-surface-soft, #f6faf7);
+    color:#24332e;
+    font-family:inherit;
+    text-align:left;
+    cursor:pointer;
+    overflow:hidden;
+    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .cal-month:not([disabled]):hover{
+    transform:translateY(-2px);
+    border-color:var(--verde-brillante);
+    box-shadow:0 8px 18px rgba(0,0,0,.07);
+  }
+  .cal-month[disabled]{ cursor:default; opacity:.45; }
+  .cal-month.is-active{
+    border-color:var(--verde-brillante);
+    box-shadow:0 0 0 3px rgba(46,204,113,.16);
+  }
+  .cal-month-name{
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.45px;
+    color:var(--gris-texto);
+  }
+  .cal-month-count{
+    font-size:28px;
+    line-height:1.05;
+    color:var(--verde-texto);
+  }
+  .cal-month-label{
+    font-size:11px;
+    color:var(--gris-texto);
+  }
+  .cal-month-bar{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:5px;
+    background:rgba(46,204,113,.13);
+  }
+  .cal-month-bar i{
+    display:block;
+    height:100%;
+    background:var(--verde-brillante);
+    border-radius:0 4px 4px 0;
+  }
+
+  .timeline-groups{ display:grid; gap:24px; }
+  .timeline-group h3{
+    margin:0 0 10px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--ie-border, #e1e9e5);
+    font-size:16px;
+    color:#1c2624;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .timeline-group h3 span{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+    color:var(--gris-texto);
+  }
+
+  .timeline-list{ display:grid; gap:10px; }
+
+  .timeline-item{
+    display:grid;
+    grid-template-columns:54px 74px minmax(0, 1fr) 24px;
+    align-items:center;
+    gap:14px;
+    padding:10px;
+    border:1px solid var(--ie-border, #e1e9e5);
+    border-radius:14px;
+    background:#fff;
+    color:inherit;
+    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .timeline-item:hover{
+    transform:translateX(3px);
+    border-color:var(--verde-brillante);
+    box-shadow:0 8px 18px rgba(0,0,0,.06);
+  }
+
+  .timeline-day{
+    text-align:center;
+    line-height:1;
+  }
+  .timeline-day strong{
+    display:block;
+    font-size:24px;
+    color:var(--verde-texto);
+  }
+  .timeline-day small{
+    display:block;
+    margin-top:3px;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    color:var(--gris-texto);
+  }
+
+  .timeline-photo{
+    width:74px;
+    height:58px;
+    border-radius:10px;
+    object-fit:cover;
+    background:#e8f0ec;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--gris-texto);
+    font-size:22px;
+    overflow:hidden;
+  }
+  .timeline-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .timeline-body{ min-width:0; }
+  .timeline-body strong{
+    display:block;
+    font-size:15px;
+    color:#1c2624;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .timeline-body em{
+    display:block;
+    margin-top:1px;
+    font-size:12px;
+    color:var(--gris-texto);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .timeline-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px 12px;
+    margin-top:5px;
+    font-size:11px;
+    color:var(--gris-texto);
+  }
+  .timeline-arrow{
+    color:var(--verde-brillante);
+    font-size:18px;
+    font-weight:800;
+    text-align:right;
+  }
+
+  .timeline-empty{
+    padding:48px 20px;
+    text-align:center;
+    color:var(--gris-texto);
+    border:1px dashed var(--ie-border, #e1e9e5);
+    border-radius:14px;
+    background:var(--ie-surface-soft, #f6faf7);
+    line-height:1.6;
+  }
+
+  footer{
+    text-align:center;
+    padding:34px 16px 20px;
+    color:var(--gris-texto);
+    font-size:13px;
+  }
+
+  @media (max-width:760px){
+    .timeline-page{ padding:0 16px 48px; }
+    .page-header{ margin-top:34px; }
+    .page-header h1{ font-size:34px; }
+    .page-header .description{ font-size:15px; }
+    .timeline-card{ padding:18px; border-radius:16px; }
+    .timeline-item{ grid-template-columns:44px 58px minmax(0, 1fr); gap:10px; }
+    .timeline-photo{ width:58px; height:50px; }
+    .timeline-arrow{ display:none; }
+    .timeline-day strong{ font-size:20px; }
+    .calendar-grid{ grid-template-columns:repeat(3, 1fr); }
+    .cal-month{ min-height:96px; padding:11px; }
+    .cal-month-count{ font-size:23px; }
+    .section-head{ flex-direction:column; }
+  }
+
+  @media (max-width:420px){
+    .calendar-grid{ grid-template-columns:repeat(2, 1fr); }
+  }
+
+  html[data-theme="dark"] .timeline-stat,
+  html[data-theme="dark"] .timeline-card,
+  html[data-theme="dark"] .timeline-item{
+    background:var(--ie-surface, #14231f);
+    border-color:var(--ie-border, #263b35);
+  }
+  html[data-theme="dark"] .timeline-stat strong,
+  html[data-theme="dark"] .cal-month-count,
+  html[data-theme="dark"] .timeline-day strong{ color:#6ce0a6; }
+  html[data-theme="dark"] .section-head h2,
+  html[data-theme="dark"] .timeline-group h3,
+  html[data-theme="dark"] .timeline-body strong{ color:#eef6f3; }
+  html[data-theme="dark"] .cal-month{
+    background:#182a25;
+    border-color:var(--ie-border, #263b35);
+    color:#e7efec;
+  }
+  html[data-theme="dark"] .year-chip,
+  html[data-theme="dark"] .month-chip{
+    background:#182a25;
+    border-color:var(--ie-border, #263b35);
+    color:#a9bbb5;
+  }
+  html[data-theme="dark"] .year-chip.is-active,
+  html[data-theme="dark"] .month-chip.is-active{
+    background:#2ecc71;
+    color:#08110f;
+  }
+  html[data-theme="dark"] .timeline-empty{ background:#182a25; }
+</style>
+<link rel="stylesheet" href="css/extras.css">
+</head>
+<body>
+
+<div class="top-header">
+  <a href="/" class="logo">
+    <img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img">
+    <div class="logo-text">InsectErik</div>
+  </a>
+  <nav class="top-nav">
+    <a href="/">Inicio</a>
+    <a href="colecciones.html">Colecciones</a>
+    <a href="listas.html">Listas</a>
+    <a href="linea-tiempo.html" class="active">Tiempo</a>
+    <a href="comparador.html">Comparar</a>
+    <a href="mapa.html">Mapa</a>
+    <a href="estadisticas.html">Estadísticas</a>
+    <a href="juego.html">Juego</a>
+  </nav>
+</div>
+
+<main class="timeline-page">
+  <header class="page-header">
+    <h1>Línea de tiempo</h1>
+    <p class="description">Recorre el catálogo como un cuaderno de campo: qué se observó cada mes, en qué vereda y en qué orden. Usa el calendario para filtrar por año y mes.</p>
+    <div class="timeline-actions">
+      <button class="ie-btn" type="button" id="shareTimeline">↗ Compartir esta vista</button>
+      <a class="ie-btn ie-btn-ghost" href="index.html" id="catalogYearLink">Ver en el catálogo →</a>
+    </div>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="/">Inicio</a> &rsaquo; <span>Línea de tiempo</span>
+  </div>
+
+  <section class="timeline-summary" id="timelineSummary" aria-label="Resumen de observaciones">
+    <div class="timeline-stat"><strong>…</strong><span>Cargando</span></div>
+  </section>
+
+  <section class="timeline-card" aria-labelledby="calendarTitle">
+    <div class="section-head">
+      <div>
+        <h2 id="calendarTitle">Calendario de observaciones</h2>
+        <p id="calendarSubtitle">Cargando observaciones…</p>
+      </div>
+      <div class="year-chips" id="yearChips" aria-label="Filtrar por año"></div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </section>
+
+  <section class="timeline-card" aria-labelledby="timelineTitle">
+    <div class="section-head">
+      <div>
+        <h2 id="timelineTitle">Cronología</h2>
+        <p id="timelineSubtitle">Las observaciones más recientes aparecen primero.</p>
+      </div>
+      <div class="month-chips" id="monthChips" aria-label="Filtrar por mes"></div>
+    </div>
+    <div class="timeline-groups" id="timelineGroups">
+      <div class="timeline-empty">Cargando observaciones…</div>
+    </div>
+  </section>
+
+  <footer>
+    Copyright © 2026 - InsectErik · Biodiversidad de Tibirita, Cundinamarca
+  </footer>
+</main>
+
+<script src="js/core.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+  var state = { year: '', month: '' };
+  var allObservations = [];
+  var years = [];
+  var latestYear = '';
+
+  var summaryEl = document.getElementById('timelineSummary');
+  var yearChipsEl = document.getElementById('yearChips');
+  var monthChipsEl = document.getElementById('monthChips');
+  var calendarGridEl = document.getElementById('calendarGrid');
+  var calendarSubtitleEl = document.getElementById('calendarSubtitle');
+  var timelineGroupsEl = document.getElementById('timelineGroups');
+  var timelineTitleEl = document.getElementById('timelineTitle');
+  var timelineSubtitleEl = document.getElementById('timelineSubtitle');
+  var catalogYearLink = document.getElementById('catalogYearLink');
+  var shareBtn = document.getElementById('shareTimeline');
+
+  function pad(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function dateParts(value) {
+    var match = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(value || ''));
+    if (!match) return null;
+    var year = Number(match[1]);
+    var month = Number(match[2]);
+    var day = Number(match[3]);
+    if (!year || month < 1 || month > 12 || day < 1 || day > 31) return null;
+    var date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+    return { year: year, month: month, day: day, date: date };
+  }
+
+  function formatLongDate(parts) {
+    return parts.day + ' de ' + MONTHS[parts.month - 1] + ' de ' + parts.year;
+  }
+
+  function monthLabel(month) {
+    return MONTHS[month - 1] || '';
+  }
+
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function truncate(value, max) {
+    value = String(value || '').trim();
+    if (value.length <= max) return value;
+    return value.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+  }
+
+  function syncUrl() {
+    var params = new URLSearchParams();
+    if (state.year) params.set('anio', state.year);
+    if (state.month) params.set('mes', state.month);
+    var query = params.toString();
+    var url = window.location.pathname + (query ? '?' + query : '');
+    window.history.replaceState(null, '', url);
+    catalogYearLink.href = state.year ? 'index.html?year=' + encodeURIComponent(state.year) : 'index.html';
+  }
+
+  function filteredObservations() {
+    return allObservations.filter(function (obs) {
+      if (state.year && String(obs.parts.year) !== state.year) return false;
+      if (state.month && String(obs.parts.month) !== state.month) return false;
+      return true;
+    });
+  }
+
+  function renderSummary() {
+    var dated = allObservations.length;
+    var uniqueMonths = {};
+    var uniqueYears = {};
+    allObservations.forEach(function (obs) {
+      uniqueMonths[obs.parts.year + '-' + pad(obs.parts.month)] = true;
+      uniqueYears[obs.parts.year] = true;
+    });
+    var withoutDate = window.__timelineSpeciesCount ? window.__timelineSpeciesCount - dated : 0;
+
+    summaryEl.innerHTML =
+      '<div class="timeline-stat"><strong>' + dated + '</strong><span>Observaciones con fecha</span></div>' +
+      '<div class="timeline-stat"><strong>' + Object.keys(uniqueMonths).length + '</strong><span>Meses con registros</span></div>' +
+      '<div class="timeline-stat"><strong>' + Object.keys(uniqueYears).length + '</strong><span>Años documentados</span></div>' +
+      '<div class="timeline-stat"><strong>' + withoutDate + '</strong><span>Especies sin fecha</span></div>';
+  }
+
+  function renderYearChips() {
+    var html = '<button type="button" class="year-chip' + (!state.year ? ' is-active' : '') + '" data-year="">Todos</button>';
+    years.slice().sort(function (a, b) { return b - a; }).forEach(function (year) {
+      html += '<button type="button" class="year-chip' + (state.year === String(year) ? ' is-active' : '') + '" data-year="' + year + '">' + year + '</button>';
+    });
+    yearChipsEl.innerHTML = html;
+    yearChipsEl.querySelectorAll('[data-year]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.year = btn.getAttribute('data-year');
+        state.month = '';
+        syncUrl();
+        render();
+      });
+    });
+  }
+
+  function observationsForCalendar() {
+    return allObservations.filter(function (obs) {
+      return !state.year || String(obs.parts.year) === state.year;
+    });
+  }
+
+  function renderCalendar() {
+    var source = observationsForCalendar();
+    var counts = {};
+    source.forEach(function (obs) {
+      counts[obs.parts.month] = (counts[obs.parts.month] || 0) + 1;
+    });
+    var max = Math.max.apply(null, Object.keys(counts).map(function (m) { return counts[m]; }).concat([1]));
+
+    calendarSubtitleEl.textContent = state.year
+      ? 'Observaciones registradas en ' + state.year + '. Haz clic en un mes para filtrar la cronología.'
+      : 'Observaciones de todos los años agrupadas por mes. Elige un año arriba para ver su calendario.';
+
+    var html = '';
+    for (var month = 1; month <= 12; month++) {
+      var count = counts[month] || 0;
+      var active = state.month === String(month);
+      var width = count ? Math.max(8, Math.round(count / max * 100)) : 0;
+      html += '<button type="button" class="cal-month' + (active ? ' is-active' : '') + '" data-month="' + month + '"' +
+        (count ? '' : ' disabled') + ' aria-label="' + monthLabel(month) + ': ' + count + ' observaciones">' +
+        '<span class="cal-month-name">' + monthLabel(month) + '</span>' +
+        '<strong class="cal-month-count">' + count + '</strong>' +
+        '<span class="cal-month-label">' + (count === 1 ? 'observación' : 'observaciones') + '</span>' +
+        '<span class="cal-month-bar"><i style="width:' + width + '%"></i></span>' +
+      '</button>';
+    }
+    calendarGridEl.innerHTML = html;
+
+    calendarGridEl.querySelectorAll('[data-month]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.disabled) return;
+        var month = btn.getAttribute('data-month');
+        state.month = state.month === month ? '' : month;
+        syncUrl();
+        render();
+      });
+    });
+  }
+
+  function renderMonthChips() {
+    var source = observationsForCalendar();
+    var counts = {};
+    source.forEach(function (obs) {
+      counts[obs.parts.month] = (counts[obs.parts.month] || 0) + 1;
+    });
+
+    var html = '<button type="button" class="month-chip' + (!state.month ? ' is-active' : '') + '" data-month="">Todos</button>';
+    Object.keys(counts).map(Number).sort(function (a, b) { return a - b; }).forEach(function (month) {
+      html += '<button type="button" class="month-chip' + (state.month === String(month) ? ' is-active' : '') + '" data-month="' + month + '">' +
+        monthLabel(month) + ' (' + counts[month] + ')</button>';
+    });
+    monthChipsEl.innerHTML = html;
+
+    monthChipsEl.querySelectorAll('[data-month]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.month = btn.getAttribute('data-month');
+        syncUrl();
+        render();
+      });
+    });
+  }
+
+  function renderTimeline() {
+    var list = filteredObservations();
+    var groups = [];
+    var byKey = {};
+
+    list.forEach(function (obs) {
+      var key = obs.parts.year + '-' + pad(obs.parts.month);
+      if (!byKey[key]) {
+        byKey[key] = { key: key, year: obs.parts.year, month: obs.parts.month, items: [] };
+        groups.push(byKey[key]);
+      }
+      byKey[key].items.push(obs);
+    });
+
+    groups.sort(function (a, b) {
+      return (b.year - a.year) || (b.month - a.month);
+    });
+
+    var titleParts = [];
+    if (state.month) titleParts.push(monthLabel(Number(state.month)));
+    if (state.year) titleParts.push(state.year);
+    timelineTitleEl.textContent = titleParts.length
+      ? 'Cronología · ' + titleParts.join(' de ')
+      : 'Cronología completa';
+    timelineSubtitleEl.textContent = list.length
+      ? list.length + (list.length === 1 ? ' observación' : ' observaciones') + ' en esta vista.'
+      : 'No hay observaciones para este filtro.';
+
+    if (!groups.length) {
+      timelineGroupsEl.innerHTML = '<div class="timeline-empty">No hay observaciones con los filtros elegidos.<br>' +
+        'Prueba con otro año o con <button type="button" class="year-chip" id="clearTimelineFilters">todos los meses</button>.</div>';
+      var clear = document.getElementById('clearTimelineFilters');
+      if (clear) clear.addEventListener('click', function () {
+        state.year = '';
+        state.month = '';
+        syncUrl();
+        render();
+      });
+      return;
+    }
+
+    timelineGroupsEl.innerHTML = groups.map(function (group) {
+      var items = group.items.slice().sort(function (a, b) {
+        return b.parts.date - a.parts.date;
+      });
+      return '<section class="timeline-group">' +
+        '<h3>' + monthLabel(group.month) + ' de ' + group.year +
+          '<span>' + items.length + (items.length === 1 ? ' observación' : ' observaciones') + '</span>' +
+        '</h3>' +
+        '<div class="timeline-list">' + items.map(function (obs) {
+          var sp = obs.sp;
+          var photo = sp.photos && sp.photos[0];
+          var vereda = (sp.vereda || []).join(', ');
+          var autores = (sp.autores || []).join(', ');
+          var path = window.IE.getCategoryPath(sp).join(' › ');
+          return '<a class="timeline-item" href="' + window.IE.speciesUrl(sp.id) + '">' +
+            '<span class="timeline-day"><strong>' + obs.parts.day + '</strong><small>' + monthLabel(obs.parts.month).slice(0, 3) + '</small></span>' +
+            '<span class="timeline-photo">' +
+              (photo
+                ? '<img src="' + esc(photo) + '" alt="" loading="lazy">'
+                : '🌿') +
+            '</span>' +
+            '<span class="timeline-body">' +
+              '<strong>' + esc(sp.name) + '</strong>' +
+              (sp.scientificName ? '<em>' + esc(sp.scientificName) + '</em>' : '') +
+              '<span class="timeline-meta">' +
+                (vereda ? '<span>📍 ' + esc(vereda) + '</span>' : '') +
+                (autores ? '<span>👤 ' + esc(truncate(autores, 64)) + '</span>' : '') +
+                (path ? '<span>' + esc(path) + '</span>' : '') +
+              '</span>' +
+            '</span>' +
+            '<span class="timeline-arrow" aria-hidden="true">→</span>' +
+          '</a>';
+        }).join('') + '</div>' +
+      '</section>';
+    }).join('');
+
+    var firstMonth = list[0];
+    if (firstMonth) {
+      // Mantiene la URL lista para compartir incluso si se llegó sin filtros.
+      if (!state.year && !state.month) syncUrl();
+    }
+  }
+
+  function render() {
+    renderYearChips();
+    renderCalendar();
+    renderMonthChips();
+    renderTimeline();
+  }
+
+  function obsFromSpecies(sp) {
+    var parts = dateParts(sp.date);
+    if (!parts) return null;
+    return { sp: sp, parts: parts };
+  }
+
+  function initFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var year = params.get('anio');
+    var month = parseInt(params.get('mes'), 10);
+    if (year && year !== 'todos' && /^\d{4}$/.test(year)) state.year = year;
+    else if (!year) state.year = latestYear;
+    if (month >= 1 && month <= 12) state.month = String(month);
+    syncUrl();
+  }
+
+  function load() {
+    if (!window.IE) {
+      timelineGroupsEl.innerHTML = '<div class="timeline-empty">No se pudo iniciar la línea de tiempo.</div>';
+      return;
+    }
+
+    window.IE.loadSpecies().then(function (species) {
+      window.__timelineSpeciesCount = species.length;
+      allObservations = species.map(obsFromSpecies).filter(Boolean);
+      allObservations.sort(function (a, b) { return b.parts.date - a.parts.date; });
+
+      var yearSet = {};
+      allObservations.forEach(function (obs) { yearSet[obs.parts.year] = true; });
+      years = Object.keys(yearSet).map(Number).sort(function (a, b) { return b - a; });
+      latestYear = years.length ? String(years[0]) : '';
+
+      initFromUrl();
+      renderSummary();
+      render();
+    }).catch(function (error) {
+      console.error(error);
+      summaryEl.innerHTML = '';
+      timelineGroupsEl.innerHTML = '<div class="timeline-empty">No se pudieron cargar las observaciones. Revisa tu conexión e intenta de nuevo.</div>';
+    });
+  }
+
+  shareBtn.addEventListener('click', function () {
+    window.IE.share('Línea de tiempo · InsectErik', window.location.href);
+  });
+
+  window.addEventListener('popstate', function () {
+    var params = new URLSearchParams(window.location.search);
+    var year = params.get('anio');
+    state.year = !year ? latestYear : (year === 'todos' ? '' : (/^\d{4}$/.test(year) ? year : latestYear));
+    var month = parseInt(params.get('mes'), 10);
+    state.month = (month >= 1 && month <= 12) ? String(month) : '';
+    renderSummary();
+    render();
+  });
+
+  load();
+})();
+</script>
+<script src="js/features.js"></script>
+</body>
+</html>

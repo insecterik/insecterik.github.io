@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego &middot; InsectErik</title>
+<link rel="icon" type="image/png" href="images/uploads/favicon.png">
+<style>
+  :root{
+    --verde-oscuro:#1c3f3a;
+    --verde-header:#16332f;
+    --verde-brillante:#2ecc71;
+    --verde-texto:#1b5e20;
+    --crema:#f4f8f2;
+    --gris-texto:#5a6b66;
+  }
+  *{ box-sizing:border-box; }
+  html, body{ max-width:100%; overflow-x:hidden; }
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--crema);
+    color:#222;
+  }
+  a{ text-decoration:none; }
+  .top-header{
+    position:sticky; top:0; z-index:100;
+    background:var(--verde-header);
+    display:flex; align-items:center;
+    padding:0 24px; height:60px; gap:16px;
+  }
+  .logo{ display:flex; align-items:center; gap:10px; color:white; font-weight:700; font-size:20px; }
+  .logo-img{ height:36px; width:36px; object-fit:contain; border-radius:50%; }
+  .logo-text{ letter-spacing:.5px; }
+  .top-nav{ margin-left:auto; display:flex; align-items:center; gap:22px; }
+  .top-nav a{ color:rgba(255,255,255,.8); font-size:15px; font-weight:500; transition:color .2s; }
+  .top-nav a:hover, .top-nav a.active{ color:#fff; }
+  footer{
+    text-align:center; padding:26px 20px 40px;
+    font-size:13px; color:var(--gris-texto);
+  }
+  .ie-game-loading{
+    max-width:1000px; margin:30px auto 70px; padding:0 24px;
+    color:var(--gris-texto); font-size:14px;
+  }
+  .ie-game-error{
+    max-width:1000px; margin:30px auto 70px; padding:24px;
+    background:#fff; border-radius:14px; box-shadow:0 2px 10px rgba(0,0,0,.07);
+    color:var(--gris-texto); font-size:14px;
+  }
+  @media (max-width:760px){
+    .top-header{ height:auto; min-height:56px; padding:8px 16px; flex-wrap:wrap; }
+    .top-nav{ gap:14px; }
+    .top-nav a{ font-size:13px; }
+  }
+</style>
+<link rel="stylesheet" href="css/extras.css">
+</head>
+<body class="ie-game-page">
+
+<div class="top-header">
+  <a href="/" class="logo">
+    <img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img">
+    <div class="logo-text">InsectErik</div>
+  </a>
+  <nav class="top-nav">
+    <a href="/">Inicio</a>
+    <a href="colecciones.html">Colecciones</a>
+    <a href="listas.html">Listas</a>
+    <a href="linea-tiempo.html">Tiempo</a>
+    <a href="comparador.html">Comparar</a>
+    <a href="mapa.html">Mapa</a>
+    <a href="estadisticas.html">Estadísticas</a>
+    <a href="juego.html" class="active">Juego</a>
+  </nav>
+</div>
+
+<header class="ie-game-hero">
+  <div class="ie-game-hero-inner">
+    <h1>Aprende <span>jugando</span></h1>
+    <p>Tres formas de explorar la biodiversidad de Tibirita: adivina la especie, recorre su clasificación o pon a prueba tu memoria con las fotos del catálogo.</p>
+  </div>
+</header>
+
+<div class="ie-game-tabs" role="tablist" aria-label="Juegos">
+  <button class="ie-game-tab is-active" type="button" data-tab="quiz" role="tab" aria-selected="true">🎯 ¿Cuál es esta especie?</button>
+  <button class="ie-game-tab" type="button" data-tab="explorer" role="tab" aria-selected="false">🧭 Explorador guiado</button>
+  <button class="ie-game-tab" type="button" data-tab="memory" role="tab" aria-selected="false">🃏 Memoria</button>
+</div>
+
+<main class="ie-game-main">
+  <div id="gameLoading" class="ie-game-loading">Cargando especies del catálogo…</div>
+
+  <!-- QUIZ -->
+  <section class="ie-game-panel is-active" id="panel-quiz" role="tabpanel">
+    <div class="ie-quiz-card">
+      <div class="ie-quiz-top">
+        <div class="ie-quiz-score">
+          <div>Puntaje<strong id="quizScore">0</strong></div>
+          <div>Racha<strong id="quizStreak">0</strong></div>
+          <div>Récord<strong id="quizBest">0</strong></div>
+        </div>
+        <div class="ie-quiz-progress">
+          <div class="ie-progress">
+            <div class="ie-progress-bar"><span id="quizProgressBar" style="width:0%"></span></div>
+            <span id="quizProgressText">Ronda 1</span>
+          </div>
+        </div>
+      </div>
+      <div id="quizPhoto" class="ie-quiz-photo">🌿</div>
+      <div class="ie-quiz-body">
+        <p class="ie-quiz-question" id="quizQuestion">¿Qué especie aparece en la foto?</p>
+        <div class="ie-quiz-options" id="quizOptions"></div>
+        <div class="ie-quiz-feedback" id="quizFeedback" aria-live="polite"></div>
+        <div class="ie-quiz-next">
+          <button class="ie-btn ie-btn-primary" type="button" id="quizNext" hidden>Siguiente especie →</button>
+          <button class="ie-btn ie-btn-ghost" type="button" id="quizSkip">Saltar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORADOR -->
+  <section class="ie-game-panel" id="panel-explorer" role="tabpanel">
+    <div class="ie-explorer-card">
+      <div class="ie-explorer-breadcrumb" id="explorerBreadcrumb"></div>
+      <h2 class="ie-explorer-title" id="explorerTitle">Elige un grupo</h2>
+      <p class="ie-explorer-sub" id="explorerSub">Ve bajando por la clasificación hasta encontrar las especies.</p>
+      <div class="ie-explorer-options" id="explorerOptions"></div>
+      <div id="explorerSpecies" style="margin-top:18px"></div>
+    </div>
+  </section>
+
+  <!-- MEMORIA -->
+  <section class="ie-game-panel" id="panel-memory" role="tabpanel">
+    <div class="ie-explorer-card">
+      <div class="ie-quiz-top" style="padding:0 0 16px;border-bottom:1px solid var(--ie-border);margin-bottom:18px">
+        <div class="ie-quiz-score">
+          <div>Parejas<strong id="memoryMatches">0 / 6</strong></div>
+          <div>Movimientos<strong id="memoryMoves">0</strong></div>
+          <div>Mejor<strong id="memoryBest">—</strong></div>
+        </div>
+        <button class="ie-btn" type="button" id="memoryRestart">↻ Reiniciar</button>
+      </div>
+      <p class="ie-explorer-sub" id="memoryHint">Encuentra cada foto con su nombre. Haz clic en dos cartas por turno.</p>
+      <div class="ie-memory-grid" id="memoryGrid"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Copyright © 2026 - InsectErik · Biodiversidad de Tibirita, Cundinamarca
+</footer>
+
+<script src="js/core.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var state = {
+    species: [],
+    quiz: { pool: [], current: null, score: 0, streak: 0, round: 0, answered: false },
+    explorer: { path: [] },
+    memory: { deck: [], first: null, second: null, lock: false, moves: 0, matches: 0, pairs: 6 }
+  };
+
+  var LEVELS = [
+    { key: 'reino', label: 'Grupo general' },
+    { key: 'grupo', label: 'Grupo biológico' },
+    { key: 'subgrupo', label: 'Grupo de organismos' },
+    { key: 'categoria', label: 'Grupo específico' },
+    { key: 'subcategoria', label: 'Categoría menor' }
+  ];
+
+  function $(id) { return document.getElementById(id); }
+  function esc(value) { return IE.escapeHtml(value); }
+  function val(sp, key) { return (sp[key] || '').trim(); }
+
+  function fail(message) {
+    $('gameLoading').innerHTML = '<div class="ie-game-error">' + esc(message) + '</div>';
+  }
+
+  IE.loadSpecies().then(function (species) {
+    state.species = species || [];
+    if (!state.species.length) {
+      fail('Todavía no hay especies en el catálogo. Vuelve cuando se registre la primera.');
+      return;
+    }
+    $('gameLoading').style.display = 'none';
+    initQuiz();
+    initExplorer();
+    initMemory();
+  }).catch(function (error) {
+    console.error(error);
+    fail('No se pudo cargar el catálogo desde GitHub. Revisa tu conexión e intenta de nuevo.');
+  });
+
+  /* ── Pestañas ─────────────────────────────────────────────── */
+  document.querySelectorAll('.ie-game-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.ie-game-tab').forEach(function (other) {
+        other.classList.toggle('is-active', other === tab);
+        other.setAttribute('aria-selected', other === tab ? 'true' : 'false');
+      });
+      document.querySelectorAll('.ie-game-panel').forEach(function (panel) {
+        panel.classList.toggle('is-active', panel.id === 'panel-' + tab.dataset.tab);
+      });
+      if (tab.dataset.tab === 'memory' && !state.memory.deck.length) startMemory();
+    });
+  });
+
+  /* ── Quiz ─────────────────────────────────────────────────── */
+  function shuffle(array) {
+    var copy = array.slice();
+    for (var i = copy.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = copy[i]; copy[i] = copy[j]; copy[j] = temp;
+    }
+    return copy;
+  }
+
+  function initQuiz() {
+    state.quiz.pool = state.species.filter(function (sp) { return sp.photos && sp.photos.length; });
+    if (!state.quiz.pool.length) state.quiz.pool = state.species.slice();
+
+    var best = Number(IE.safeGet('ie_quiz_best', 0)) || 0;
+    $('quizBest').textContent = best;
+
+    if (!state.quiz.pool.some(function (sp) { return sp.photos && sp.photos.length; })) {
+      $('quizPhoto').textContent = '🌿';
+      $('quizQuestion').textContent = 'Aún no hay fotos suficientes para jugar. ¡Sube imágenes desde el administrador!';
+      $('quizOptions').innerHTML = '';
+      $('quizSkip').hidden = true;
+      return;
+    }
+
+    nextQuestion();
+    $('quizNext').addEventListener('click', nextQuestion);
+    $('quizSkip').addEventListener('click', nextQuestion);
+  }
+
+  function nextQuestion() {
+    var pool = state.quiz.pool;
+    var candidates = pool.filter(function (sp) {
+      return sp.photos && sp.photos.length && (!state.quiz.current || sp.id !== state.quiz.current.id);
+    });
+    if (!candidates.length) candidates = pool;
+    var target = candidates[Math.floor(Math.random() * candidates.length)];
+
+    var names = [];
+    var seen = {};
+    names.push(target.name);
+    seen[target.name.toLowerCase()] = true;
+    var others = shuffle(pool).filter(function (sp) {
+      var key = sp.name.toLowerCase();
+      if (seen[key]) return false;
+      seen[key] = true;
+      return true;
+    }).slice(0, 3);
+    others.forEach(function (sp) { names.push(sp.name); });
+    names = shuffle(names);
+
+    state.quiz.current = target;
+    state.quiz.answered = false;
+    state.quiz.round++;
+
+    var photo = target.photos && target.photos[0];
+    $('quizPhoto').innerHTML = photo
+      ? '<img src="' + esc(photo) + '" alt="Especie misteriosa" style="width:100%;height:100%;object-fit:cover">'
+      : '🌿';
+    $('quizQuestion').textContent = '¿Qué especie aparece en la foto?';
+    $('quizFeedback').innerHTML = '';
+    $('quizNext').hidden = true;
+    $('quizSkip').hidden = false;
+    $('quizProgressBar').style.width = Math.min(100, (state.quiz.round - 1) * 8) + '%';
+    $('quizProgressText').textContent = 'Ronda ' + state.quiz.round;
+
+    var options = $('quizOptions');
+    options.innerHTML = '';
+    names.forEach(function (name, index) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ie-quiz-option';
+      btn.innerHTML = '<span class="letter">' + String.fromCharCode(65 + index) + '</span><span>' + esc(name) + '</span>';
+      btn.addEventListener('click', function () { answerQuiz(btn, name, target); });
+      options.appendChild(btn);
+    });
+    updateQuizStats();
+  }
+
+  function answerQuiz(button, name, target) {
+    if (state.quiz.answered) return;
+    state.quiz.answered = true;
+    var correct = name.toLowerCase() === target.name.toLowerCase();
+
+    $('quizOptions').querySelectorAll('.ie-quiz-option').forEach(function (btn) {
+      btn.disabled = true;
+      var text = btn.textContent.replace(/^[A-D]\s*/, '');
+      if (text.toLowerCase() === target.name.toLowerCase()) btn.classList.add('is-correct');
+    });
+    if (!correct) button.classList.add('is-wrong');
+
+    if (correct) {
+      state.quiz.score += 10;
+      state.quiz.streak += 1;
+      $('quizFeedback').innerHTML = '<strong>¡Correcto!</strong> Es <strong>' + esc(target.name) +
+        '</strong>' + (target.scientificName ? ' <em>(' + esc(target.scientificName) + ')</em>' : '') +
+        '. <a href="' + IE.speciesUrl(target.id) + '" style="color:var(--verde-texto);font-weight:700">Ver ficha →</a>';
+    } else {
+      state.quiz.streak = 0;
+      $('quizFeedback').innerHTML = 'Casi. La respuesta era <strong>' + esc(target.name) +
+        '</strong>' + (target.scientificName ? ' <em>(' + esc(target.scientificName) + ')</em>' : '') +
+        '. <a href="' + IE.speciesUrl(target.id) + '" style="color:var(--verde-texto);font-weight:700">Ver ficha →</a>';
+    }
+
+    var best = Number(IE.safeGet('ie_quiz_best', 0)) || 0;
+    if (state.quiz.score > best) {
+      IE.safeSet('ie_quiz_best', state.quiz.score);
+      best = state.quiz.score;
+    }
+    var bestStreak = Number(IE.safeGet('ie_quiz_best_streak', 0)) || 0;
+    if (state.quiz.streak > bestStreak) IE.safeSet('ie_quiz_best_streak', state.quiz.streak);
+
+    $('quizNext').hidden = false;
+    updateQuizStats(best);
+  }
+
+  function updateQuizStats(best) {
+    $('quizScore').textContent = state.quiz.score;
+    $('quizStreak').textContent = state.quiz.streak;
+    $('quizBest').textContent = best == null ? (Number(IE.safeGet('ie_quiz_best', 0)) || 0) : best;
+  }
+
+  /* ── Explorador guiado ────────────────────────────────────── */
+  function initExplorer() {
+    renderExplorer();
+  }
+
+  function speciesMatchingPath(path) {
+    return state.species.filter(function (sp) {
+      return path.every(function (step) {
+        return val(sp, step.key).toLowerCase() === step.value.toLowerCase();
+      });
+    });
+  }
+
+  function renderExplorer() {
+    var path = state.explorer.path;
+    var matching = speciesMatchingPath(path);
+    var breadcrumb = $('explorerBreadcrumb');
+    breadcrumb.innerHTML = '<span class="ie-explorer-crumb"><button type="button" data-depth="0">Todas</button></span>';
+
+    path.forEach(function (step, index) {
+      var label = LEVELS[index] ? LEVELS[index].label : step.key;
+      breadcrumb.innerHTML += '<span style="opacity:.5">›</span>' +
+        '<span class="ie-explorer-crumb"><button type="button" data-depth="' + (index + 1) + '">' + esc(step.value) + '</button></span>';
+    });
+
+    breadcrumb.querySelectorAll('button[data-depth]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.explorer.path = path.slice(0, Number(btn.dataset.depth));
+        renderExplorer();
+      });
+    });
+
+    var nextLevel = LEVELS[path.length];
+    var optionsHtml = '';
+    var hasOptions = false;
+
+    if (nextLevel && matching.length) {
+      var counts = {};
+      matching.forEach(function (sp) {
+        var value = val(sp, nextLevel.key);
+        if (value) counts[value] = (counts[value] || 0) + 1;
+      });
+      var values = Object.keys(counts).sort(function (a, b) { return a.localeCompare(b, 'es'); });
+      if (values.length) {
+        hasOptions = true;
+        optionsHtml = values.map(function (value) {
+          return '<button class="ie-explorer-option" type="button" data-value="' + esc(value) + '">' +
+            esc(value) + ' <span>' + counts[value] + '</span></button>';
+        }).join('');
+      }
+    }
+
+    $('explorerTitle').textContent = path.length
+      ? 'Dentro de ' + path[path.length - 1].value
+      : 'Elige un grupo';
+    $('explorerSub').textContent = hasOptions
+      ? 'Siguiente nivel: ' + (nextLevel.label || nextLevel.key) + '. Elige una opción o mira las especies de este grupo.'
+      : 'Estas son las especies que coinciden con tu recorrido.';
+
+    var optionsEl = $('explorerOptions');
+    optionsEl.innerHTML = optionsHtml +
+      (matching.length ? '<button class="ie-explorer-option" type="button" data-show-species style="background:var(--verde-brillante);border-color:transparent;color:var(--verde-header)">Ver ' + matching.length + (matching.length === 1 ? ' especie' : ' especies') + ' →</button>' : '');
+
+    optionsEl.querySelectorAll('[data-value]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.explorer.path.push({ key: nextLevel.key, value: btn.dataset.value });
+        renderExplorer();
+      });
+    });
+    var showBtn = optionsEl.querySelector('[data-show-species]');
+    if (showBtn) showBtn.addEventListener('click', function () { renderExplorerSpecies(matching); });
+
+    var speciesEl = $('explorerSpecies');
+    if (!matching.length) {
+      speciesEl.innerHTML = '<p class="ie-explorer-sub">No hay especies en esta rama.</p>';
+    } else if (!hasOptions || path.length >= LEVELS.length) {
+      renderExplorerSpecies(matching);
+    } else {
+      speciesEl.innerHTML = '';
+    }
+  }
+
+  function renderExplorerSpecies(species) {
+    $('explorerSpecies').innerHTML = '<div class="ie-explorer-species">' + species.map(function (sp) {
+      var photo = sp.photos && sp.photos[0];
+      return '<a href="' + IE.speciesUrl(sp.id) + '">' +
+        (photo ? '<img src="' + esc(photo) + '" alt="" loading="lazy">' : '<div class="noimg">🌿</div>') +
+        '<strong>' + esc(sp.name) + '</strong>' +
+        '<small>' + esc(sp.scientificName || sp.categoryLabel || '') + '</small>' +
+      '</a>';
+    }).join('') + '</div>';
+  }
+
+  /* ── Memoria ──────────────────────────────────────────────── */
+  function initMemory() {
+    var withPhotos = state.species.filter(function (sp) { return sp.photos && sp.photos.length; });
+    if (withPhotos.length < 4) {
+      $('memoryGrid').innerHTML = '<p class="ie-explorer-sub">Necesitamos al menos 4 especies con foto para jugar. ¡Sube más imágenes!</p>';
+      $('memoryRestart').hidden = true;
+      return;
+    }
+    var best = Number(IE.safeGet('ie_memory_best', 0)) || 0;
+    $('memoryBest').textContent = best ? best + ' mov.' : '—';
+    $('memoryRestart').addEventListener('click', startMemory);
+    startMemory();
+  }
+
+  function startMemory() {
+    var withPhotos = state.species.filter(function (sp) { return sp.photos && sp.photos.length; });
+    if (withPhotos.length < 4) return;
+    var pairs = Math.min(state.memory.pairs, withPhotos.length);
+    var chosen = shuffle(withPhotos).slice(0, pairs);
+    var deck = [];
+    chosen.forEach(function (sp, index) {
+      deck.push({ pair: index, type: 'photo', species: sp, image: sp.photos[0] });
+      deck.push({ pair: index, type: 'name', species: sp });
+    });
+    state.memory.deck = shuffle(deck);
+    state.memory.first = null;
+    state.memory.second = null;
+    state.memory.lock = false;
+    state.memory.moves = 0;
+    state.memory.matches = 0;
+    state.memory.pairs = pairs;
+
+    $('memoryMatches').textContent = '0 / ' + pairs;
+    $('memoryMoves').textContent = '0';
+    $('memoryHint').textContent = 'Encuentra cada foto con su nombre. Haz clic en dos cartas por turno.';
+    renderMemory();
+  }
+
+  function renderMemory() {
+    var grid = $('memoryGrid');
+    grid.innerHTML = '';
+    state.memory.deck.forEach(function (card, index) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ie-memory-card';
+      btn.dataset.index = index;
+      btn.innerHTML = '<span class="back">?</span>';
+      btn.addEventListener('click', function () { flipMemoryCard(index); });
+      grid.appendChild(btn);
+    });
+  }
+
+  function flipMemoryCard(index) {
+    var memory = state.memory;
+    if (memory.lock) return;
+    var card = memory.deck[index];
+    if (!card || card.matched || index === memory.first || index === memory.second) return;
+
+    var el = document.querySelector('.ie-memory-card[data-index="' + index + '"]');
+    if (!el) return;
+    el.classList.add('is-flipped');
+    el.innerHTML = card.type === 'photo'
+      ? '<img src="' + esc(card.image) + '" alt="">'
+      : '<span class="back" style="background:var(--verde-oscuro);padding:6px;font-size:13px;text-align:center">' + esc(card.species.name) + '</span>';
+
+    if (memory.first === null) {
+      memory.first = index;
+      return;
+    }
+
+    memory.second = index;
+    memory.moves++;
+    $('memoryMoves').textContent = memory.moves;
+    var first = memory.deck[memory.first];
+    var second = memory.deck[index];
+    var isMatch = first.pair === second.pair && first.type !== second.type;
+
+    if (isMatch) {
+      first.matched = true;
+      second.matched = true;
+      memory.matches++;
+      $('memoryMatches').textContent = memory.matches + ' / ' + memory.pairs;
+      document.querySelectorAll('.ie-memory-card[data-index="' + memory.first + '"], .ie-memory-card[data-index="' + index + '"]').forEach(function (node) {
+        node.classList.add('is-matched');
+      });
+      memory.first = null;
+      memory.second = null;
+      if (memory.matches === memory.pairs) finishMemory();
+    } else {
+      memory.lock = true;
+      var firstIndex = memory.first;
+      var secondIndex = index;
+      setTimeout(function () {
+        [firstIndex, secondIndex].forEach(function (cardIndex) {
+          var node = document.querySelector('.ie-memory-card[data-index="' + cardIndex + '"]');
+          if (!node) return;
+          node.classList.remove('is-flipped');
+          node.innerHTML = '<span class="back">?</span>';
+        });
+        memory.first = null;
+        memory.second = null;
+        memory.lock = false;
+      }, 850);
+    }
+  }
+
+  function finishMemory() {
+    var best = Number(IE.safeGet('ie_memory_best', 0)) || 0;
+    if (!best || state.memory.moves < best) {
+      IE.safeSet('ie_memory_best', state.memory.moves);
+      best = state.memory.moves;
+      $('memoryBest').textContent = best + ' mov.';
+    }
+    $('memoryHint').innerHTML = '<strong>¡Completaste el tablero en ' + state.memory.moves + ' movimientos!</strong> ' +
+      'Puedes reiniciar para intentar superar tu récord.';
+    IE.toast('¡Memoria completada! 🎉');
+  }
+
+  /* ── Atajos del quiz: 1-4 para responder ──────────────────── */
+  document.addEventListener('keydown', function (event) {
+    if (!document.getElementById('panel-quiz').classList.contains('is-active')) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName || '')) return;
+    var number = Number(event.key);
+    if (number >= 1 && number <= 4) {
+      var option = document.querySelectorAll('#quizOptions .ie-quiz-option')[number - 1];
+      if (option && !option.disabled) option.click();
+    }
+    if (event.key === 'Enter' && !document.getElementById('quizNext').hidden) nextQuestion();
+  });
+})();
+</script>
+<script src="js/features.js"></script>
+</body>
+</html>

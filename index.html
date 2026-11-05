@@ -1067,6 +1067,7 @@
   }
 
 </style>
+<link rel="stylesheet" href="css/extras.css">
 </head>
 <body>
 
@@ -1079,8 +1080,11 @@
   <div class="top-nav">
     <a href="colecciones.html">Colecciones</a>
     <a href="listas.html">Listas</a>
+    <a href="linea-tiempo.html">Tiempo</a>
+    <a href="comparador.html">Comparar</a>
     <a href="mapa.html">Mapa</a>
     <a href="estadisticas.html">Estadísticas</a>
+    <a href="juego.html">Juego</a>
     <div class="search-box">
       <input type="text" placeholder="Buscar especie...">
       <button aria-label="Buscar">🔍</button>
@@ -1106,8 +1110,11 @@
     <div class="hero-mobile-nav">
       <a href="colecciones.html">Colecciones</a>
       <a href="listas.html">Listas</a>
+      <a href="linea-tiempo.html">Tiempo</a>
+      <a href="comparador.html">Comparar</a>
       <a href="mapa.html">Mapa</a>
       <a href="estadisticas.html">Estadísticas</a>
+      <a href="juego.html">Juego</a>
     </div>
     <h1>Aprender,<br>Explorar, Valorar</h1>
     <p class="subtitle">la magnífica diversidad de la fauna de Tibirita, Cundinamarca</p>
@@ -1162,6 +1169,38 @@
     </div>
 
     <div class="container">
+      <div class="ie-toolbar" id="catalogToolbar">
+        <div class="ie-toolbar-search">
+          <input type="search" id="catalogSearch" autocomplete="off" placeholder="Nombre, científico, vereda o autor…" aria-label="Filtrar especies">
+          <span class="ie-toolbar-search-icon" aria-hidden="true">⌕</span>
+        </div>
+        <label class="ie-field">Vereda
+          <select id="filterVereda" aria-label="Filtrar por vereda"><option value="">Todas</option></select>
+        </label>
+        <label class="ie-field">Autor
+          <select id="filterAutor" aria-label="Filtrar por autor"><option value="">Todos</option></select>
+        </label>
+        <label class="ie-field">Año
+          <select id="filterYear" aria-label="Filtrar por año"><option value="">Todos</option></select>
+        </label>
+        <label class="ie-field">Orden
+          <select id="filterSort" aria-label="Ordenar resultados">
+            <option value="recent">Más recientes</option>
+            <option value="name">Nombre A-Z</option>
+            <option value="oldest">Más antiguas</option>
+          </select>
+        </label>
+        <label class="ie-check"><input type="checkbox" id="filterPhoto"> Con foto</label>
+        <label class="ie-check"><input type="checkbox" id="filterFav"> ♥ Favoritas</label>
+        <label class="ie-check"><input type="checkbox" id="filterSeen"> ✓ Vistas</label>
+        <div class="ie-toolbar-actions">
+          <button class="ie-btn" type="button" id="randomSpeciesBtn">🎲 Especie al azar</button>
+          <button class="ie-btn" type="button" id="openNotebookBtn">📒 Mi libreta</button>
+          <button class="ie-btn ie-btn-ghost" type="button" id="clearFiltersBtn">Limpiar</button>
+        </div>
+      </div>
+      <div class="ie-progress" id="catalogProgress" style="margin:0 0 14px"></div>
+      <div class="ie-chips" id="catalogChips"></div>
       <div class="gallery" id="gallery">
         <!-- tarjetas generadas por JS desde data.json -->
       </div>
@@ -1202,6 +1241,7 @@
   </div>
 </div>
 
+<script src="js/core.js"></script>
 <script>
 // ═══════════════════════════════════════════
 // Biodiversidad de Tibirita — app.js inline
@@ -1213,6 +1253,12 @@
 
   var DB = { categories: [], species: [] };
   var activeFilter = null; // null = todos
+  var filters = {
+    q: '', vereda: '', autor: '', year: '',
+    onlyPhoto: false, onlyFav: false, onlySeen: false,
+    sort: 'recent'
+  };
+  var controlsBound = false;
 
   // ── CONFIG: repo de GitHub donde Decap guarda el contenido ──
   var GH_USER   = 'insecterik';
@@ -1277,6 +1323,12 @@
       .replace(/(^-|-$)/g, '');
   }
 
+  // Une las dos formas usadas en el contenido para la misma vereda.
+  function normalizeVereda(value) {
+    var name = String(value || '').trim();
+    return name.toUpperCase() === 'CASCO URBANO' ? 'CASCO' : name;
+  }
+
   // Lista los archivos .md de una carpeta del repo usando la API de GitHub
   function listMdFiles(folder) {
     return fetch(GH_API + folder + '?ref=' + GH_BRANCH)
@@ -1308,7 +1360,7 @@
     }));
   }
 
-  // ── CARGA DE CONTENIDO DESDE content/*.md (vía GitHub) ──────
+  // ── CARGA DE CONTENIDO DESDE content/*.md ──────────────────
   // Niveles, de más general a más específico. El orden importa: define
   // qué campo "padre" se prioriza si por error hay más de uno relleno.
   var LEVELS = [
@@ -1325,10 +1377,40 @@
     categoria: 'categorias', subcategoria: 'subcategorias'
   };
 
-  Promise.all(
-    LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
-      .concat([listMdFiles('content/especies').then(fetchAndParseAll)])
-  )
+  function loadFromGitHub() {
+    return Promise.all(
+      LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
+        .concat([listMdFiles('content/especies').then(fetchAndParseAll)])
+    );
+  }
+
+  // data.json se genera con scripts/build-data.mjs y evita la API de GitHub.
+  // Si no existe, se conserva el respaldo anterior.
+  function loadCatalogResults() {
+    if (window.IE && typeof IE.loadData === 'function') {
+      return IE.loadData().then(function (data) {
+        var levels = data.levels || {};
+        var species = levels.especies || [];
+        if (!Array.isArray(species) || !species.length) {
+          throw new Error('data.json no contiene especies');
+        }
+        return [
+          levels.reinos || [],
+          levels.grupos || [],
+          levels.subgrupos || [],
+          levels.categorias || [],
+          levels.subcategorias || [],
+          species
+        ];
+      }).catch(function (error) {
+        console.warn('No se pudo usar data.json; se carga el catálogo desde GitHub.', error);
+        return loadFromGitHub();
+      });
+    }
+    return loadFromGitHub();
+  }
+
+  loadCatalogResults()
     .then(function (results) {
       var categories = [];
 
@@ -1371,6 +1453,13 @@
 
         var imagenes = Array.isArray(sp.imagenes) ? sp.imagenes
                      : (sp.imagenes ? [sp.imagenes] : []);
+        var vereda = (Array.isArray(sp.vereda) ? sp.vereda.filter(Boolean)
+                   : (sp.vereda ? [sp.vereda] : [])).map(normalizeVereda);
+        var autores = Array.isArray(sp.autores) ? sp.autores.filter(Boolean)
+                    : (sp.autores ? [sp.autores] : (sp.autor ? [sp.autor] : []));
+        autores = autores.map(function (a) {
+          return (a && typeof a === 'object') ? (a.nombre || a.name || '') : String(a || '');
+        }).filter(Boolean);
 
         return {
           id: slugify(sp.title) + '-' + slugify(sp.__path),
@@ -1380,7 +1469,18 @@
           description: sp.descripcion || '',
           location: sp.ubicacion || '',
           date: sp.fecha || '',
-          photos: imagenes
+          photos: imagenes,
+          vereda: vereda,
+          autores: autores,
+          reino: sp.reino || '',
+          grupo: sp.grupo || '',
+          subgrupo: sp.subgrupo || '',
+          categoria: sp.categoria || '',
+          subcategoria: sp.subcategoria || '',
+          searchText: [
+            sp.title, sp.cientifico, sp.descripcion, sp.ubicacion,
+            sp.reino, sp.grupo, sp.subgrupo, sp.categoria, sp.subcategoria
+          ].concat(vereda, autores).join(' ').toLowerCase()
         };
       });
 
@@ -1392,23 +1492,322 @@
       });
 
       DB = { categories: categories, species: species };
+
+      // Puente para las mejoras interactivas (libreta, buscador global, juego…)
+      window.InsectErikApp = {
+        getSpecies: function () { return DB.species; },
+        getCategories: function () { return DB.categories; },
+        getFilters: function () { return filters; },
+        applyFilters: applyFilters,
+        setCategory: function (id) { activeFilter = id || null; applyFilters(); },
+        renderGallery: renderGallery
+      };
+
       renderAll();
+      document.dispatchEvent(new CustomEvent('ie:species-rendered', { detail: DB.species }));
     })
     .catch(function (err) {
       console.error(err);
       document.getElementById('gallery').innerHTML =
-        '<p style="padding:40px;color:#888;grid-column:1/-1">No se pudo cargar el contenido desde GitHub. ' +
-        'Revisa la consola del navegador (F12) para más detalles, y verifica que las carpetas ' +
-        '<code>content/reinos</code>, <code>content/grupos</code>, <code>content/subgrupos</code>, ' +
-        '<code>content/categorias</code>, <code>content/subcategorias</code> y <code>content/especies</code> ' +
-        'existan en el repositorio.</p>';
+        '<p style="padding:40px;color:#888;grid-column:1/-1">No se pudo cargar el catálogo. ' +
+        'Revisa la consola del navegador (F12) para más detalles. Si estás trabajando en local, ' +
+        'ejecuta <code>node scripts/build-data.mjs</code> para generar <code>data.json</code>; ' +
+        'también se intenta el respaldo desde GitHub.</p>';
     });
 
   // ── RENDER PRINCIPAL ─────────────────────
   function renderAll() {
     renderHeroStats();
     renderSidebar();
-    renderGallery(DB.species);
+    initCatalogControls();
+    readFiltersFromUrl();
+    populateFilterOptions();
+    syncFilterControls();
+    applyFilters();
+  }
+
+  // ── FILTROS COMBINABLES ──────────────────
+  function initCatalogControls() {
+    if (controlsBound) return;
+    controlsBound = true;
+
+    var search = document.getElementById('catalogSearch');
+    var vereda = document.getElementById('filterVereda');
+    var autor = document.getElementById('filterAutor');
+    var year = document.getElementById('filterYear');
+    var sort = document.getElementById('filterSort');
+
+    if (search) search.addEventListener('input', function () {
+      filters.q = search.value;
+      applyFilters();
+    });
+    if (vereda) vereda.addEventListener('change', function () { filters.vereda = vereda.value; applyFilters(); });
+    if (autor) autor.addEventListener('change', function () { filters.autor = autor.value; applyFilters(); });
+    if (year) year.addEventListener('change', function () { filters.year = year.value; applyFilters(); });
+    if (sort) sort.addEventListener('change', function () { filters.sort = sort.value; applyFilters(); });
+
+    ['filterPhoto', 'filterFav', 'filterSeen'].forEach(function (id) {
+      var input = document.getElementById(id);
+      if (!input) return;
+      input.addEventListener('change', function () {
+        if (id === 'filterPhoto') filters.onlyPhoto = input.checked;
+        if (id === 'filterFav') filters.onlyFav = input.checked;
+        if (id === 'filterSeen') filters.onlySeen = input.checked;
+        applyFilters();
+      });
+    });
+
+    var randomBtn = document.getElementById('randomSpeciesBtn');
+    if (randomBtn) randomBtn.addEventListener('click', function () {
+      if (window.IE) IE.openRandomSpecies();
+    });
+
+    var notebookBtn = document.getElementById('openNotebookBtn');
+    if (notebookBtn) notebookBtn.addEventListener('click', function () {
+      if (window.IE) IE.openNotebook();
+    });
+
+    var clearBtn = document.getElementById('clearFiltersBtn');
+    if (clearBtn) clearBtn.addEventListener('click', resetFilters);
+
+    var chips = document.getElementById('catalogChips');
+    if (chips) chips.addEventListener('click', function (event) {
+      var chip = event.target.closest('[data-clear-filter]');
+      if (!chip) return;
+      clearFilter(chip.getAttribute('data-clear-filter'));
+    });
+
+    document.addEventListener('ie:notebook', function () {
+      updateNotebookProgress();
+      if (filters.onlyFav || filters.onlySeen) applyFilters();
+      else refreshCardActionStates();
+    });
+
+    window.addEventListener('popstate', function () {
+      readFiltersFromUrl();
+      syncFilterControls();
+      applyFilters();
+    });
+  }
+
+  function readFiltersFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    filters.q = params.get('q') || '';
+    filters.vereda = normalizeVereda(params.get('vereda'));
+    filters.autor = params.get('autor') || '';
+    filters.year = params.get('year') || '';
+    filters.onlyPhoto = params.get('foto') === '1';
+    filters.onlyFav = params.get('fav') === '1';
+    filters.onlySeen = params.get('vistas') === '1';
+    filters.sort = params.get('sort') || 'recent';
+    var cat = params.get('categoria');
+    if (cat && DB.categories.some(function (c) { return c.id === cat; })) activeFilter = cat;
+  }
+
+  function syncFilterControls() {
+    var search = document.getElementById('catalogSearch');
+    var vereda = document.getElementById('filterVereda');
+    var autor = document.getElementById('filterAutor');
+    var year = document.getElementById('filterYear');
+    var sort = document.getElementById('filterSort');
+    if (search) search.value = filters.q;
+    if (vereda) vereda.value = filters.vereda;
+    if (autor) autor.value = filters.autor;
+    if (year) year.value = filters.year;
+    if (sort) sort.value = filters.sort;
+    var photo = document.getElementById('filterPhoto');
+    var fav = document.getElementById('filterFav');
+    var seen = document.getElementById('filterSeen');
+    if (photo) photo.checked = filters.onlyPhoto;
+    if (fav) fav.checked = filters.onlyFav;
+    if (seen) seen.checked = filters.onlySeen;
+  }
+
+  function fillSelect(select, values, current, allLabel) {
+    if (!select) return;
+    var html = '<option value="">' + allLabel + '</option>';
+    values.forEach(function (value) {
+      html += '<option value="' + value.replace(/"/g, '&quot;') + '">' + value + '</option>';
+    });
+    select.innerHTML = html;
+    select.value = current || '';
+  }
+
+  function populateFilterOptions() {
+    var veredas = {}, autores = {}, years = {};
+    DB.species.forEach(function (sp) {
+      (sp.vereda || []).forEach(function (v) { veredas[v] = (veredas[v] || 0) + 1; });
+      (sp.autores || []).forEach(function (a) { autores[a] = (autores[a] || 0) + 1; });
+      if (sp.date) {
+        var d = new Date(sp.date);
+        if (!isNaN(d.getTime())) years[d.getFullYear()] = true;
+      }
+    });
+
+    function sortedKeys(obj, numeric) {
+      return Object.keys(obj).sort(function (a, b) {
+        return numeric ? Number(a) - Number(b) : a.localeCompare(b, 'es');
+      });
+    }
+
+    fillSelect(document.getElementById('filterVereda'), sortedKeys(veredas), filters.vereda, 'Todas');
+    fillSelect(document.getElementById('filterAutor'), sortedKeys(autores), filters.autor, 'Todos');
+    fillSelect(document.getElementById('filterYear'), sortedKeys(years, true), filters.year, 'Todos');
+  }
+
+  function getBaseSpecies() {
+    if (!activeFilter) return DB.species;
+    var ids = getAllDescendantIds(activeFilter);
+    return DB.species.filter(function (sp) { return ids.indexOf(sp.categoryId) !== -1; });
+  }
+
+  function matchesFilters(sp) {
+    if (filters.q) {
+      var q = filters.q.trim().toLowerCase();
+      var haystack = sp.searchText || [
+        sp.name, sp.scientificName, sp.description, sp.location,
+        sp.reino, sp.grupo, sp.subgrupo, sp.categoria, sp.subcategoria
+      ].concat(sp.vereda || [], sp.autores || []).join(' ').toLowerCase();
+      if (haystack.indexOf(q) === -1) return false;
+    }
+    if (filters.vereda) {
+      var target = filters.vereda.toLowerCase();
+      if (!(sp.vereda || []).some(function (v) { return v.toLowerCase() === target; })) return false;
+    }
+    if (filters.autor) {
+      var author = filters.autor.toLowerCase();
+      if (!(sp.autores || []).some(function (a) { return a.toLowerCase() === author; })) return false;
+    }
+    if (filters.year) {
+      var date = sp.date ? new Date(sp.date) : null;
+      if (!date || isNaN(date.getTime()) || String(date.getFullYear()) !== filters.year) return false;
+    }
+    if (filters.onlyPhoto && !(sp.photos && sp.photos.length)) return false;
+    if (window.IE) {
+      if (filters.onlyFav && !IE.notebook.isFavorite(sp.id)) return false;
+      if (filters.onlySeen && !IE.notebook.isSeen(sp.id)) return false;
+    }
+    return true;
+  }
+
+  function applyFilters() {
+    var list = getBaseSpecies().filter(matchesFilters);
+
+    if (filters.sort === 'name') {
+      list = list.slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'es'); });
+    } else if (filters.sort === 'oldest') {
+      list = list.slice().sort(function (a, b) {
+        var da = a.date ? new Date(a.date).getTime() : 0;
+        var db = b.date ? new Date(b.date).getTime() : 0;
+        return da - db;
+      });
+    }
+
+    renderGallery(list);
+    renderFilterChips();
+    updateNotebookProgress();
+    syncUrl();
+  }
+
+  function renderFilterChips() {
+    var container = document.getElementById('catalogChips');
+    if (!container) return;
+    var chips = [];
+    var category = activeFilter ? DB.categories.find(function (c) { return c.id === activeFilter; }) : null;
+    if (category) chips.push({ key: 'category', label: category.name });
+    if (filters.q) chips.push({ key: 'q', label: '“' + filters.q + '”' });
+    if (filters.vereda) chips.push({ key: 'vereda', label: 'Vereda: ' + filters.vereda });
+    if (filters.autor) chips.push({ key: 'autor', label: 'Autor: ' + filters.autor });
+    if (filters.year) chips.push({ key: 'year', label: 'Año: ' + filters.year });
+    if (filters.onlyPhoto) chips.push({ key: 'photo', label: 'Con foto' });
+    if (filters.onlyFav) chips.push({ key: 'fav', label: '♥ Favoritas' });
+    if (filters.onlySeen) chips.push({ key: 'seen', label: '✓ Vistas' });
+
+    if (!chips.length) { container.innerHTML = ''; return; }
+    container.innerHTML = chips.map(function (chip) {
+      return '<button class="ie-chip" type="button" data-clear-filter="' + chip.key + '">' +
+        chip.label + ' <span class="ie-chip-x">×</span></button>';
+    }).join('') + '<button class="ie-chip ie-chip-remove-all" type="button" data-clear-filter="all">Limpiar todo</button>';
+  }
+
+  function clearFilter(key) {
+    if (key === 'all') { resetFilters(); return; }
+    if (key === 'category') activeFilter = null;
+    if (key === 'q') filters.q = '';
+    if (key === 'vereda') filters.vereda = '';
+    if (key === 'autor') filters.autor = '';
+    if (key === 'year') filters.year = '';
+    if (key === 'photo') filters.onlyPhoto = false;
+    if (key === 'fav') filters.onlyFav = false;
+    if (key === 'seen') filters.onlySeen = false;
+    syncFilterControls();
+    applyFilters();
+  }
+
+  function resetFilters() {
+    activeFilter = null;
+    filters.q = '';
+    filters.vereda = '';
+    filters.autor = '';
+    filters.year = '';
+    filters.onlyPhoto = false;
+    filters.onlyFav = false;
+    filters.onlySeen = false;
+    filters.sort = 'recent';
+    syncFilterControls();
+    applyFilters();
+  }
+
+  function updateNotebookProgress() {
+    var container = document.getElementById('catalogProgress');
+    if (!container || !window.IE) return;
+    var total = DB.species.length;
+    var seen = DB.species.filter(function (sp) { return IE.notebook.isSeen(sp.id); }).length;
+    var pct = total ? Math.round(seen / total * 100) : 0;
+    container.innerHTML =
+      '<div class="ie-progress-bar"><span style="width:' + pct + '%"></span></div>' +
+      '<span><strong>' + seen + '</strong> / ' + total + ' especies vistas</span>' +
+      '<button class="ie-btn ie-btn-ghost" type="button" id="progressNotebookBtn" style="padding:6px 12px">Abrir libreta</button>';
+    var btn = document.getElementById('progressNotebookBtn');
+    if (btn) btn.addEventListener('click', function () { IE.openNotebook(); });
+  }
+
+  function refreshCardActionStates() {
+    if (!window.IE) return;
+    document.querySelectorAll('.card[data-species-id]').forEach(function (card) {
+      var id = card.getAttribute('data-species-id');
+      var fav = card.querySelector('[data-card-action="fav"]');
+      var seen = card.querySelector('[data-card-action="seen"]');
+      var badge = card.querySelector('.ie-card-badge-seen');
+      if (fav) {
+        fav.classList.toggle('is-fav', IE.notebook.isFavorite(id));
+        fav.textContent = IE.notebook.isFavorite(id) ? '♥' : '♡';
+        fav.setAttribute('aria-label', IE.notebook.isFavorite(id) ? 'Quitar de favoritas' : 'Guardar en favoritas');
+      }
+      if (seen) {
+        seen.classList.toggle('is-on', IE.notebook.isSeen(id));
+        seen.textContent = IE.notebook.isSeen(id) ? '✓' : '○';
+        seen.setAttribute('aria-label', IE.notebook.isSeen(id) ? 'Quitar de vistas' : 'Marcar como vista');
+      }
+      if (badge) badge.hidden = !IE.notebook.isSeen(id);
+    });
+  }
+
+  function syncUrl() {
+    var params = new URLSearchParams();
+    if (filters.q) params.set('q', filters.q);
+    if (filters.vereda) params.set('vereda', filters.vereda);
+    if (filters.autor) params.set('autor', filters.autor);
+    if (filters.year) params.set('year', filters.year);
+    if (filters.onlyPhoto) params.set('foto', '1');
+    if (filters.onlyFav) params.set('fav', '1');
+    if (filters.onlySeen) params.set('vistas', '1');
+    if (filters.sort !== 'recent') params.set('sort', filters.sort);
+    if (activeFilter) params.set('categoria', activeFilter);
+    var query = params.toString();
+    try {
+      history.replaceState(null, '', window.location.pathname + (query ? '?' + query : '') + window.location.hash);
+    } catch (e) { /* file:// o navegadores restringidos */ }
   }
 
   // ── HERO STATS ───────────────────────────
@@ -1498,7 +1897,7 @@
 
         if (btn.dataset.id === '__all__') {
           activeFilter = null;
-          renderGallery(DB.species);
+          applyFilters();
           highlightActive(btn);
           return;
         }
@@ -1511,8 +1910,7 @@
 
         // filtrar por categoría raíz (incluye subcategorías)
         activeFilter = btn.dataset.id;
-        var ids = getAllDescendantIds(btn.dataset.id);
-        renderGallery(DB.species.filter(function (s) { return ids.includes(s.categoryId); }));
+        applyFilters();
         highlightActive(btn);
       });
     });
@@ -1528,8 +1926,7 @@
 
         // filtrar por subcategoría
         activeFilter = btn.dataset.id;
-        var ids = getAllDescendantIds(btn.dataset.id);
-        renderGallery(DB.species.filter(function (s) { return ids.includes(s.categoryId); }));
+        applyFilters();
         highlightActive(btn);
       });
     });
@@ -1542,9 +1939,13 @@
       });
     });
 
-    // Abrir primera categoría raíz automáticamente
+    // Abrir visualmente la primera categoría raíz sin activar un filtro.
     var firstToggle = document.querySelector('.cat-group:nth-child(2) .cat-toggle');
-    if (firstToggle) firstToggle.click();
+    if (firstToggle) {
+      firstToggle.classList.add('open');
+      var firstList = firstToggle.nextElementSibling;
+      if (firstList) firstList.classList.add('open');
+    }
   }
 
   function highlightActive(el) {
@@ -1566,6 +1967,7 @@
 
     var card = document.createElement('div');
     card.className = 'card';
+    card.setAttribute('data-species-id', sp.id);
 
     var photoDiv = document.createElement('div');
     photoDiv.className = 'card-photo';
@@ -1658,6 +2060,64 @@
   });
   content.appendChild(sci);
 }
+    // Acciones de la libreta de campo (favorita / vista)
+    if (window.IE) {
+      var actions = document.createElement('div');
+      actions.className = 'ie-card-actions';
+      actions.addEventListener('click', function (event) { event.stopPropagation(); });
+
+      var favBtn = document.createElement('button');
+      favBtn.type = 'button';
+      favBtn.className = 'ie-icon-btn' + (IE.notebook.isFavorite(sp.id) ? ' is-fav' : '');
+      favBtn.setAttribute('data-card-action', 'fav');
+      favBtn.textContent = IE.notebook.isFavorite(sp.id) ? '♥' : '♡';
+      favBtn.setAttribute('aria-label', IE.notebook.isFavorite(sp.id) ? 'Quitar de favoritas' : 'Guardar en favoritas');
+      favBtn.title = favBtn.getAttribute('aria-label');
+      favBtn.addEventListener('click', function () {
+        var active = IE.notebook.toggleFavorite(sp.id);
+        favBtn.classList.toggle('is-fav', active);
+        favBtn.textContent = active ? '♥' : '♡';
+        favBtn.setAttribute('aria-label', active ? 'Quitar de favoritas' : 'Guardar en favoritas');
+        favBtn.title = favBtn.getAttribute('aria-label');
+        IE.toast(active ? 'Guardada en tu libreta' : 'Quitada de favoritas');
+      });
+
+      var seenBtn = document.createElement('button');
+      seenBtn.type = 'button';
+      seenBtn.className = 'ie-icon-btn' + (IE.notebook.isSeen(sp.id) ? ' is-on' : '');
+      seenBtn.setAttribute('data-card-action', 'seen');
+      seenBtn.textContent = IE.notebook.isSeen(sp.id) ? '✓' : '○';
+      seenBtn.setAttribute('aria-label', IE.notebook.isSeen(sp.id) ? 'Quitar de vistas' : 'Marcar como vista');
+      seenBtn.title = seenBtn.getAttribute('aria-label');
+      seenBtn.addEventListener('click', function () {
+        var active = IE.notebook.toggleSeen(sp.id);
+        seenBtn.classList.toggle('is-on', active);
+        seenBtn.textContent = active ? '✓' : '○';
+        seenBtn.setAttribute('aria-label', active ? 'Quitar de vistas' : 'Marcar como vista');
+        seenBtn.title = seenBtn.getAttribute('aria-label');
+        IE.toast(active ? '¡Sumada a tus especies vistas!' : 'Quitada de especies vistas');
+      });
+
+      var compareLink = document.createElement('a');
+      compareLink.className = 'ie-icon-btn';
+      compareLink.href = 'comparador.html?ids=' + encodeURIComponent(sp.id);
+      compareLink.textContent = '⇄';
+      compareLink.setAttribute('aria-label', 'Comparar esta especie');
+      compareLink.title = 'Comparar esta especie';
+
+      actions.appendChild(favBtn);
+      actions.appendChild(seenBtn);
+      actions.appendChild(compareLink);
+      photoDiv.appendChild(actions);
+
+      if (IE.notebook.isSeen(sp.id)) {
+        var seenBadge = document.createElement('span');
+        seenBadge.className = 'ie-card-badge-seen';
+        seenBadge.textContent = '✓ VISTA';
+        photoDiv.appendChild(seenBadge);
+      }
+    }
+
     card.appendChild(photoDiv);
     card.appendChild(content);
     return card;
@@ -1720,7 +2180,10 @@
     document.getElementById('totalCount').textContent = species.length + ' especie' + (species.length !== 1 ? 's' : '') + ' en total';
 
     if (!species.length) {
-      gallery.innerHTML = '<p style="padding:40px;color:#888;grid-column:1/-1">No hay especies en esta categoría aún.</p>';
+      gallery.innerHTML = '<div class="ie-empty">No hay especies que coincidan con estos filtros.<br>' +
+        '<button class="ie-btn" type="button" id="emptyResetBtn" style="margin-top:14px">Limpiar filtros</button></div>';
+      var reset = document.getElementById('emptyResetBtn');
+      if (reset) reset.addEventListener('click', resetFilters);
       return;
     }
 
@@ -1729,6 +2192,7 @@
     currentPage = 0;
     if (lazyObserver) { lazyObserver.disconnect(); lazyObserver = null; }
     loadMoreCards();
+    document.dispatchEvent(new CustomEvent('ie:gallery-rendered', { detail: species }));
   }
 
   // ── HELPERS ──────────────────────────────
@@ -1775,13 +2239,10 @@
   var searchInput = document.querySelector('.search-box input');
   if (searchInput) {
     searchInput.addEventListener('input', function () {
-      var q = searchInput.value.trim().toLowerCase();
-      if (!q) { renderGallery(DB.species); return; }
-      renderGallery(DB.species.filter(function (s) {
-        return (s.name || '').toLowerCase().includes(q) ||
-               (s.scientificName || '').toLowerCase().includes(q) ||
-               (s.description || '').toLowerCase().includes(q);
-      }));
+      filters.q = searchInput.value;
+      var toolbarSearch = document.getElementById('catalogSearch');
+      if (toolbarSearch) toolbarSearch.value = searchInput.value;
+      applyFilters();
     });
 
     document.querySelector('.search-box button').addEventListener('click', function () {
@@ -2028,5 +2489,6 @@
   programar();
 })();
 </script>
+<script src="js/features.js"></script>
 </body>
 </html>

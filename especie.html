@@ -517,6 +517,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="css/extras.css">
 </head>
 
 <body>
@@ -590,6 +591,7 @@
     </div>
   </div>
 
+  <script src="js/core.js"></script>
   <script>
     (function () {
       'use strict';
@@ -761,10 +763,37 @@
 
       var LEVEL_LABELS = ['Grupo General', 'Grupo Biológico', 'Grupo de Organismos', 'Grupo Específico', 'Categoría Menor'];
 
-      Promise.all(
-        LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
-          .concat([listMdFiles('content/especies').then(fetchAndParseAll)])
-      )
+      function loadCatalogFromGitHub() {
+        return Promise.all(
+          LEVELS.map(function (lvl) { return listMdFiles(lvl.folder).then(fetchAndParseAll); })
+            .concat([listMdFiles('content/especies').then(fetchAndParseAll)])
+        );
+      }
+
+      function loadCatalogData() {
+        if (window.IE && typeof IE.loadData === 'function') {
+          return IE.loadData().then(function (data) {
+            var levels = data.levels || {};
+            if (!Array.isArray(levels.especies) || !levels.especies.length) {
+              throw new Error('data.json no contiene especies');
+            }
+            return [
+              levels.reinos || [],
+              levels.grupos || [],
+              levels.subgrupos || [],
+              levels.categorias || [],
+              levels.subcategorias || [],
+              levels.especies
+            ];
+          }).catch(function (error) {
+            console.warn('No se pudo usar data.json; se carga la ficha desde GitHub.', error);
+            return loadCatalogFromGitHub();
+          });
+        }
+        return loadCatalogFromGitHub();
+      }
+
+      loadCatalogData()
         .then(function (results) {
           var categories = [];
 
@@ -808,7 +837,13 @@
               photos: imagenes,
               taxonomia: sp.taxonomia || {},
               autores: Array.isArray(sp.autores) ? sp.autores.filter(Boolean)
-                : (sp.autores ? [sp.autores] : (sp.autor ? [sp.autor] : []))
+                : (sp.autores ? [sp.autores] : (sp.autor ? [sp.autor] : [])),
+              reino: sp.reino || '',
+              grupo: sp.grupo || '',
+              subgrupo: sp.subgrupo || '',
+              categoria: sp.categoria || '',
+              subcategoria: sp.subcategoria || '',
+              categoryLabel: sp.subcategoria || sp.categoria || sp.subgrupo || sp.grupo || sp.reino || ''
             };
           });
 
@@ -820,10 +855,15 @@
           }
 
           renderSpecies(sp, categories);
+
+          // Expone la especie para las mejoras interactivas (libreta, compartir,
+          // especies relacionadas) y avisa cuando ya está pintada.
+          window.InsectErikSpecies = sp;
+          document.dispatchEvent(new CustomEvent('ie:species', { detail: sp }));
         })
         .catch(function (err) {
           console.error(err);
-          showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+          showError('No se pudo cargar la información. Revisa tu conexión e intenta de nuevo.');
         });
 
       // ── HELPERS DE RUTA DE CATEGORÍA (igual lógica que index.html, soporta cualquier profundidad) ──
@@ -1233,6 +1273,7 @@
   programar();
 })();
 </script>
+<script src="js/features.js"></script>
 </body>
 
 </html>

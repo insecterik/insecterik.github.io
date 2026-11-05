@@ -246,6 +246,7 @@
     .sp-thumb, .sp-thumb-placeholder{ width:36px; height:36px; font-size:16px; }
   }
 </style>
+<link rel="stylesheet" href="css/extras.css">
 </head>
 <body>
 
@@ -259,8 +260,11 @@
     <a href="/">Inicio</a>
     <a href="colecciones.html">Colecciones</a>
     <a href="listas.html" class="active">Listas</a>
+    <a href="linea-tiempo.html">Tiempo</a>
+    <a href="comparador.html">Comparar</a>
     <a href="mapa.html">Mapa</a>
     <a href="estadisticas.html">Estadísticas</a>
+    <a href="juego.html">Juego</a>
   </nav>
 </div>
 
@@ -394,6 +398,7 @@
 
 </div><!-- /page-body -->
 
+<script src="js/core.js"></script>
 <script>
 (function(){
   var GH_USER   = 'insecterik';
@@ -488,7 +493,9 @@
     if(first){
       var img = document.createElement('img');
       img.className = 'sp-thumb';
-      img.src = GH_RAW + 'images/uploads/' + first.replace(/^.*[\\/]/,'');
+      img.src = /^(https?:|\/|images\/)/.test(first)
+        ? first
+        : GH_RAW + 'images/uploads/' + first.replace(/^.*[\\/]/,'');
       img.alt = sp.title || '';
       img.onerror = function(){ this.replaceWith(placeholder(sp)); };
       return img;
@@ -635,9 +642,28 @@
     showTable('taxon');
   }
 
+  function loadSpeciesFromGitHub(){
+    return listMdFiles('content/especies').then(fetchAndParseAll);
+  }
+
+  function loadSpeciesData(){
+    if (window.IE && typeof IE.loadData === 'function') {
+      return IE.loadData().then(function(data){
+        var species = data.levels && data.levels.especies;
+        if (!Array.isArray(species) || !species.length) {
+          throw new Error('data.json no contiene especies');
+        }
+        return species;
+      }).catch(function(err){
+        console.warn('No se pudo usar data.json; se cargan las listas desde GitHub.', err);
+        return loadSpeciesFromGitHub();
+      });
+    }
+    return loadSpeciesFromGitHub();
+  }
+
   // ── MAIN ──
-  listMdFiles('content/especies')
-    .then(fetchAndParseAll)
+  loadSpeciesData()
     .then(function(species){
       renderRecientes(species);
       renderFotos(species);
@@ -714,5 +740,6 @@
   programar();
 })();
 </script>
+<script src="js/features.js"></script>
 </body>
 </html>

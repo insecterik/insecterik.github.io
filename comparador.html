@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparador de especies · InsectErik</title>
+<link rel="icon" type="image/png" href="images/uploads/favicon.png">
+<style>
+  :root{
+    --verde-oscuro:#1c3f3a;
+    --verde-header:#16332f;
+    --verde-brillante:#2ecc71;
+    --verde-texto:#1b5e20;
+    --crema:#f4f8f2;
+    --gris-texto:#5a6b66;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html, body{
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  body{
+    margin:0;
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:var(--crema);
+    color:#222;
+  }
+
+  a{ text-decoration:none; }
+
+  .top-header{
+    position:sticky; top:0; z-index:100;
+    background:var(--verde-header);
+    display:flex; align-items:center;
+    padding:0 24px; height:60px; gap:16px;
+  }
+  .logo{ display:flex; align-items:center; gap:10px; color:white; font-weight:700; font-size:20px; }
+  .logo-img{ height:36px; width:36px; object-fit:contain; border-radius:50%; }
+  .logo-text{ letter-spacing:.5px; }
+
+  .top-nav{
+    margin-left:auto; display:flex; align-items:center; gap:24px;
+  }
+  .top-nav a{
+    color:rgba(255,255,255,.8); font-size:15px; font-weight:500;
+    transition:color .2s;
+  }
+  .top-nav a:hover, .top-nav a.active{ color:#fff; }
+
+  .compare-page{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 24px 64px;
+  }
+
+  .page-header{ margin:50px auto 0; }
+  .page-header h1{
+    font-size:48px;
+    font-weight:800;
+    color:var(--verde-brillante);
+    margin:0 0 14px;
+  }
+  .page-header .description{
+    font-size:17px;
+    color:#3c4a46;
+    line-height:1.7;
+    max-width:800px;
+    margin:0 0 18px;
+  }
+
+  .compare-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:20px 0 6px;
+  }
+
+  .breadcrumb{
+    margin:0 0 30px;
+    font-size:13px;
+    color:var(--gris-texto);
+  }
+  .breadcrumb a{ color:var(--verde-texto); font-weight:600; }
+
+  .compare-panel{
+    background:#fff;
+    border:1px solid var(--ie-border, #e1e9e5);
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+    margin-bottom:22px;
+  }
+
+  .compare-pickers{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:14px;
+  }
+
+  .compare-picker{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.35px;
+    text-transform:uppercase;
+    color:var(--gris-texto);
+  }
+
+  .compare-picker select{
+    width:100%;
+    border:1px solid var(--ie-border, #e1e9e5);
+    border-radius:12px;
+    background:var(--ie-surface-soft, #f6faf7);
+    color:#1c2624;
+    font-family:inherit;
+    font-size:13px;
+    padding:11px 12px;
+    outline:none;
+    cursor:pointer;
+  }
+  .compare-picker select:focus{ border-color:var(--verde-brillante); box-shadow:0 0 0 3px rgba(46,204,113,.15); }
+
+  .compare-toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid var(--ie-border, #e1e9e5);
+    font-size:13px;
+    color:var(--gris-texto);
+  }
+
+  .compare-check{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .compare-check input{ accent-color:var(--verde-brillante); width:16px; height:16px; margin:0; }
+
+  .compare-help{ font-size:12px; line-height:1.5; }
+
+  .compare-empty{
+    background:#fff;
+    border:1px dashed var(--ie-border, #e1e9e5);
+    border-radius:20px;
+    padding:34px 24px;
+    text-align:center;
+    color:var(--gris-texto);
+    line-height:1.65;
+    margin-bottom:22px;
+  }
+  .compare-empty h2{
+    margin:0 0 8px;
+    color:#1c2624;
+    font-size:24px;
+  }
+  .compare-empty p{ margin:0 auto 16px; max-width:620px; }
+
+  .suggestions{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+    margin-top:8px;
+  }
+  .suggestion-btn{
+    border:1px solid var(--ie-border, #e1e9e5);
+    background:var(--ie-surface-soft, #f6faf7);
+    color:var(--verde-texto);
+    border-radius:999px;
+    padding:8px 13px;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .suggestion-btn:hover{ border-color:var(--verde-brillante); transform:translateY(-1px); }
+
+  .compare-table-wrap{
+    background:#fff;
+    border:1px solid var(--ie-border, #e1e9e5);
+    border-radius:20px;
+    overflow:auto;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+    margin-bottom:22px;
+  }
+
+  .compare-table{
+    width:100%;
+    min-width:720px;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+
+  .compare-table th,
+  .compare-table td{
+    border-bottom:1px solid var(--ie-border, #e1e9e5);
+    border-right:1px solid var(--ie-border, #e1e9e5);
+    padding:13px 15px;
+    vertical-align:top;
+    text-align:left;
+    font-size:13px;
+    line-height:1.55;
+  }
+  .compare-table th:last-child,
+  .compare-table td:last-child{ border-right:none; }
+  .compare-table tr:last-child th,
+  .compare-table tr:last-child td{ border-bottom:none; }
+
+  .compare-table thead th{
+    background:var(--ie-surface-soft, #f6faf7);
+    vertical-align:top;
+    padding:18px 15px;
+  }
+  .compare-table thead th:first-child{
+    width:150px;
+    vertical-align:middle;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.45px;
+    text-transform:uppercase;
+    color:var(--gris-texto);
+  }
+
+  .compare-species-head{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .compare-species-photo{
+    width:100%;
+    height:112px;
+    border-radius:12px;
+    object-fit:cover;
+    background:#e8f0ec;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    color:var(--gris-texto);
+    overflow:hidden;
+  }
+  .compare-species-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .compare-species-head strong{
+    font-size:16px;
+    line-height:1.25;
+    color:#1c2624;
+  }
+  .compare-species-head em{
+    font-size:12px;
+    color:var(--gris-texto);
+    font-weight:400;
+  }
+  .compare-species-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:2px;
+  }
+  .compare-species-links a,
+  .compare-species-links button{
+    border:1px solid var(--ie-border, #e1e9e5);
+    background:transparent;
+    color:var(--verde-texto);
+    border-radius:999px;
+    padding:5px 9px;
+    font-family:inherit;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .compare-species-links a:hover,
+  .compare-species-links button:hover{ border-color:var(--verde-brillante); }
+
+  .compare-row-label{
+    background:var(--ie-surface-soft, #f6faf7);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.3px;
+    text-transform:uppercase;
+    color:var(--gris-texto);
+    width:150px;
+  }
+
+  .compare-value.is-empty{ color:#a5b2ad; }
+  .compare-value em{ color:inherit; }
+
+  .compare-note{
+    padding:12px 16px;
+    border-radius:12px;
+    background:rgba(46,204,113,.1);
+    color:var(--verde-texto);
+    font-size:13px;
+    font-weight:600;
+    margin:0 0 16px;
+  }
+
+  footer{
+    text-align:center;
+    padding:34px 16px 20px;
+    color:var(--gris-texto);
+    font-size:13px;
+  }
+
+  @media (max-width:900px){
+    .compare-pickers{ grid-template-columns:1fr; }
+  }
+
+  @media (max-width:760px){
+    .compare-page{ padding:0 16px 48px; }
+    .page-header{ margin-top:34px; }
+    .page-header h1{ font-size:34px; }
+    .page-header .description{ font-size:15px; }
+    .compare-panel{ padding:17px; border-radius:16px; }
+    .compare-table-wrap{ border-radius:16px; }
+    .compare-table{ min-width:680px; }
+  }
+
+  html[data-theme="dark"] .compare-panel,
+  html[data-theme="dark"] .compare-table-wrap,
+  html[data-theme="dark"] .compare-empty{
+    background:var(--ie-surface, #14231f);
+    border-color:var(--ie-border, #263b35);
+  }
+  html[data-theme="dark"] .compare-picker select,
+  html[data-theme="dark"] .compare-table thead th,
+  html[data-theme="dark"] .compare-row-label{
+    background:#182a25;
+    border-color:var(--ie-border, #263b35);
+    color:#e7efec;
+  }
+  html[data-theme="dark"] .compare-species-head strong,
+  html[data-theme="dark"] .compare-empty h2{ color:#eef6f3; }
+  html[data-theme="dark"] .compare-table th,
+  html[data-theme="dark"] .compare-table td{ border-color:var(--ie-border, #263b35); }
+  html[data-theme="dark"] .compare-species-links a,
+  html[data-theme="dark"] .compare-species-links button,
+  html[data-theme="dark"] .suggestion-btn{ background:#182a25; border-color:var(--ie-border, #263b35); color:#8fe9bb; }
+  html[data-theme="dark"] .compare-note{ background:rgba(46,204,113,.16); }
+</style>
+<link rel="stylesheet" href="css/extras.css">
+</head>
+<body>
+
+<div class="top-header">
+  <a href="/" class="logo">
+    <img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img">
+    <div class="logo-text">InsectErik</div>
+  </a>
+  <nav class="top-nav">
+    <a href="/">Inicio</a>
+    <a href="colecciones.html">Colecciones</a>
+    <a href="listas.html">Listas</a>
+    <a href="linea-tiempo.html">Tiempo</a>
+    <a href="comparador.html" class="active">Comparar</a>
+    <a href="mapa.html">Mapa</a>
+    <a href="estadisticas.html">Estadísticas</a>
+    <a href="juego.html">Juego</a>
+  </nav>
+</div>
+
+<main class="compare-page">
+  <header class="page-header">
+    <h1>Comparador de especies</h1>
+    <p class="description">Pon dos o tres especies lado a lado y revisa sus diferencias de clasificación, fecha, vereda y autores. Puedes compartir la comparación con un enlace.</p>
+    <div class="compare-actions">
+      <button class="ie-btn" type="button" id="shareComparison">↗ Compartir comparación</button>
+      <button class="ie-btn ie-btn-ghost" type="button" id="clearComparison">Limpiar selección</button>
+    </div>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="/">Inicio</a> &rsaquo; <span>Comparador</span>
+  </div>
+
+  <section class="compare-panel" aria-label="Seleccionar especies">
+    <div class="compare-pickers">
+      <label class="compare-picker">Especie A
+        <select id="pickA"><option value="">Cargando especies…</option></select>
+      </label>
+      <label class="compare-picker">Especie B
+        <select id="pickB"><option value="">Cargando especies…</option></select>
+      </label>
+      <label class="compare-picker">Especie C (opcional)
+        <select id="pickC"><option value="">Cargando especies…</option></select>
+      </label>
+    </div>
+    <div class="compare-toolbar">
+      <label class="compare-check">
+        <input type="checkbox" id="onlyDifferences">
+        Resaltar solo las diferencias
+      </label>
+      <span class="compare-help" id="compareHelp">Elige al menos dos especies para comparar.</span>
+    </div>
+  </section>
+
+  <div id="compareContent">
+    <div class="compare-empty">
+      <h2>Elige dos especies para empezar</h2>
+      <p>Selecciona una especie en cada lista. También puedes probar una comparación sugerida:</p>
+      <div class="suggestions" id="suggestions"></div>
+    </div>
+  </div>
+
+  <footer>
+    Copyright © 2026 - InsectErik · Biodiversidad de Tibirita, Cundinamarca
+  </footer>
+</main>
+
+<script src="js/core.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var species = [];
+  var selected = [];
+  var onlyDifferences = false;
+  var pickA = document.getElementById('pickA');
+  var pickB = document.getElementById('pickB');
+  var pickC = document.getElementById('pickC');
+  var contentEl = document.getElementById('compareContent');
+  var suggestionsEl = document.getElementById('suggestions');
+  var helpEl = document.getElementById('compareHelp');
+  var onlyDiffEl = document.getElementById('onlyDifferences');
+
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function byId(id) {
+    return species.filter(function (sp) { return sp.id === id; })[0] || null;
+  }
+
+  function selectedSpecies() {
+    return selected.map(byId).filter(Boolean);
+  }
+
+  function formatDate(value) {
+    var match = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(value || ''));
+    if (!match) return '';
+    var months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    return Number(match[3]) + ' de ' + months[Number(match[2]) - 1] + ' de ' + match[1];
+  }
+
+  function groupLabel(sp) {
+    return sp.categoryLabel || sp.subgrupo || sp.grupo || sp.reino || 'Sin categoría';
+  }
+
+  function fillSelect(select, selectedId, optional) {
+    var groups = {};
+    species.forEach(function (sp) {
+      var label = groupLabel(sp);
+      if (!groups[label]) groups[label] = [];
+      groups[label].push(sp);
+    });
+
+    var html = '<option value="">' + (optional ? 'Sin tercera especie' : 'Elige una especie…') + '</option>';
+    Object.keys(groups).sort(function (a, b) {
+      return a.localeCompare(b, 'es');
+    }).forEach(function (label) {
+      html += '<optgroup label="' + esc(label) + '">';
+      groups[label].sort(function (a, b) {
+        return a.name.localeCompare(b.name, 'es');
+      }).forEach(function (sp) {
+        html += '<option value="' + esc(sp.id) + '">' + esc(sp.name) +
+          (sp.scientificName ? ' — ' + esc(sp.scientificName) : '') + '</option>';
+      });
+      html += '</optgroup>';
+    });
+    select.innerHTML = html;
+    select.value = selectedId || '';
+  }
+
+  function updateUrl() {
+    var params = new URLSearchParams();
+    if (selected.length) params.set('ids', selected.join(','));
+    var query = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (query ? '?' + query : ''));
+  }
+
+  function normalizeIds(ids) {
+    var seen = {};
+    return ids.filter(function (id) {
+      if (!id || seen[id] || !byId(id)) return false;
+      seen[id] = true;
+      return true;
+    }).slice(0, 3);
+  }
+
+  function applyIds(ids, message) {
+    selected = normalizeIds(ids);
+    if (message) window.IE.toast(message);
+    renderAll();
+  }
+
+  function row(label, getValue, isScientific) {
+    return { label: label, getValue: getValue, isScientific: isScientific };
+  }
+
+  var FIELDS = [
+    row('Categoría', function (sp) { return window.IE.getCategoryPath(sp).join(' › '); }),
+    row('Reino', function (sp) { return sp.reino; }),
+    row('Grupo', function (sp) { return sp.grupo; }),
+    row('Subgrupo', function (sp) { return sp.subgrupo; }),
+    row('Categoría específica', function (sp) { return sp.categoria; }),
+    row('Subcategoría', function (sp) { return sp.subcategoria; }),
+    row('Dominio', function (sp) { return sp.taxonomia && sp.taxonomia.dominio; }),
+    row('Reino taxonómico', function (sp) { return sp.taxonomia && sp.taxonomia.reino_taxonomico; }),
+    row('Filo / división', function (sp) { return sp.taxonomia && sp.taxonomia.filo; }),
+    row('Clase', function (sp) { return sp.taxonomia && sp.taxonomia.clase; }),
+    row('Orden', function (sp) { return sp.taxonomia && sp.taxonomia.orden; }),
+    row('Familia', function (sp) { return sp.taxonomia && sp.taxonomia.familia; }),
+    row('Género', function (sp) { return sp.taxonomia && sp.taxonomia.genero; }),
+    row('Especie taxonómica', function (sp) { return sp.taxonomia && sp.taxonomia.especie_taxonomica; }),
+    row('Fecha de observación', function (sp) { return formatDate(sp.date); }),
+    row('Vereda', function (sp) { return (sp.vereda || []).join(', '); }),
+    row('Autores', function (sp) { return (sp.autores || []).join(', '); }),
+    row('Ubicación', function (sp) { return sp.location; }),
+    row('Descripción', function (sp) { return sp.description; })
+  ];
+
+  function renderHead(sp) {
+    var photo = sp.photos && sp.photos[0];
+    return '<th scope="col">' +
+      '<div class="compare-species-head">' +
+        '<span class="compare-species-photo">' +
+          (photo ? '<img src="' + esc(photo) + '" alt="" loading="lazy">' : '🌿') +
+        '</span>' +
+        '<strong>' + esc(sp.name) + '</strong>' +
+        (sp.scientificName ? '<em>' + esc(sp.scientificName) + '</em>' : '') +
+        '<span class="compare-species-links">' +
+          '<a href="' + window.IE.speciesUrl(sp.id) + '">Ver ficha →</a>' +
+          '<button type="button" data-remove="' + esc(sp.id) + '">Quitar</button>' +
+        '</span>' +
+      '</div>' +
+    '</th>';
+  }
+
+  function renderComparison() {
+    var list = selectedSpecies();
+
+    if (!list.length) {
+      contentEl.innerHTML = '<div class="compare-empty">' +
+        '<h2>Elige dos especies para empezar</h2>' +
+        '<p>Selecciona una especie en cada lista. También puedes probar una comparación sugerida:</p>' +
+        '<div class="suggestions" id="suggestions"></div>' +
+      '</div>';
+      suggestionsEl = document.getElementById('suggestions');
+      renderSuggestions();
+      helpEl.textContent = 'Elige al menos dos especies para comparar.';
+      return;
+    }
+
+    var html = '';
+    if (list.length === 1) {
+      html += '<p class="compare-note">Elige una segunda especie en la lista de arriba para completar la comparación.</p>';
+    }
+    html += '<div class="compare-table-wrap"><table class="compare-table">' +
+      '<thead><tr><th scope="col">Campo</th>' + list.map(renderHead).join('') + '</tr></thead><tbody>';
+
+    FIELDS.forEach(function (field) {
+      var values = list.map(function (sp) {
+        return String(field.getValue(sp) == null ? '' : field.getValue(sp)).trim();
+      });
+      var allEqual = values.every(function (value) { return value === values[0]; });
+      if (onlyDifferences && list.length > 1 && allEqual) return;
+
+      html += '<tr><th scope="row" class="compare-row-label">' + esc(field.label) + '</th>' +
+        values.map(function (value) {
+          var display = value || '—';
+          if (field.isScientific && value) display = '<em>' + esc(value) + '</em>';
+          else display = esc(display);
+          return '<td class="compare-value' + (value ? '' : ' is-empty') + '">' + display + '</td>';
+        }).join('') + '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+    if (list.length < 2) {
+      html += '<div class="suggestions" id="suggestions"></div>';
+    }
+    contentEl.innerHTML = html;
+    suggestionsEl = document.getElementById('suggestions');
+    renderSuggestions();
+
+    helpEl.textContent = list.length + (list.length === 1 ? ' especie seleccionada' : ' especies seleccionadas') +
+      (list.length < 3 ? ' · puedes añadir una tercera.' : ' · comparación completa.');
+
+    contentEl.querySelectorAll('[data-remove]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        applyIds(selected.filter(function (id) { return id !== btn.getAttribute('data-remove'); }));
+      });
+    });
+  }
+
+  function suggestionPairs() {
+    var groups = {};
+    species.forEach(function (sp) {
+      var key = groupLabel(sp);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(sp);
+    });
+
+    var pairs = [];
+    Object.keys(groups).forEach(function (key) {
+      if (groups[key].length < 2) return;
+      pairs.push({
+        label: key,
+        ids: [groups[key][0].id, groups[key][1].id]
+      });
+    });
+
+    pairs.sort(function (a, b) { return b.ids.length - a.ids.length; });
+    if (pairs.length < 3) {
+      for (var i = 0; i < species.length && pairs.length < 4; i += 2) {
+        if (!species[i + 1]) break;
+        pairs.push({ label: species[i].name + ' y ' + species[i + 1].name, ids: [species[i].id, species[i + 1].id] });
+      }
+    }
+    return pairs.slice(0, 4);
+  }
+
+  function renderSuggestions() {
+    if (!suggestionsEl) return;
+    var pairs = suggestionPairs();
+    var html = pairs.map(function (pair) {
+      return '<button type="button" class="suggestion-btn" data-ids="' + esc(pair.ids.join(',')) + '">' +
+        esc(pair.label) + '</button>';
+    }).join('');
+    if (selected.length < 3 && species.length) {
+      html += '<button type="button" class="suggestion-btn" id="randomComparison">🎲 Comparación al azar</button>';
+    }
+    suggestionsEl.innerHTML = html;
+    suggestionsEl.querySelectorAll('[data-ids]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        applyIds(btn.getAttribute('data-ids').split(','));
+      });
+    });
+    var random = document.getElementById('randomComparison');
+    if (random) {
+      random.addEventListener('click', function () {
+        var pool = species.slice();
+        var ids = [];
+        while (pool.length && ids.length < 2) {
+          var index = Math.floor(Math.random() * pool.length);
+          ids.push(pool.splice(index, 1)[0].id);
+        }
+        applyIds(ids);
+      });
+    }
+  }
+
+  function renderAll() {
+    fillSelect(pickA, selected[0] || '');
+    fillSelect(pickB, selected[1] || '');
+    fillSelect(pickC, selected[2] || '', true);
+    updateUrl();
+    renderComparison();
+  }
+
+  function onPickChange() {
+    var ids = [pickA.value, pickB.value, pickC.value].filter(Boolean);
+    var normalized = normalizeIds(ids);
+    if (ids.length !== normalized.length) {
+      window.IE.toast('Esa especie ya estaba en la comparación');
+    }
+    selected = normalized;
+    // Se conserva el orden A, B, C aunque el usuario cambie una sola lista.
+    renderAll();
+  }
+
+  function initFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var ids = (params.get('ids') || '').split(',').map(function (id) {
+      try { return decodeURIComponent(id.trim()); } catch (e) { return id.trim(); }
+    }).filter(Boolean);
+    selected = normalizeIds(ids);
+  }
+
+  function load() {
+    if (!window.IE) {
+      contentEl.innerHTML = '<div class="compare-empty">No se pudo iniciar el comparador.</div>';
+      return;
+    }
+
+    window.IE.loadSpecies().then(function (list) {
+      species = list.slice().sort(function (a, b) {
+        return a.name.localeCompare(b.name, 'es');
+      });
+      initFromUrl();
+      renderAll();
+    }).catch(function (error) {
+      console.error(error);
+      contentEl.innerHTML = '<div class="compare-empty">No se pudieron cargar las especies. Revisa tu conexión e intenta de nuevo.</div>';
+    });
+  }
+
+  pickA.addEventListener('change', onPickChange);
+  pickB.addEventListener('change', onPickChange);
+  pickC.addEventListener('change', onPickChange);
+  onlyDiffEl.addEventListener('change', function () {
+    onlyDifferences = onlyDiffEl.checked;
+    renderComparison();
+  });
+
+  document.getElementById('shareComparison').addEventListener('click', function () {
+    window.IE.share('Comparador de especies · InsectErik', window.location.href);
+  });
+
+  document.getElementById('clearComparison').addEventListener('click', function () {
+    selected = [];
+    renderAll();
+    window.IE.toast('Selección limpiada');
+  });
+
+  window.addEventListener('popstate', function () {
+    initFromUrl();
+    renderAll();
+  });
+
+  load();
+})();
+</script>
+<script src="js/features.js"></script>
+</body>
+</html>

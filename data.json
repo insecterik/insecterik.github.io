@@ -1,0 +1,1015 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-05T19:31:29.029Z",
+  "source": "content/*.md",
+  "levels": {
+    "reinos": [
+      {
+        "title": "Fauna",
+        "descripcion": "descripcion del apartado fauna",
+        "__path": "content/reinos/fauna.md",
+        "__file": "fauna.md"
+      },
+      {
+        "title": "Flora",
+        "__path": "content/reinos/flora.md",
+        "__file": "flora.md"
+      },
+      {
+        "title": "Hongos (Fungi)",
+        "descripcion": "descripcion de los hongos",
+        "__path": "content/reinos/hongo.md",
+        "__file": "hongo.md"
+      }
+    ],
+    "grupos": [
+      {
+        "title": "Invertebrados",
+        "reino": "Fauna",
+        "__path": "content/grupos/invertebrados.md",
+        "__file": "invertebrados.md"
+      },
+      {
+        "title": "Vertebrados",
+        "reino": "Fauna",
+        "descripcion": "descripcion de vertebrados",
+        "__path": "content/grupos/mamiferos.md",
+        "__file": "mamiferos.md"
+      }
+    ],
+    "subgrupos": [
+      {
+        "title": "Anfibios",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "__path": "content/subgrupos/anfibios.md",
+        "__file": "anfibios.md"
+      },
+      {
+        "title": "Anélidos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "__path": "content/subgrupos/anélidos.md",
+        "__file": "anélidos.md"
+      },
+      {
+        "title": "Arácnidos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "__path": "content/subgrupos/arácnidos.md",
+        "__file": "arácnidos.md"
+      },
+      {
+        "title": "Aves",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "__path": "content/subgrupos/aves.md",
+        "__file": "aves.md"
+      },
+      {
+        "title": "Crustáceos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "__path": "content/subgrupos/crustáceos.md",
+        "__file": "crustáceos.md"
+      },
+      {
+        "title": "Hongos",
+        "reino": "Hongos (Fungi)",
+        "__path": "content/subgrupos/hongos.md",
+        "__file": "hongos.md"
+      },
+      {
+        "title": "Insectos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "__path": "content/subgrupos/insectos.md",
+        "__file": "insectos.md"
+      },
+      {
+        "title": "Moluscos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "__path": "content/subgrupos/moluscos.md",
+        "__file": "moluscos.md"
+      },
+      {
+        "title": "Mamíferos",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "descripcion": "descripcion de los mamiferos",
+        "__path": "content/subgrupos/osos.md",
+        "__file": "osos.md"
+      },
+      {
+        "title": "Peces",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "__path": "content/subgrupos/peces.md",
+        "__file": "peces.md"
+      },
+      {
+        "title": "Plantas",
+        "reino": "Flora",
+        "__path": "content/subgrupos/plantas.md",
+        "__file": "plantas.md"
+      },
+      {
+        "title": "Reptiles",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "__path": "content/subgrupos/reptiles.md",
+        "__file": "reptiles.md"
+      }
+    ],
+    "categorias": [
+      {
+        "title": "Anfibios",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Anfibios",
+        "__path": "content/categorias/anfibios.md",
+        "__file": "anfibios.md"
+      },
+      {
+        "title": "Anélidos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Anélidos",
+        "__path": "content/categorias/anélidos.md",
+        "__file": "anélidos.md"
+      },
+      {
+        "title": "Arácnidos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Arácnidos",
+        "__path": "content/categorias/arácnidos.md",
+        "__file": "arácnidos.md"
+      },
+      {
+        "title": "Aves",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Aves",
+        "__path": "content/categorias/aves.md",
+        "__file": "aves.md"
+      },
+      {
+        "title": "Blatodeos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/blatodeos.md",
+        "__file": "blatodeos.md"
+      },
+      {
+        "title": "Coleópteros",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/coleópteros.md",
+        "__file": "coleópteros.md"
+      },
+      {
+        "title": "Crustáceos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Crustáceos",
+        "__path": "content/categorias/crustáceos.md",
+        "__file": "crustáceos.md"
+      },
+      {
+        "title": "Dípteros",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/dípteros.md",
+        "__file": "dípteros.md"
+      },
+      {
+        "title": "Fásmidos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/fásmidos.md",
+        "__file": "fásmidos.md"
+      },
+      {
+        "title": "Hemípteros",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/hemípteros.md",
+        "__file": "hemípteros.md"
+      },
+      {
+        "title": "Himenópteros",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/himenópteros.md",
+        "__file": "himenópteros.md"
+      },
+      {
+        "title": "Lepidópteros",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "descripcion": "descripción ",
+        "__path": "content/categorias/mamiferos.md",
+        "__file": "mamiferos.md"
+      },
+      {
+        "title": "Mamíferos",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Mamíferos",
+        "__path": "content/categorias/mamíferos.md",
+        "__file": "mamíferos.md"
+      },
+      {
+        "title": "Mantodeos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/mantodeos.md",
+        "__file": "mantodeos.md"
+      },
+      {
+        "title": "Moluscos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Moluscos",
+        "__path": "content/categorias/moluscos.md",
+        "__file": "moluscos.md"
+      },
+      {
+        "title": "Odonatos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/odonatos.md",
+        "__file": "odonatos.md"
+      },
+      {
+        "title": "Ortópteros",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "__path": "content/categorias/ortópteros.md",
+        "__file": "ortópteros.md"
+      },
+      {
+        "title": "Reptiles",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Reptiles",
+        "__path": "content/categorias/reptiles.md",
+        "__file": "reptiles.md"
+      }
+    ],
+    "subcategorias": [
+      {
+        "title": "Abejas",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Himenópteros",
+        "__path": "content/subcategorias/abejas.md",
+        "__file": "abejas.md"
+      },
+      {
+        "title": "Mamíferos Acuáticos",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Mamíferos",
+        "categoria": "Mamíferos",
+        "__path": "content/subcategorias/acuáticos.md",
+        "__file": "acuáticos.md"
+      },
+      {
+        "title": "Anfibios Acuáticos",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Anfibios",
+        "categoria": "Anfibios",
+        "__path": "content/subcategorias/anfibios-acuáticos.md",
+        "__file": "anfibios-acuáticos.md"
+      },
+      {
+        "title": "Anfibios Arborícolas",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Anfibios",
+        "categoria": "Anfibios",
+        "__path": "content/subcategorias/anfibios-arborícolas.md",
+        "__file": "anfibios-arborícolas.md"
+      },
+      {
+        "title": "Anfibios Terrestres",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Anfibios",
+        "categoria": "Anfibios",
+        "__path": "content/subcategorias/anfibios-terrestres.md",
+        "__file": "anfibios-terrestres.md"
+      },
+      {
+        "title": "Anélidos Acuáticos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Anélidos",
+        "categoria": "Anélidos",
+        "__path": "content/subcategorias/anélidos-acuáticos.md",
+        "__file": "anélidos-acuáticos.md"
+      },
+      {
+        "title": "Anélidos Terrestres",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Anélidos",
+        "categoria": "Anélidos",
+        "__path": "content/subcategorias/anélidos-terrestres.md",
+        "__file": "anélidos-terrestres.md"
+      },
+      {
+        "title": "Avispas",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Himenópteros",
+        "__path": "content/subcategorias/avispas.md",
+        "__file": "avispas.md"
+      },
+      {
+        "title": "Caballitos del diablo",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Odonatos",
+        "__path": "content/subcategorias/caballitos-del-diablo.md",
+        "__file": "caballitos-del-diablo.md"
+      },
+      {
+        "title": "Chinches",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Hemípteros",
+        "__path": "content/subcategorias/chinches.md",
+        "__file": "chinches.md"
+      },
+      {
+        "title": "Cigarras",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Hemípteros",
+        "__path": "content/subcategorias/cigarras.md",
+        "__file": "cigarras.md"
+      },
+      {
+        "title": "Crustáceos Acuáticos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Crustáceos",
+        "categoria": "Crustáceos",
+        "__path": "content/subcategorias/crustáceos-acuáticos.md",
+        "__file": "crustáceos-acuáticos.md"
+      },
+      {
+        "title": "Crustáceos Terrestres",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Crustáceos",
+        "categoria": "Crustáceos",
+        "__path": "content/subcategorias/crustáceos-terrestres.md",
+        "__file": "crustáceos-terrestres.md"
+      },
+      {
+        "title": "Cucarachas",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Blatodeos",
+        "__path": "content/subcategorias/cucarachas.md",
+        "__file": "cucarachas.md"
+      },
+      {
+        "title": "Escarabajos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Coleópteros",
+        "__path": "content/subcategorias/escarabajos.md",
+        "__file": "escarabajos.md"
+      },
+      {
+        "title": "Grillos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Ortópteros",
+        "__path": "content/subcategorias/grillos.md",
+        "__file": "grillos.md"
+      },
+      {
+        "title": "Hormigas",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Himenópteros",
+        "__path": "content/subcategorias/hormigas.md",
+        "__file": "hormigas.md"
+      },
+      {
+        "title": "Insectos palo",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Fásmidos",
+        "__path": "content/subcategorias/insectos-palo.md",
+        "__file": "insectos-palo.md"
+      },
+      {
+        "title": "Libélulas",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Odonatos",
+        "__path": "content/subcategorias/libélulas.md",
+        "__file": "libélulas.md"
+      },
+      {
+        "title": "Mantis",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Mantodeos",
+        "__path": "content/subcategorias/mantis.md",
+        "__file": "mantis.md"
+      },
+      {
+        "title": "Moluscos Acuáticos",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Moluscos",
+        "categoria": "Moluscos",
+        "__path": "content/subcategorias/moluscos-acuáticos.md",
+        "__file": "moluscos-acuáticos.md"
+      },
+      {
+        "title": "Moluscos Terrestres",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Moluscos",
+        "categoria": "Moluscos",
+        "__path": "content/subcategorias/moluscos-terrestres.md",
+        "__file": "moluscos-terrestres.md"
+      },
+      {
+        "title": "Moscas",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Dípteros",
+        "__path": "content/subcategorias/moscas.md",
+        "__file": "moscas.md"
+      },
+      {
+        "title": "Aves no voladoras",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Aves",
+        "categoria": "Aves",
+        "__path": "content/subcategorias/no-voladoras.md",
+        "__file": "no-voladoras.md"
+      },
+      {
+        "title": "Mariposas diurnas",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "__path": "content/subcategorias/nocturnas.md",
+        "__file": "nocturnas.md"
+      },
+      {
+        "title": "Mariposas nocturnas o Polillas",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "descripcion": "descripción",
+        "__path": "content/subcategorias/osos-negros-pequeños.md",
+        "__file": "osos-negros-pequeños.md"
+      },
+      {
+        "title": "Reptiles Acuáticos",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Reptiles",
+        "categoria": "Reptiles",
+        "__path": "content/subcategorias/reptiles-acuáticos.md",
+        "__file": "reptiles-acuáticos.md"
+      },
+      {
+        "title": "Reptiles Arborícolas",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Reptiles",
+        "categoria": "Reptiles",
+        "__path": "content/subcategorias/reptiles-arborícolas.md",
+        "__file": "reptiles-arborícolas.md"
+      },
+      {
+        "title": "Reptiles Terrestres",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Reptiles",
+        "categoria": "Reptiles",
+        "__path": "content/subcategorias/reptiles-terrestres.md",
+        "__file": "reptiles-terrestres.md"
+      },
+      {
+        "title": "Saltamontes",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Ortópteros",
+        "__path": "content/subcategorias/saltamontes.md",
+        "__file": "saltamontes.md"
+      },
+      {
+        "title": "Mamíferos Terrestres",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Mamíferos",
+        "categoria": "Mamíferos",
+        "__path": "content/subcategorias/terrestres.md",
+        "__file": "terrestres.md"
+      },
+      {
+        "title": "Aves voladoras",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Aves",
+        "categoria": "Aves",
+        "__path": "content/subcategorias/voladoras.md",
+        "__file": "voladoras.md"
+      },
+      {
+        "title": "Mamíferos voladores",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Mamíferos",
+        "categoria": "Mamíferos",
+        "__path": "content/subcategorias/voladores.md",
+        "__file": "voladores.md"
+      }
+    ],
+    "especies": [
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.51.15-pm-5-.jpeg",
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.51.15-pm.jpeg"
+        ],
+        "autor": "Luis Miguel Martín Montenegro",
+        "title": "Alcaraván o Avefría Tero",
+        "cientifico": "Vanellus chilensis",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Aves",
+        "categoria": "Aves",
+        "subcategoria": "Aves voladoras",
+        "fecha": "2026-08-02T17:30:00.000-05:00",
+        "ubicacion": "Tomada en la zona urbana cerca a la Plaza de Toros.",
+        "vereda": [
+          "CASCO URBANO"
+        ],
+        "autores": [
+          "Luis Miguel Martín Montenegro"
+        ],
+        "__path": "content/especies/alcaraván-o-avefría-tero.md",
+        "__file": "alcaraván-o-avefría-tero.md"
+      },
+      {
+        "title": "Mariposa azul metalizada",
+        "cientifico": "Rhetus sp.",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas diurnas",
+        "taxonomia": {
+          "dominio": "",
+          "reino_taxonomico": "Animalia",
+          "filo": "Arthropoda",
+          "clase": "Insecta",
+          "orden": "Lepidoptera",
+          "familia": "Riodinidae",
+          "genero": "Rhetus",
+          "especie_taxonomica": "Rhetus sp."
+        },
+        "imagenes": [
+          "/images/uploads/mariposa-rhetus1.jpg",
+          "/images/uploads/mariposa-rhetus2.jpg",
+          "/images/uploads/mariposa-rhetus3.jpg"
+        ],
+        "autor": "InsectErik",
+        "descripcion": [],
+        "fecha": "2026-09-12T12:43:00.000-05:00",
+        "ubicacion": "Vía El Alto de las imágenes",
+        "vereda": [
+          "CAÑADAS"
+        ],
+        "autores": [
+          "InsectErik"
+        ],
+        "__path": "content/especies/alto-elgo.md",
+        "__file": "alto-elgo.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-21-.jpeg"
+        ],
+        "autor": "Roque Roa Martín - Blue Green",
+        "title": "Amaranta roja",
+        "cientifico": "Heliconius clysonymus",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas diurnas",
+        "descripcion": "Tomada cerca a La Chorrera",
+        "fecha": "2026-08-04T13:09:00.000-05:00",
+        "vereda": [
+          "LAGUNA"
+        ],
+        "autores": [
+          "Roque Roa Martín - Blue Green"
+        ],
+        "__path": "content/especies/amaranta-roja.md",
+        "__file": "amaranta-roja.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-7-.jpeg"
+        ],
+        "autor": "Roque Roa Martín - Blue Green",
+        "title": "Araña lince",
+        "cientifico": "Peucetia sp.",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Arácnidos",
+        "categoria": "Arácnidos",
+        "fecha": "2026-08-04T10:00:00.000-05:00",
+        "ubicacion": "Tomada cerca a La Chorrera",
+        "vereda": [
+          "LAGUNA"
+        ],
+        "autores": [
+          "Roque Roa Martín - Blue Green"
+        ],
+        "__path": "content/especies/araña-lince.md",
+        "__file": "araña-lince.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-4-.jpeg",
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-5-.jpeg"
+        ],
+        "autor": "Luis Miguel Martín Montenegro",
+        "title": "Ardilla de Cola Roja",
+        "cientifico": "Sciurus granatensis",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Mamíferos",
+        "categoria": "Mamíferos",
+        "subcategoria": "Mamíferos Terrestres",
+        "fecha": "2026-08-29T14:52:00.000-05:00",
+        "vereda": [
+          "FUGUNTÁ"
+        ],
+        "autores": [
+          "Luis Miguel Martín Montenegro"
+        ],
+        "__path": "content/especies/ardilla-de-cola-roja.md",
+        "__file": "ardilla-de-cola-roja.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.51.15-pm-2-.jpeg",
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.51.15-pm-3-.jpeg"
+        ],
+        "autor": "Luis Miguel Martín Montenegro",
+        "title": "Garza silbadora o chiflona",
+        "cientifico": "Syrigma sibilatrix",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Aves",
+        "categoria": "Aves",
+        "subcategoria": "Aves voladoras",
+        "descripcion": [],
+        "fecha": "2026-07-16T12:50:00.000-05:00",
+        "vereda": [
+          "MEDIO QUEBRADAS"
+        ],
+        "autores": [
+          "Luis Miguel Martín Montenegro"
+        ],
+        "__path": "content/especies/garza-silbadora-o-chiflona.md",
+        "__file": "garza-silbadora-o-chiflona.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm.jpeg",
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-1-.jpeg"
+        ],
+        "autor": "Alejandro Arturo Bernal Muñoz",
+        "title": "Hongo Matamoscas",
+        "cientifico": "Amanita muscaria",
+        "reino": "Hongos (Fungi)",
+        "subgrupo": "Hongos",
+        "fecha": "2026-08-12T13:33:00.000-05:00",
+        "vereda": [
+          "SOATAMA"
+        ],
+        "autores": [
+          "Alejandro Arturo Bernal Muñoz"
+        ],
+        "__path": "content/especies/hongo-matamoscas.md",
+        "__file": "hongo-matamoscas.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-5-.jpeg"
+        ],
+        "autor": "José Danilo Castañeda Moreno",
+        "title": "Larva de Polilla",
+        "cientifico": "Lepidoptera",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas nocturnas o Polillas",
+        "descripcion": [],
+        "fecha": "2026-08-26T19:30:00.000-05:00",
+        "ubicacion": "Observada cerca a la Quebrada Los Carranza",
+        "vereda": [
+          "CAÑADAS"
+        ],
+        "autores": [
+          "José Danilo Castañeda Moreno"
+        ],
+        "__path": "content/especies/larva-de-polilla.md",
+        "__file": "larva-de-polilla.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/large.jpg"
+        ],
+        "autor": "Alejandro Arturo Bernal Muñoz",
+        "title": "Mariposa saltarina",
+        "cientifico": "Urbanus sp.",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas diurnas",
+        "descripcion": [],
+        "fecha": "2026-09-16T13:19:00.000-05:00",
+        "vereda": [
+          "CASCO"
+        ],
+        "autores": [
+          "Alejandro Arturo Bernal Muñoz"
+        ],
+        "__path": "content/especies/mariposa-saltarina.md",
+        "__file": "mariposa-saltarina.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-10-.jpeg"
+        ],
+        "autor": "Roque Roa Martín - Blue Green",
+        "title": "Mosca",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Dípteros",
+        "subcategoria": "Moscas",
+        "fecha": "2026-08-04T09:00:00.000-05:00",
+        "ubicacion": "Tomada cerca a La Chorrera",
+        "vereda": [
+          "LAGUNA"
+        ],
+        "autores": [
+          "Roque Roa Martín - Blue Green"
+        ],
+        "__path": "content/especies/mosca.md",
+        "__file": "mosca.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-8-.jpeg",
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-9-.jpeg"
+        ],
+        "autor": "Luis Miguel Martín Montenegro",
+        "title": "Moscas Parasitoides (Posiblemente)",
+        "cientifico": "Familia Tachinidae",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Dípteros",
+        "subcategoria": "Moscas",
+        "fecha": "2026-08-23T13:48:00.000-05:00",
+        "vereda": [
+          "MEDIO QUEBRADAS"
+        ],
+        "autores": [
+          "Luis Miguel Martín Montenegro"
+        ],
+        "__path": "content/especies/moscas-parasitoides-posiblemente.md",
+        "__file": "moscas-parasitoides-posiblemente.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-1-.jpeg",
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm.jpeg"
+        ],
+        "autor": "Luis Miguel Martín Montenegro",
+        "title": "Pasionaria Andina",
+        "cientifico": "Dione glycera",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas diurnas",
+        "descripcion": [],
+        "fecha": "2026-05-11T16:40:00.000-05:00",
+        "ubicacion": [],
+        "vereda": [
+          "RESGUARDO"
+        ],
+        "autores": [
+          "Luis Miguel Martín Montenegro"
+        ],
+        "__path": "content/especies/pasionaria-andina.md",
+        "__file": "pasionaria-andina.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-10-.jpeg",
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-12-.jpeg"
+        ],
+        "autor": "Alejandro Arturo Bernal Muñoz",
+        "title": "Polilla Gamelia",
+        "cientifico": "Gamelia sp.",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas nocturnas o Polillas",
+        "descripcion": "Al cerrar las alas parece un triángulo.",
+        "fecha": "2026-09-06T12:25:00.000-05:00",
+        "vereda": [
+          "CASCO"
+        ],
+        "autores": [
+          "Alejandro Arturo Bernal Muñoz"
+        ],
+        "__path": "content/especies/polilla-gamelia.md",
+        "__file": "polilla-gamelia.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-26-.jpeg"
+        ],
+        "autor": "Alejandro Arturo Bernal Muñoz",
+        "title": "Polilla Periclina",
+        "cientifico": "Periclina sp.",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas nocturnas o Polillas",
+        "descripcion": [],
+        "fecha": "2026-09-16T07:00:00.000-05:00",
+        "vereda": [
+          "CASCO"
+        ],
+        "autores": [
+          "Alejandro Arturo Bernal Muñoz"
+        ],
+        "__path": "content/especies/polilla-periclina.md",
+        "__file": "polilla-periclina.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-6-.jpeg"
+        ],
+        "autor": "Emilia Rubiano",
+        "title": "Polilla (Posiblemente del género Coronidia)",
+        "cientifico": "Coronidia sp.",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas nocturnas o Polillas",
+        "fecha": "2026-09-27T13:17:00.000-05:00",
+        "vereda": [
+          "SOATAMA"
+        ],
+        "autores": [
+          "Emilia Rubiano"
+        ],
+        "__path": "content/especies/polilla-posiblemente-del-género-coronidia.md",
+        "__file": "polilla-posiblemente-del-género-coronidia.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-2-.jpeg"
+        ],
+        "autor": "Alejandro Arturo Bernal Muñoz",
+        "title": "Polilla Cuatro Espejos",
+        "cientifico": "Rothschildia sp.",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas nocturnas o Polillas",
+        "descripcion": [],
+        "fecha": "2026-09-02T14:23:00.000-05:00",
+        "vereda": [
+          "CASCO"
+        ],
+        "autores": [
+          "Alejandro Arturo Bernal Muñoz"
+        ],
+        "__path": "content/especies/polillas-cuatro-espejos.md",
+        "__file": "polillas-cuatro-espejos.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-06-at-1.57.39-pm-3-.jpeg"
+        ],
+        "autor": "Roque Roa Martín - Blue Green",
+        "title": "Saltarín de camino",
+        "cientifico": "Anthoptus epictetus",
+        "reino": "Fauna",
+        "grupo": "Invertebrados",
+        "subgrupo": "Insectos",
+        "categoria": "Lepidópteros",
+        "subcategoria": "Mariposas diurnas",
+        "descripcion": [],
+        "fecha": "2026-08-04T11:36:00.000-05:00",
+        "ubicacion": "Observada cerca al sitio turístico La Chorrera de Tibirita",
+        "vereda": [
+          "LAGUNA"
+        ],
+        "autores": [
+          "Roque Roa Martín - Blue Green"
+        ],
+        "__path": "content/especies/saltarín-de-camino.md",
+        "__file": "saltarín-de-camino.md"
+      },
+      {
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-11-.jpeg",
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-12-.jpeg"
+        ],
+        "autor": "Luis Miguel Martín Montenegro",
+        "title": "Serpiente",
+        "cientifico": "Suborden Serpentes",
+        "reino": "Fauna",
+        "grupo": "Vertebrados",
+        "subgrupo": "Reptiles",
+        "categoria": "Reptiles",
+        "subcategoria": "Reptiles Terrestres",
+        "fecha": "2026-08-15T19:47:00.000-05:00",
+        "ubicacion": "Tomada cerca a la Plaza de Toros",
+        "vereda": [
+          "CASCO URBANO"
+        ],
+        "autores": [
+          "Luis Miguel Martín Montenegro"
+        ],
+        "__path": "content/especies/serpiente.md",
+        "__file": "serpiente.md"
+      }
+    ],
+    "colecciones": [
+      {
+        "title": "Mariposas azules",
+        "imagen": "/images/uploads/1000053270.png",
+        "especies": [
+          "Mariposa azul metalizada"
+        ],
+        "__path": "content/colecciones/mariposas-azules.md",
+        "__file": "mariposas-azules.md"
+      }
+    ]
+  }
+}

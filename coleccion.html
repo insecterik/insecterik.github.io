@@ -202,6 +202,7 @@
     .top-nav a{ display:none; }
   }
 </style>
+<link rel="stylesheet" href="css/extras.css">
 </head>
 <body>
 
@@ -209,6 +210,7 @@
   <a class="logo" href="/"><img src="images/uploads/logo.png" alt="InsectErik logo" class="logo-img"><span class="logo-text">InsectErik</span></a>
   <div class="top-nav">
     <a class="back-link" href="/">&#8592; Volver al catálogo</a>
+    <a href="juego.html">Juego</a>
   </div>
 </div>
 
@@ -229,6 +231,7 @@
   Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
 </footer>
 
+<script src="js/core.js"></script>
 <script>
 (function(){
   'use strict';
@@ -329,6 +332,27 @@
     }));
   }
 
+  function loadCollectionsFromGitHub() {
+    return Promise.all([
+      listMdFiles('content/colecciones').then(fetchAndParseAll),
+      listMdFiles('content/especies').then(fetchAndParseAll)
+    ]);
+  }
+
+  function loadCollectionsData() {
+    if (window.IE && typeof IE.loadData === 'function') {
+      return IE.loadData().then(function (data) {
+        var levels = data.levels || {};
+        if (!Array.isArray(levels.colecciones)) throw new Error('data.json no contiene colecciones');
+        return [levels.colecciones, levels.especies || []];
+      }).catch(function (error) {
+        console.warn('No se pudo usar data.json; se carga la colección desde GitHub.', error);
+        return loadCollectionsFromGitHub();
+      });
+    }
+    return loadCollectionsFromGitHub();
+  }
+
   function showError(message) {
     document.getElementById('collectionTitle').textContent = 'No se encontró la colección';
     document.getElementById('breadcrumbCurrent').textContent = 'No encontrada';
@@ -345,10 +369,7 @@
   }
 
   // ── CARGAR LA COLECCIÓN SOLICITADA + TODAS LAS ESPECIES ──
-  Promise.all([
-    listMdFiles('content/colecciones').then(fetchAndParseAll),
-    listMdFiles('content/especies').then(fetchAndParseAll)
-  ])
+  loadCollectionsData()
     .then(function (results) {
       var rawColecciones = results[0];
       var rawEspecies = results[1];
@@ -396,7 +417,7 @@
     })
     .catch(function (err) {
       console.error(err);
-      showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+      showError('No se pudo cargar la información. Revisa tu conexión e intenta de nuevo.');
     });
 
   function renderCollection(collection, species) {
@@ -445,6 +466,7 @@
   }
 })();
 </script>
+<script src="js/features.js"></script>
 
 </body>
 </html>

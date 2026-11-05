@@ -240,6 +240,7 @@
     .top-nav a{ font-size:13px; }
   }
 </style>
+<link rel="stylesheet" href="css/extras.css">
 </head>
 <body>
 
@@ -252,8 +253,11 @@
     <a href="/">Inicio</a>
     <a href="colecciones.html" class="active">Colecciones</a>
     <a href="listas.html">Listas</a>
+    <a href="linea-tiempo.html">Tiempo</a>
+    <a href="comparador.html">Comparar</a>
     <a href="mapa.html">Mapa</a>
     <a href="estadisticas.html">Estadísticas</a>
+    <a href="juego.html">Juego</a>
   </nav>
 </div>
 
@@ -274,6 +278,7 @@
   Biodiversidad de Tibirita &middot; Catálogo de fauna observada en Tibirita, Cundinamarca
 </footer>
 
+<script src="js/core.js"></script>
 <script>
 (function(){
   'use strict';
@@ -374,6 +379,27 @@
     }));
   }
 
+  function loadCollectionsFromGitHub() {
+    return Promise.all([
+      listMdFiles('content/colecciones').then(fetchAndParseAll),
+      listMdFiles('content/especies').then(fetchAndParseAll)
+    ]);
+  }
+
+  function loadCollectionsData() {
+    if (window.IE && typeof IE.loadData === 'function') {
+      return IE.loadData().then(function (data) {
+        var levels = data.levels || {};
+        if (!Array.isArray(levels.colecciones)) throw new Error('data.json no contiene colecciones');
+        return [levels.colecciones, levels.especies || []];
+      }).catch(function (error) {
+        console.warn('No se pudo usar data.json; se cargan las colecciones desde GitHub.', error);
+        return loadCollectionsFromGitHub();
+      });
+    }
+    return loadCollectionsFromGitHub();
+  }
+
   function showError(message) {
     document.getElementById('collectionTitle').textContent = 'No se encontró la colección';
     document.getElementById('breadcrumbCurrent').textContent = 'No encontrada';
@@ -414,23 +440,19 @@
 
   if (!targetId) {
     // ── SIN id: mostrar el listado de todas las colecciones ──
-    listMdFiles('content/colecciones')
-      .then(fetchAndParseAll)
-      .then(function (rawColecciones) {
-        renderCollectionsList(buildCollections(rawColecciones));
+    loadCollectionsData()
+      .then(function (results) {
+        renderCollectionsList(buildCollections(results[0]));
       })
       .catch(function (err) {
         console.error(err);
-        showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+        showError('No se pudo cargar la información. Revisa tu conexión e intenta de nuevo.');
       });
     return;
   }
 
   // ── CON id: CARGAR LA COLECCIÓN SOLICITADA + TODAS LAS ESPECIES ──
-  Promise.all([
-    listMdFiles('content/colecciones').then(fetchAndParseAll),
-    listMdFiles('content/especies').then(fetchAndParseAll)
-  ])
+  loadCollectionsData()
     .then(function (results) {
       var collections = buildCollections(results[0]);
       var species = buildSpecies(results[1]);
@@ -454,7 +476,7 @@
     })
     .catch(function (err) {
       console.error(err);
-      showError('No se pudo cargar la información desde GitHub. Revisa tu conexión e intenta de nuevo.');
+      showError('No se pudo cargar la información. Revisa tu conexión e intenta de nuevo.');
     });
 
   function renderCollectionsList(collections) {
@@ -596,5 +618,6 @@
   programar();
 })();
 </script>
+<script src="js/features.js"></script>
 </body>
 </html>

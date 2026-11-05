@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-05T20:40:56.881Z",
+  "generatedAt": "2026-11-05T20:44:32.554Z",
   "source": "content/*.md",
   "levels": {
     "reinos": [
@@ -960,6 +960,9 @@
         "ubicacion": "centro",
         "vereda": [
           "CASCO URBANO"
+        ],
+        "imagenes": [
+          "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-1-.jpeg"
         ],
         "autores": [
           "thomas",

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-05T20:44:32.554Z",
+  "generatedAt": "2026-11-05T21:15:38.714Z",
   "source": "content/*.md",
   "levels": {
     "reinos": [
@@ -956,6 +956,7 @@
         "cientifico": "prueba",
         "reino": "Hongos (Fungi)",
         "grupo": [],
+        "subgrupo": "Hongos",
         "fecha": "2026-11-05T14:40:00.000-06:00",
         "ubicacion": "centro",
         "vereda": [

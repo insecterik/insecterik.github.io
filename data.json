@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-05T20:32:58.112Z",
+  "generatedAt": "2026-11-05T20:40:56.881Z",
   "source": "content/*.md",
   "levels": {
     "reinos": [
@@ -950,6 +950,23 @@
         ],
         "__path": "content/especies/polillas-cuatro-espejos.md",
         "__file": "polillas-cuatro-espejos.md"
+      },
+      {
+        "title": "prueba",
+        "cientifico": "prueba",
+        "reino": "Hongos (Fungi)",
+        "grupo": [],
+        "fecha": "2026-11-05T14:40:00.000-06:00",
+        "ubicacion": "centro",
+        "vereda": [
+          "CASCO URBANO"
+        ],
+        "autores": [
+          "thomas",
+          "thomi"
+        ],
+        "__path": "content/especies/prueba.md",
+        "__file": "prueba.md"
       },
       {
         "imagenes": [

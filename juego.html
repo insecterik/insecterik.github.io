@@ -97,7 +97,7 @@
       <div class="ie-trail-hud">
         <div class="ie-trail-score">
           <div>Mapa<strong id="trailWorld">1 / 3</strong></div>
-          <div>Parada<strong id="trailStop">1 / 6</strong></div>
+          <div>Banderas<strong id="trailStop">0 / 6</strong></div>
           <div>Récord<strong id="trailBest">0 / 6</strong></div>
           <div>Intentos<strong id="trailAttempts">1</strong></div>
         </div>
@@ -106,7 +106,7 @@
 
       <div class="ie-trail-mapwrap">
         <div class="ie-trail-mapframe">
-          <svg id="trailMap" class="ie-trail-map" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet" role="img" data-theme="forest" aria-label="Mapa pixel art de una ruta con seis paradas para reconocer especies">
+          <svg id="trailMap" class="ie-trail-map" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet" role="img" data-theme="forest" aria-label="Mapa pixel art de una ruta con seis banderas para explorar">
             <g class="ie-map-scene is-active" data-scene="forest">
             <!-- cielo -->
             <rect width="640" height="300" fill="#a9dde3"/>
@@ -429,23 +429,35 @@
             <path id="trailPathBase" class="ie-trail-path-base" fill="none" stroke="#6f5232" stroke-width="16" stroke-linecap="square" stroke-linejoin="miter" d="M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552"/>
             <path id="trailPathTop" class="ie-trail-path" fill="none" stroke="#d8b078" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter" d="M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552"/>
 
-            <!-- paradas y explorador (se generan por JS) -->
+            <!-- banderas (se generan por JS) -->
             <g id="trailStops"></g>
-            <g id="trailHiker" class="ie-trail-hiker" transform="translate(64 244)">
-              <g class="ie-trail-hiker-inner">
-                <rect x="-14" y="-1" width="28" height="5" fill="rgba(0,0,0,.28)"/>
-                <image class="ie-trail-avatar" href="images/uploads/avatar.png" x="-27" y="-51" width="54" height="54" role="presentation"/>
-              </g>
-            </g>
           </svg>
+          <div class="ie-trail-player" id="trailPlayer" aria-hidden="true">
+            <img id="trailPlayerImg" src="images/uploads/FrenteEstatico.png" alt="">
+          </div>
         </div>
         <div class="ie-trail-caption">
-          <strong id="trailPlace">Orilla del río</strong>
-          <span id="trailStatus">Cada respuesta correcta te acerca a la cumbre</span>
+          <strong id="trailPlace">Bosque de Tibirita</strong>
+          <span id="trailStatus">Camina con las flechas o los botones y busca las banderas.</span>
+        </div>
+        <div class="ie-trail-controls" id="trailControls">
+          <div class="ie-trail-dpad" role="group" aria-label="Controles de movimiento">
+            <button type="button" data-move="up" aria-label="Caminar hacia arriba">▲</button>
+            <button type="button" data-move="left" aria-label="Caminar hacia la izquierda">◀</button>
+            <button type="button" data-move="down" aria-label="Caminar hacia abajo">▼</button>
+            <button type="button" data-move="right" aria-label="Caminar hacia la derecha">▶</button>
+          </div>
+          <div class="ie-trail-actionbar">
+            <p class="ie-trail-keyhint">
+              Muévete con <kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> o <kbd>WASD</kbd>.
+              Junto a una bandera, pulsa <kbd>E</kbd>.
+            </p>
+            <button class="ie-btn ie-btn-primary" type="button" id="trailInteract" hidden>Responder bandera</button>
+          </div>
         </div>
       </div>
 
-      <div class="ie-trail-game">
+      <div class="ie-trail-game" id="trailGame" hidden>
         <div id="quizPhoto" class="ie-trail-photo">🌿</div>
         <div class="ie-trail-body">
           <p class="ie-quiz-question" id="quizQuestion">¿Qué especie aparece en la foto?</p>
@@ -557,14 +569,17 @@
     trail: {
       mapIndex: 0,
       route: [],
-      index: 0,
       attempts: 0,
       bests: {},
+      near: -1,
+      active: -1,
+      encounterOpen: false,
       answered: false,
       solved: false,
       wrong: false,
       completed: false,
-      won: false
+      won: false,
+      player: { x: 24, y: 278, facing: 'down', moving: false }
     },
     explorer: { path: [] },
     memory: { deck: [], first: null, second: null, lock: false, moves: 0, matches: 0, pairs: 6 }
@@ -576,7 +591,8 @@
       name: 'Bosque de Tibirita',
       shortName: 'bosque',
       theme: 'forest',
-      aria: 'Mapa pixel art del bosque con seis paradas',
+      aria: 'Mapa pixel art del bosque con seis banderas para explorar',
+      start: { x: 40, y: 220 },
       path: 'M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552',
       stops: [
         { x: 64, y: 246, place: 'Orilla del río' },
@@ -592,7 +608,8 @@
       name: 'Ríos y cascadas',
       shortName: 'agua',
       theme: 'water',
-      aria: 'Mapa pixel art de agua con ocho paradas entre islas y puentes',
+      aria: 'Mapa pixel art de agua con ocho banderas entre islas y puentes',
+      start: { x: 40, y: 278 },
       path: 'M52 250 H92 V222 H132 H176 V250 H210 H250 V200 H286 H326 V230 H360 H400 V180 H436 H476 V214 H510 H548 V150 H584',
       stops: [
         { x: 52, y: 250, place: 'Muelle de madera' },
@@ -610,7 +627,8 @@
       name: 'Volcán ardiente',
       shortName: 'fuego',
       theme: 'fire',
-      aria: 'Mapa pixel art de fuego con ocho paradas entre lava y roca volcánica',
+      aria: 'Mapa pixel art de fuego con ocho banderas entre lava y roca volcánica',
+      start: { x: 40, y: 278 },
       path: 'M48 250 H84 V218 H124 H164 V246 H202 H238 V196 H276 H312 V226 H348 H384 V172 H420 H456 V204 H494 H530 V134 H572',
       stops: [
         { x: 48, y: 250, place: 'Borde del cráter' },
@@ -624,6 +642,29 @@
       ]
     }
   ];
+
+  var PLAYER_BOUNDS = { minX: 32, maxX: 608, minY: 130, maxY: 286 };
+  var PLAYER_SPEED = 108;
+  var INTERACT_RADIUS = 28;
+
+  var PLAYER_FRAMES = {
+    down: {
+      idle: 'images/uploads/FrenteEstatico.png',
+      walk: ['images/uploads/FrentePasoIzquierdo.png', 'images/uploads/FrentePasoDerecho.png']
+    },
+    up: {
+      idle: 'images/uploads/EspaldaEstatico.png',
+      walk: ['images/uploads/EspaldaPasoIzquierdo.png', 'images/uploads/EspaldaPasoDerecho.png']
+    },
+    left: {
+      idle: 'images/uploads/LadoIzquierdoEstatico.png',
+      walk: ['images/uploads/LadoIzquierdoEstatico.png', 'images/uploads/LadoIzquierdoPaso.png']
+    },
+    right: {
+      idle: 'images/uploads/LadoDerechoEstatico.png',
+      walk: ['images/uploads/LadoDerechoEstatico.png', 'images/uploads/LadoDerechoPaso.png']
+    }
+  };
 
   var LEVELS = [
     { key: 'reino', label: 'Grupo general' },
@@ -666,6 +707,7 @@
       document.querySelectorAll('.ie-game-panel').forEach(function (panel) {
         panel.classList.toggle('is-active', panel.id === 'panel-' + tab.dataset.tab);
       });
+      if (tab.dataset.tab !== 'quiz') stopMoving();
       if (tab.dataset.tab === 'memory' && !state.memory.deck.length) startMemory();
     });
   });
@@ -682,8 +724,16 @@
 
   function hasPhoto(sp) { return sp.photos && sp.photos.length; }
 
+  var moveHeld = { up: false, down: false, left: false, right: false };
+  var moveRaf = null;
+  var lastMoveTs = 0;
+  var playerFrameSrc = '';
+
   function currentMap() { return MAPS[state.trail.mapIndex] || MAPS[0]; }
   function mapBest(map) { return Number(state.trail.bests[map.id]) || 0; }
+  function countAnswered() {
+    return state.trail.route.filter(function (flag) { return flag.answered; }).length;
+  }
 
   function initTrail() {
     var photoPool = state.species.filter(hasPhoto);
@@ -702,10 +752,50 @@
       if (oldBest) state.trail.bests.bosque = oldBest;
     }
 
-    $('trailRestart').addEventListener('click', function () { startMap(true); });
+    preloadTrailFrames();
+
+    $('trailRestart').addEventListener('click', function () {
+      startMap(true);
+      $('trailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
     $('quizNext').addEventListener('click', advanceTrail);
     $('trailPlayAgain').addEventListener('click', playAgain);
+    $('trailInteract').addEventListener('click', tryEnterFlag);
+
+    document.querySelectorAll('.ie-trail-dpad [data-move]').forEach(function (btn) {
+      var dir = btn.getAttribute('data-move');
+      btn.addEventListener('pointerdown', function (event) {
+        event.preventDefault();
+        if (btn.setPointerCapture) {
+          try { btn.setPointerCapture(event.pointerId); } catch (err) {}
+        }
+        btn.classList.add('is-pressed');
+        beginMove(dir);
+      });
+      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (type) {
+        btn.addEventListener(type, function () {
+          btn.classList.remove('is-pressed');
+          endMove(dir);
+        });
+      });
+      btn.addEventListener('pointerleave', function () {
+        btn.classList.remove('is-pressed');
+        endMove(dir);
+      });
+      btn.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+    });
+
     startAdventure();
+  }
+
+  function preloadTrailFrames() {
+    Object.keys(PLAYER_FRAMES).forEach(function (dir) {
+      var frames = PLAYER_FRAMES[dir];
+      [frames.idle].concat(frames.walk).forEach(function (src) {
+        var img = new Image();
+        img.src = src;
+      });
+    });
   }
 
   function startAdventure() {
@@ -728,20 +818,33 @@
   function startMap(isRestart) {
     var trail = state.trail;
     var map = currentMap();
+    stopMoving();
     trail.route = buildRoute(map);
-    trail.index = 0;
+    trail.near = -1;
+    trail.active = -1;
+    trail.encounterOpen = false;
     trail.answered = false;
     trail.solved = false;
     trail.wrong = false;
     trail.completed = false;
     trail.won = false;
     trail.attempts = isRestart ? trail.attempts + 1 : 1;
+    trail.player = { x: map.start.x, y: map.start.y, facing: 'down', moving: false };
     applyMapScene(map);
 
-    var hiker = $('trailHiker');
-    hiker.style.transition = 'none';
-    renderTrailQuestion();
-    requestAnimationFrame(function () { hiker.style.transition = ''; });
+    $('trailGame').hidden = true;
+    $('trailGame').classList.remove('is-open');
+    $('trailControls').classList.remove('is-paused');
+    $('quizFeedback').innerHTML = '';
+    $('quizOptions').innerHTML = '';
+    $('trailInteract').hidden = true;
+
+    renderTrailFlags();
+    updatePlayerPosition();
+    updatePlayerFrame(performance.now(), true);
+    updateTrailHud();
+    updateNearFlag();
+    updateInteractionUi();
   }
 
   function applyMapScene(map) {
@@ -773,89 +876,184 @@
     var pool = state.species.filter(hasPhoto);
     if (!pool.length) pool = state.species.slice();
     var length = Math.min(map.stops.length, pool.length);
-    return shuffle(pool).slice(0, length).map(function (target) {
-      return { species: target, options: buildOptions(target) };
+    return shuffle(pool).slice(0, length).map(function (target, index) {
+      var stop = map.stops[index];
+      return {
+        species: target,
+        options: buildOptions(target),
+        x: stop.x,
+        y: stop.y,
+        place: stop.place,
+        answered: false
+      };
     });
   }
 
-  function stopElement(index) {
-    var stop = currentMap().stops[index];
-    var status = 'is-future';
-    if (state.trail.completed || index < state.trail.index || (state.trail.solved && index === state.trail.index)) status = 'is-done';
-    else if (index === state.trail.index) status = 'is-current';
+  function flagElement(index) {
+    var trail = state.trail;
+    var flag = trail.route[index];
+    var status = flag.answered ? 'is-done' : ((index === trail.near || index === trail.active) ? 'is-current' : 'is-future');
 
     var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.setAttribute('class', 'ie-trail-stop ' + status);
-    g.setAttribute('transform', 'translate(' + stop.x + ' ' + stop.y + ')');
+    g.setAttribute('transform', 'translate(' + flag.x + ' ' + flag.y + ')');
+    g.setAttribute('data-flag', index);
+    g.setAttribute('data-x', flag.x);
+    g.setAttribute('data-y', flag.y);
     g.innerHTML =
-      (status === 'is-current' ? '<rect class="ie-stop-ring" x="-14" y="-4" width="28" height="8"></rect>' : '') +
-      '<rect class="ie-stop-shadow" x="-9" y="2" width="18" height="4"></rect>' +
-      '<rect class="ie-stop-pole" x="-1" y="-28" width="3" height="30"></rect>' +
-      '<rect class="ie-stop-flag" x="2" y="-28" width="18" height="12"></rect>' +
-      '<rect class="ie-stop-flag-tip" x="20" y="-28" width="3" height="8"></rect>' +
-      '<text x="11" y="-19" text-anchor="middle" font-family="Courier New, monospace" font-size="8" font-weight="700" fill="#10231d">' + (index + 1) + '</text>';
+      (status === 'is-current' ? '<rect class="ie-stop-ring" x="-22" y="-7" width="44" height="14"></rect>' : '') +
+      '<rect class="ie-stop-shadow" x="-11" y="2" width="22" height="5"></rect>' +
+      '<rect class="ie-stop-pole" x="-1.5" y="-30" width="4" height="32"></rect>' +
+      '<rect class="ie-stop-flag" x="2.5" y="-30" width="24" height="16"></rect>' +
+      '<rect class="ie-stop-flag-tip" x="26.5" y="-30" width="4" height="11"></rect>' +
+      '<text x="14.5" y="-18.5" text-anchor="middle" font-family="Courier New, monospace" font-size="9.5" font-weight="700" fill="#10231d">' + (index + 1) + '</text>';
     return g;
   }
 
-  function renderTrailStops() {
+  function renderTrailFlags() {
     var layer = $('trailStops');
     layer.innerHTML = '';
     state.trail.route.forEach(function (_, index) {
-      layer.appendChild(stopElement(index));
+      layer.appendChild(flagElement(index));
     });
   }
 
-  function moveHiker() {
-    var map = currentMap();
-    var index = state.trail.completed ? state.trail.route.length - 1 : state.trail.index;
-    var stop = map.stops[Math.max(0, Math.min(index, map.stops.length - 1))];
-    if (!stop) return;
-    $('trailHiker').style.transform = 'translate(' + stop.x + 'px,' + (stop.y - 2) + 'px)';
+  function updateNearFlag() {
+    var trail = state.trail;
+    if (trail.encounterOpen) return;
+    var near = -1;
+    var best = INTERACT_RADIUS;
+    trail.route.forEach(function (flag, index) {
+      if (flag.answered) return;
+      var distance = Math.hypot(trail.player.x - flag.x, trail.player.y - flag.y);
+      if (distance < best) {
+        best = distance;
+        near = index;
+      }
+    });
+    if (near !== trail.near) {
+      trail.near = near;
+      renderTrailFlags();
+      updateInteractionUi();
+    }
   }
 
-  function renderTrailQuestion() {
+  function updateInteractionUi() {
     var trail = state.trail;
     var map = currentMap();
-    var item = trail.route[trail.index];
-    if (!item) return;
-    var target = item.species;
+    var interact = $('trailInteract');
+
+    if (trail.encounterOpen && trail.active >= 0 && trail.route[trail.active]) {
+      interact.hidden = true;
+      $('trailPlace').textContent = map.name + ' · ' + trail.route[trail.active].place;
+      $('trailStatus').textContent = 'Responde la pregunta para asegurar la bandera.';
+      return;
+    }
+
+    if (trail.near >= 0 && trail.route[trail.near]) {
+      interact.hidden = false;
+      interact.textContent = 'Responder bandera ' + (trail.near + 1);
+      $('trailPlace').textContent = map.name + ' · ' + trail.route[trail.near].place;
+      $('trailStatus').textContent = 'Pulsa E o toca el botón para entrar a responder.';
+      return;
+    }
+
+    interact.hidden = true;
+    $('trailPlace').textContent = map.name;
+    var remaining = trail.route.length - countAnswered();
+    if (trail.completed) {
+      $('trailStatus').textContent = trail.won ? '¡Recompensa desbloqueada!' : '¡Mapa completado!';
+    } else if (remaining === trail.route.length) {
+      $('trailStatus').textContent = 'Camina con las flechas o los botones y busca las banderas.';
+    } else if (remaining > 0) {
+      $('trailStatus').textContent = 'Quedan ' + remaining + ' banderas por descubrir.';
+    } else {
+      $('trailStatus').textContent = '¡Todas las banderas están aseguradas!';
+    }
+  }
+
+  function tryEnterFlag() {
+    var trail = state.trail;
+    if (trail.encounterOpen || trail.near < 0) return;
+    openEncounter(trail.near);
+  }
+
+  function openEncounter(index) {
+    var trail = state.trail;
+    var flag = trail.route[index];
+    if (!flag || flag.answered) return;
+
+    stopMoving();
+    trail.active = index;
+    trail.encounterOpen = true;
     trail.answered = false;
     trail.solved = false;
     trail.wrong = false;
+    trail.near = index;
+    renderTrailQuestion(index);
+    $('trailGame').hidden = false;
+    $('trailGame').classList.add('is-open');
+    $('trailControls').classList.add('is-paused');
+    renderTrailFlags();
+    updateInteractionUi();
+    updateTrailHud();
+
+    requestAnimationFrame(function () {
+      $('trailGame').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  function closeEncounter(scrollBack) {
+    var trail = state.trail;
+    trail.encounterOpen = false;
+    trail.active = -1;
+    trail.answered = false;
+    trail.solved = false;
+    trail.wrong = false;
+    trail.near = -1;
+    $('trailGame').hidden = true;
+    $('trailGame').classList.remove('is-open');
+    $('trailControls').classList.remove('is-paused');
+    updateNearFlag();
+    updateInteractionUi();
+    updateTrailHud();
+    if (scrollBack) {
+      $('trailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function renderTrailQuestion(index) {
+    var trail = state.trail;
+    var item = trail.route[index];
+    if (!item) return;
+    var target = item.species;
 
     var photo = target.photos && target.photos[0];
     $('quizPhoto').innerHTML = photo
       ? '<img src="' + esc(photo) + '" alt="Especie misteriosa" loading="lazy">'
       : '🌿';
-    $('quizQuestion').textContent = 'Parada ' + (trail.index + 1) + ' de ' + trail.route.length + ' · ¿Qué especie aparece en la foto?';
+    $('quizQuestion').textContent = 'Bandera ' + (index + 1) + ' de ' + trail.route.length + ' · ¿Qué especie aparece en la foto?';
     $('quizFeedback').innerHTML = '';
     $('quizNext').hidden = true;
-    $('quizNext').textContent = trail.index === trail.route.length - 1
-      ? (trail.mapIndex === MAPS.length - 1 ? 'Reclamar la espada →' : 'Completar mapa →')
-      : 'Siguiente parada →';
-    $('trailPlace').textContent = map.name + ' · ' + map.stops[trail.index].place;
-    $('trailStatus').textContent = 'Observa bien: si fallas, vuelves al inicio de este mapa.';
+    $('quizNext').textContent = 'Seguir explorando';
+    $('quizOptions').innerHTML = '';
 
-    var options = $('quizOptions');
-    options.innerHTML = '';
-    item.options.forEach(function (name, index) {
+    item.options.forEach(function (name, optionIndex) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'ie-quiz-option';
-      btn.innerHTML = '<span class="letter">' + String.fromCharCode(65 + index) + '</span><span>' + esc(name) + '</span>';
+      btn.innerHTML = '<span class="letter">' + String.fromCharCode(65 + optionIndex) + '</span><span>' + esc(name) + '</span>';
       btn.addEventListener('click', function () { answerTrail(btn, name, target); });
-      options.appendChild(btn);
+      $('quizOptions').appendChild(btn);
     });
-
-    renderTrailStops();
-    moveHiker();
-    updateTrailHud();
   }
 
   function answerTrail(button, name, target) {
     var trail = state.trail;
     var map = currentMap();
-    if (trail.answered) return;
+    var index = trail.active;
+    if (index < 0 || trail.answered) return;
+    var item = trail.route[index];
     trail.answered = true;
     var correct = name.toLowerCase() === target.name.toLowerCase();
 
@@ -873,46 +1071,53 @@
     if (correct) {
       trail.solved = true;
       trail.wrong = false;
-      updateTrailBest(trail.index + 1);
+      item.answered = true;
+      trail.near = -1;
+      var answeredCount = countAnswered();
+      updateTrailBest(answeredCount);
 
-      if (trail.index + 1 >= trail.route.length) {
+      if (answeredCount >= trail.route.length) {
         trail.completed = true;
         if (trail.mapIndex === MAPS.length - 1) {
           trail.won = true;
           $('quizFeedback').innerHTML = '<strong>¡Completaste el mapa de fuego!</strong> La última especie era ' + details +
             '. La Espada de la Sabiduría ya es tuya.' + speciesLink;
           $('quizNext').textContent = 'Reclamar la espada ⚔️';
-          $('quizNext').hidden = false;
           $('trailStatus').textContent = '¡El volcán se ha calmado! Reclama tu recompensa.';
         } else {
           var nextMap = MAPS[trail.mapIndex + 1];
           $('quizFeedback').innerHTML = '<strong>¡Mapa completado!</strong> Reconociste las ' + trail.route.length +
-            ' especies de este territorio. La última era ' + details + '.' + speciesLink;
+            ' banderas de este territorio. La última era ' + details + '.' + speciesLink;
           $('quizNext').textContent = 'Ir al mapa de ' + nextMap.shortName + ' →';
-          $('quizNext').hidden = false;
           $('trailStatus').textContent = '¡Ruta completada! El siguiente territorio te espera.';
         }
       } else {
-        $('quizFeedback').innerHTML = '<strong>¡Correcto!</strong> Es ' + details + '.' + speciesLink;
-        $('quizNext').textContent = 'Siguiente parada →';
-        $('quizNext').hidden = false;
-        $('trailStatus').textContent = '¡Bien! La siguiente parada te espera.';
+        var remaining = trail.route.length - answeredCount;
+        $('quizFeedback').innerHTML = '<strong>¡Bandera asegurada!</strong> Es ' + details + '. Quedan ' +
+          remaining + (remaining === 1 ? ' bandera.' : ' banderas.') + speciesLink;
+        $('quizNext').textContent = 'Seguir explorando →';
+        $('trailStatus').textContent = '¡Bandera asegurada! Vuelve al mapa y sigue explorando.';
       }
     } else {
       trail.solved = false;
       trail.wrong = true;
       $('quizFeedback').innerHTML = 'Era ' + details + '. Vuelves al inicio de ' + map.name + '.' + speciesLink;
-      $('quizNext').textContent = 'Volver al inicio ↺';
-      $('quizNext').hidden = false;
+      $('quizNext').textContent = 'Reiniciar mapa ↺';
       $('trailStatus').textContent = '¡Uy! Un error reinicia este mapa.';
     }
 
-    renderTrailStops();
+    $('quizNext').hidden = false;
+    renderTrailFlags();
     updateTrailHud();
   }
 
   function advanceTrail() {
     var trail = state.trail;
+    if (trail.wrong) {
+      startMap(true);
+      $('trailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     if (trail.completed) {
       if (trail.won) {
         showReward();
@@ -920,17 +1125,10 @@
       }
       trail.mapIndex++;
       startMap(false);
+      $('trailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
-    if (trail.wrong) {
-      startMap(true);
-      return;
-    }
-    if (!trail.answered) return;
-    if (trail.index < trail.route.length - 1) {
-      trail.index++;
-      renderTrailQuestion();
-    }
+    if (trail.solved) closeEncounter(true);
   }
 
   function showReward() {
@@ -952,11 +1150,102 @@
     var trail = state.trail;
     var map = currentMap();
     var total = trail.route.length || map.stops.length;
-    var current = trail.completed ? total : Math.min(trail.index + 1, total);
+    var answered = countAnswered();
     $('trailWorld').textContent = (trail.mapIndex + 1) + ' / ' + MAPS.length;
-    $('trailStop').textContent = current + ' / ' + total;
+    $('trailStop').textContent = answered + ' / ' + total;
     $('trailBest').textContent = Math.min(mapBest(map), total) + ' / ' + total;
     $('trailAttempts').textContent = trail.attempts;
+  }
+
+  function anyMoveHeld() {
+    return moveHeld.up || moveHeld.down || moveHeld.left || moveHeld.right;
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function beginMove(direction) {
+    if (state.trail.encounterOpen) return;
+    moveHeld[direction] = true;
+    if (!moveRaf) {
+      lastMoveTs = 0;
+      moveRaf = requestAnimationFrame(moveTick);
+    }
+  }
+
+  function endMove(direction) {
+    moveHeld[direction] = false;
+    if (!anyMoveHeld() && !moveRaf) {
+      state.trail.player.moving = false;
+      updatePlayerFrame(performance.now(), true);
+    }
+  }
+
+  function stopMoving() {
+    moveHeld.up = false;
+    moveHeld.down = false;
+    moveHeld.left = false;
+    moveHeld.right = false;
+    if (moveRaf) {
+      cancelAnimationFrame(moveRaf);
+      moveRaf = null;
+    }
+    state.trail.player.moving = false;
+    updatePlayerFrame(performance.now(), true);
+  }
+
+  function moveTick(timestamp) {
+    if (state.trail.encounterOpen || !anyMoveHeld()) {
+      moveRaf = null;
+      state.trail.player.moving = false;
+      updatePlayerFrame(timestamp, true);
+      return;
+    }
+
+    var dt = lastMoveTs ? Math.min((timestamp - lastMoveTs) / 1000, 0.05) : 0.016;
+    lastMoveTs = timestamp;
+
+    var dx = (moveHeld.right ? 1 : 0) - (moveHeld.left ? 1 : 0);
+    var dy = (moveHeld.down ? 1 : 0) - (moveHeld.up ? 1 : 0);
+    if (dx && dy) {
+      dx *= 0.7071;
+      dy *= 0.7071;
+    }
+
+    var player = state.trail.player;
+    player.x = clamp(player.x + dx * PLAYER_SPEED * dt, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX);
+    player.y = clamp(player.y + dy * PLAYER_SPEED * dt, PLAYER_BOUNDS.minY, PLAYER_BOUNDS.maxY);
+
+    if (dx && Math.abs(dx) >= Math.abs(dy)) player.facing = dx > 0 ? 'right' : 'left';
+    else if (dy) player.facing = dy > 0 ? 'down' : 'up';
+
+    player.moving = true;
+    updatePlayerPosition();
+    updateNearFlag();
+    updatePlayerFrame(timestamp, false);
+
+    moveRaf = requestAnimationFrame(moveTick);
+  }
+
+  function updatePlayerPosition() {
+    var player = state.trail.player;
+    var element = $('trailPlayer');
+    element.style.left = (player.x / 640 * 100).toFixed(3) + '%';
+    element.style.top = (player.y / 300 * 100).toFixed(3) + '%';
+    element.setAttribute('data-x', player.x.toFixed(1));
+    element.setAttribute('data-y', player.y.toFixed(1));
+    element.setAttribute('data-facing', player.facing);
+  }
+
+  function updatePlayerFrame(timestamp, force) {
+    var player = state.trail.player;
+    var frames = PLAYER_FRAMES[player.facing] || PLAYER_FRAMES.down;
+    var src = player.moving ? frames.walk[Math.floor(timestamp / 150) % frames.walk.length] : frames.idle;
+    if (force || src !== playerFrameSrc) {
+      playerFrameSrc = src;
+      $('trailPlayerImg').src = src;
+    }
   }
 
   /* ── Explorador guiado ────────────────────────────────────── */
@@ -1170,17 +1459,58 @@
     IE.toast('¡Memoria completada! 🎉');
   }
 
-  /* ── Atajos de la ruta: 1-4 para responder ────────────────── */
+  /* ── Controles de la ruta: caminar, entrar y responder ─────── */
+  var TRAIL_KEYS = {
+    arrowup: 'up', w: 'up',
+    arrowdown: 'down', s: 'down',
+    arrowleft: 'left', a: 'left',
+    arrowright: 'right', d: 'right'
+  };
+
   document.addEventListener('keydown', function (event) {
     if (!document.getElementById('panel-quiz').classList.contains('is-active')) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName || '')) return;
+
+    var trail = state.trail;
+    var key = (event.key || '').toLowerCase();
+    var moveDirection = TRAIL_KEYS[key];
+
+    if (moveDirection) {
+      if (trail.encounterOpen) return;
+      event.preventDefault();
+      beginMove(moveDirection);
+      return;
+    }
+
+    if (key === 'enter' || key === 'e') {
+      if (trail.encounterOpen) {
+        if (!document.getElementById('quizNext').hidden) {
+          event.preventDefault();
+          advanceTrail();
+        }
+      } else if (trail.near >= 0) {
+        event.preventDefault();
+        tryEnterFlag();
+      }
+      return;
+    }
+
     var number = Number(event.key);
-    if (number >= 1 && number <= 4) {
+    if (number >= 1 && number <= 4 && trail.encounterOpen) {
       var option = document.querySelectorAll('#quizOptions .ie-quiz-option')[number - 1];
       if (option && !option.disabled) option.click();
     }
-    if (event.key === 'Enter' && !document.getElementById('quizNext').hidden) advanceTrail();
   });
+
+  document.addEventListener('keyup', function (event) {
+    var moveDirection = TRAIL_KEYS[(event.key || '').toLowerCase()];
+    if (moveDirection) endMove(moveDirection);
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stopMoving();
+  });
+  window.addEventListener('blur', stopMoving);
 })();
 </script>
 <script src="js/features.js"></script>

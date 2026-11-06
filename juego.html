@@ -78,12 +78,12 @@
 <header class="ie-game-hero">
   <div class="ie-game-hero-inner">
     <h1>Aprende <span>jugando</span></h1>
-    <p>Tres formas de explorar la biodiversidad de Tibirita: adivina la especie, recorre su clasificación o pon a prueba tu memoria con las fotos del catálogo.</p>
+    <p>Tres formas de explorar la biodiversidad de Tibirita: recorre un mapa pixel art reconociendo especies, avanza por su clasificación o pon a prueba tu memoria con las fotos del catálogo.</p>
   </div>
 </header>
 
 <div class="ie-game-tabs" role="tablist" aria-label="Juegos">
-  <button class="ie-game-tab is-active" type="button" data-tab="quiz" role="tab" aria-selected="true">🎯 ¿Cuál es esta especie?</button>
+  <button class="ie-game-tab is-active" type="button" data-tab="quiz" role="tab" aria-selected="true">🗺️ Ruta de las especies</button>
   <button class="ie-game-tab" type="button" data-tab="explorer" role="tab" aria-selected="false">🧭 Explorador guiado</button>
   <button class="ie-game-tab" type="button" data-tab="memory" role="tab" aria-selected="false">🃏 Memoria</button>
 </div>
@@ -91,31 +91,426 @@
 <main class="ie-game-main">
   <div id="gameLoading" class="ie-game-loading">Cargando especies del catálogo…</div>
 
-  <!-- QUIZ -->
+  <!-- RUTA DE LAS ESPECIES -->
   <section class="ie-game-panel is-active" id="panel-quiz" role="tabpanel">
-    <div class="ie-quiz-card">
-      <div class="ie-quiz-top">
-        <div class="ie-quiz-score">
-          <div>Puntaje<strong id="quizScore">0</strong></div>
-          <div>Racha<strong id="quizStreak">0</strong></div>
-          <div>Récord<strong id="quizBest">0</strong></div>
+    <div class="ie-trail-card" id="trailCard">
+      <div class="ie-trail-hud">
+        <div class="ie-trail-score">
+          <div>Mapa<strong id="trailWorld">1 / 3</strong></div>
+          <div>Parada<strong id="trailStop">1 / 6</strong></div>
+          <div>Récord<strong id="trailBest">0 / 6</strong></div>
+          <div>Intentos<strong id="trailAttempts">1</strong></div>
         </div>
-        <div class="ie-quiz-progress">
-          <div class="ie-progress">
-            <div class="ie-progress-bar"><span id="quizProgressBar" style="width:0%"></span></div>
-            <span id="quizProgressText">Ronda 1</span>
+        <button class="ie-btn ie-btn-ghost" type="button" id="trailRestart">↻ Reiniciar mapa</button>
+      </div>
+
+      <div class="ie-trail-mapwrap">
+        <div class="ie-trail-mapframe">
+          <svg id="trailMap" class="ie-trail-map" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet" role="img" data-theme="forest" aria-label="Mapa pixel art de una ruta con seis paradas para reconocer especies">
+            <g class="ie-map-scene is-active" data-scene="forest">
+            <!-- cielo -->
+            <rect width="640" height="300" fill="#a9dde3"/>
+            <rect width="640" height="86" fill="#bfe9e8"/>
+            <rect y="86" width="640" height="42" fill="#d5f0e8"/>
+
+            <!-- sol pixelado -->
+            <g fill="#ffe08a">
+              <rect x="536" y="18" width="6" height="6"/>
+              <rect x="530" y="24" width="18" height="6"/>
+              <rect x="524" y="30" width="30" height="6"/>
+              <rect x="530" y="36" width="18" height="6"/>
+              <rect x="536" y="42" width="6" height="6"/>
+            </g>
+
+            <!-- nubes -->
+            <g fill="#f1fbf8">
+              <rect x="54" y="42" width="48" height="8"/>
+              <rect x="42" y="50" width="72" height="8"/>
+              <rect x="60" y="34" width="26" height="8"/>
+              <rect x="300" y="54" width="40" height="8"/>
+              <rect x="288" y="62" width="64" height="8"/>
+              <rect x="312" y="46" width="20" height="8"/>
+            </g>
+
+            <!-- montañas lejanas -->
+            <path fill="#84bda3" d="M0 158 V140 H24 V120 H48 V100 H72 V84 H96 V100 H120 V120 H144 V140 H180 V116 H204 V96 H228 V80 H252 V96 H276 V116 H300 V140 H340 V120 H364 V100 H388 V80 H412 V100 H436 V120 H460 V140 H500 V124 H524 V108 H548 V124 H572 V144 H640 V300 H0 Z"/>
+            <g fill="#eaf7f0">
+              <rect x="72" y="84" width="24" height="8"/>
+              <rect x="64" y="92" width="10" height="8"/>
+              <rect x="96" y="92" width="6" height="8"/>
+              <rect x="228" y="80" width="24" height="8"/>
+              <rect x="220" y="88" width="10" height="8"/>
+              <rect x="252" y="88" width="6" height="8"/>
+              <rect x="388" y="80" width="24" height="8"/>
+              <rect x="380" y="88" width="10" height="8"/>
+              <rect x="412" y="88" width="6" height="8"/>
+            </g>
+
+            <!-- colinas medias -->
+            <path fill="#5d9b75" d="M0 196 V178 H40 V162 H80 V178 H120 V158 H160 V178 H200 V164 H240 V180 H280 V160 H320 V176 H360 V156 H400 V176 H440 V164 H480 V180 H520 V160 H560 V176 H600 V164 H640 V300 H0 Z"/>
+
+            <!-- suelo -->
+            <rect y="212" width="640" height="88" fill="#3f7d5a"/>
+            <rect y="240" width="640" height="60" fill="#356b4c"/>
+            <rect y="272" width="640" height="28" fill="#2c5b41"/>
+
+            <!-- estanque -->
+            <path fill="#4fa9c4" d="M0 300 V268 H16 V258 H44 V252 H80 V256 H108 V266 H124 V300 Z"/>
+            <rect x="18" y="270" width="28" height="4" fill="#8ad8e8"/>
+            <rect x="70" y="262" width="24" height="4" fill="#8ad8e8"/>
+
+            <!-- pasto y flores -->
+            <g fill="#4f9269">
+              <rect x="150" y="222" width="4" height="4"/><rect x="196" y="212" width="4" height="4"/>
+              <rect x="270" y="242" width="4" height="4"/><rect x="316" y="206" width="4" height="4"/>
+              <rect x="390" y="224" width="4" height="4"/><rect x="470" y="210" width="4" height="4"/>
+              <rect x="540" y="196" width="4" height="4"/><rect x="594" y="226" width="4" height="4"/>
+            </g>
+            <g fill="#f2a6c4">
+              <rect x="170" y="238" width="4" height="4"/><rect x="330" y="228" width="4" height="4"/>
+              <rect x="458" y="236" width="4" height="4"/><rect x="516" y="206" width="4" height="4"/>
+            </g>
+
+            <!-- árboles pixelados -->
+            <g transform="translate(18 170)">
+              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
+              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
+              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
+              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
+            </g>
+            <g transform="translate(112 156) scale(.9)">
+              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
+              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
+              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
+              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
+            </g>
+            <g transform="translate(206 170)">
+              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
+              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
+              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
+              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
+            </g>
+            <g transform="translate(286 138) scale(.9)">
+              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
+              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
+              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
+              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
+            </g>
+            <g transform="translate(400 136) scale(1.1)">
+              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
+              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
+              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
+              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
+            </g>
+            <g transform="translate(500 154) scale(.95)">
+              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
+              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
+              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
+              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
+            </g>
+            <g transform="translate(584 132) scale(1.15)">
+              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
+              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
+              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
+              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
+            </g>
+
+            <!-- arbustos y rocas -->
+            <g fill="#2f6347">
+              <rect x="138" y="264" width="22" height="8"/><rect x="144" y="258" width="12" height="8"/>
+              <rect x="328" y="250" width="20" height="8"/><rect x="334" y="244" width="10" height="8"/>
+              <rect x="468" y="250" width="24" height="8"/><rect x="474" y="244" width="12" height="8"/>
+              <rect x="604" y="228" width="22" height="8"/><rect x="610" y="222" width="12" height="8"/>
+            </g>
+            <g fill="#8a9b91">
+              <rect x="220" y="252" width="12" height="8"/><rect x="358" y="252" width="10" height="6"/>
+              <rect x="556" y="240" width="12" height="8"/>
+            </g>
+            <g>
+              <rect x="270" y="248" width="2" height="6" fill="#eadfc4"/>
+              <rect x="266" y="244" width="10" height="4" fill="#d94f4f"/>
+              <rect x="280" y="252" width="2" height="4" fill="#eadfc4"/>
+              <rect x="277" y="249" width="8" height="3" fill="#e8833f"/>
+            </g>
+            </g>
+
+            <!-- mapa de agua -->
+            <g class="ie-map-scene" data-scene="water">
+              <rect width="640" height="300" fill="#8fd7e8"/>
+              <rect width="640" height="78" fill="#aee6ec"/>
+              <rect y="78" width="640" height="62" fill="#d3f2ee"/>
+
+              <g fill="#ffe8a0">
+                <rect x="524" y="22" width="6" height="6"/>
+                <rect x="518" y="28" width="18" height="6"/>
+                <rect x="512" y="34" width="30" height="6"/>
+                <rect x="518" y="40" width="18" height="6"/>
+                <rect x="524" y="46" width="6" height="6"/>
+              </g>
+
+              <g fill="#f4fdfb">
+                <rect x="58" y="46" width="46" height="8"/>
+                <rect x="46" y="54" width="70" height="8"/>
+                <rect x="64" y="38" width="24" height="8"/>
+                <rect x="304" y="38" width="38" height="8"/>
+                <rect x="292" y="46" width="62" height="8"/>
+                <rect x="316" y="30" width="18" height="8"/>
+              </g>
+
+              <rect y="140" width="640" height="160" fill="#2f9fc0"/>
+              <rect y="168" width="640" height="132" fill="#278aad"/>
+              <rect y="208" width="640" height="92" fill="#1f7699"/>
+
+              <g fill="#8ad8e8">
+                <rect x="24" y="160" width="38" height="4"/><rect x="110" y="174" width="52" height="4"/>
+                <rect x="210" y="154" width="30" height="4"/><rect x="300" y="182" width="46" height="4"/>
+                <rect x="392" y="158" width="34" height="4"/><rect x="470" y="176" width="54" height="4"/>
+                <rect x="560" y="166" width="30" height="4"/>
+              </g>
+              <g fill="#5cc7d8">
+                <rect x="70" y="196" width="44" height="3"/><rect x="160" y="212" width="30" height="3"/>
+                <rect x="250" y="188" width="54" height="3"/><rect x="348" y="206" width="36" height="3"/>
+                <rect x="440" y="192" width="48" height="3"/><rect x="530" y="210" width="42" height="3"/>
+              </g>
+
+              <g>
+                <path fill="#e8d5a4" d="M0 300 V260 H20 V250 H58 V246 H92 V254 H112 V266 H128 V300 Z"/>
+                <rect x="22" y="252" width="70" height="8" fill="#6aa56f"/>
+                <path fill="#e8d5a4" d="M170 300 V262 H196 V252 H232 V248 H266 V258 H286 V300 Z"/>
+                <rect x="194" y="254" width="70" height="8" fill="#6aa56f"/>
+                <path fill="#e8d5a4" d="M330 300 V250 H356 V240 H392 V246 H414 V260 H428 V300 Z"/>
+                <rect x="354" y="244" width="58" height="6" fill="#6aa56f"/>
+                <path fill="#e8d5a4" d="M480 300 V246 H506 V236 H542 V244 H560 V300 Z"/>
+                <rect x="504" y="240" width="52" height="6" fill="#6aa56f"/>
+                <path fill="#e8d5a4" d="M560 300 V176 H580 V150 H620 V158 H640 V300 Z"/>
+                <rect x="578" y="156" width="46" height="10" fill="#6aa56f"/>
+              </g>
+
+              <g transform="translate(34 220)">
+                <rect x="14" y="18" width="4" height="22" fill="#7a5230"/>
+                <rect x="4" y="10" width="22" height="4" fill="#2f7d52"/>
+                <rect x="0" y="4" width="12" height="4" fill="#3f9b62"/>
+                <rect x="18" y="2" width="12" height="4" fill="#3f9b62"/>
+                <rect x="8" y="-4" width="10" height="4" fill="#4cb36f"/>
+              </g>
+              <g transform="translate(210 214) scale(.9)">
+                <rect x="14" y="18" width="4" height="22" fill="#7a5230"/>
+                <rect x="4" y="10" width="22" height="4" fill="#2f7d52"/>
+                <rect x="0" y="4" width="12" height="4" fill="#3f9b62"/>
+                <rect x="18" y="2" width="12" height="4" fill="#3f9b62"/>
+                <rect x="8" y="-4" width="10" height="4" fill="#4cb36f"/>
+              </g>
+              <g transform="translate(360 204) scale(.8)">
+                <rect x="14" y="18" width="4" height="22" fill="#7a5230"/>
+                <rect x="4" y="10" width="22" height="4" fill="#2f7d52"/>
+                <rect x="0" y="4" width="12" height="4" fill="#3f9b62"/>
+                <rect x="18" y="2" width="12" height="4" fill="#3f9b62"/>
+                <rect x="8" y="-4" width="10" height="4" fill="#4cb36f"/>
+              </g>
+
+              <g transform="translate(268 228)">
+                <rect x="0" y="12" width="36" height="6" fill="#6b4a2b"/>
+                <rect x="4" y="8" width="28" height="4" fill="#8a5f37"/>
+                <rect x="16" y="-14" width="3" height="22" fill="#6b4a2b"/>
+                <path fill="#f4f8f2" d="M19 -12 L19 4 L34 4 Z"/>
+              </g>
+
+              <g fill="#7d8f96">
+                <rect x="130" y="266" width="12" height="8"/><rect x="302" y="258" width="10" height="6"/>
+                <rect x="446" y="252" width="12" height="8"/>
+              </g>
+              <g fill="#ffd166">
+                <rect x="120" y="232" width="8" height="4"/><rect x="128" y="230" width="4" height="8"/>
+                <rect x="380" y="236" width="8" height="4"/><rect x="388" y="234" width="4" height="8"/>
+              </g>
+
+              <g transform="translate(612 118)">
+                <rect x="0" y="30" width="24" height="46" fill="#f4f8f2"/>
+                <rect x="2" y="8" width="20" height="24" fill="#f4f8f2"/>
+                <rect x="2" y="14" width="20" height="4" fill="#d94f4f"/>
+                <rect x="2" y="24" width="20" height="4" fill="#d94f4f"/>
+                <rect x="-1" y="2" width="26" height="6" fill="#d94f4f"/>
+                <rect x="6" y="-6" width="12" height="8" fill="#ffd166"/>
+                <rect x="12" y="-18" width="4" height="12" fill="#ffe8a0" opacity=".4"/>
+                <rect x="22" y="-18" width="4" height="12" fill="#ffe8a0" opacity=".2"/>
+              </g>
+            </g>
+
+            <!-- mapa de fuego -->
+            <g class="ie-map-scene" data-scene="fire">
+              <rect width="640" height="300" fill="#3a1c2b"/>
+              <rect width="640" height="88" fill="#55222e"/>
+              <rect y="88" width="640" height="54" fill="#742c2c"/>
+
+              <g>
+                <rect x="522" y="22" width="36" height="36" fill="#ff8c42" opacity=".22"/>
+                <rect x="516" y="28" width="48" height="24" fill="#ff8c42" opacity=".16"/>
+                <rect x="528" y="16" width="24" height="48" fill="#ff8c42" opacity=".16"/>
+                <rect x="530" y="30" width="24" height="24" fill="#ffd166"/>
+                <rect x="536" y="36" width="12" height="12" fill="#3a1c2b"/>
+              </g>
+
+              <g fill="#6b3236" opacity=".8">
+                <rect x="50" y="40" width="52" height="8"/>
+                <rect x="38" y="48" width="78" height="8"/>
+                <rect x="60" y="32" width="28" height="8"/>
+                <rect x="300" y="54" width="44" height="8"/>
+                <rect x="288" y="62" width="68" height="8"/>
+                <rect x="312" y="46" width="20" height="8"/>
+              </g>
+
+              <path fill="#4a2630" d="M0 190 V172 H28 V154 H56 V136 H84 V154 H112 V172 H144 V190 H180 V174 H204 V158 H228 V174 H260 V190 H300 V172 H328 V156 H356 V172 H380 V190 H640 V300 H0 Z"/>
+
+              <path fill="#5c2b30" d="M346 220 V204 H372 V188 H398 V172 H424 V156 H450 V140 H476 V124 H502 V108 H526 V92 H558 V108 H582 V124 H608 V140 H640 V300 H346 Z"/>
+              <rect x="522" y="94" width="44" height="8" fill="#ffd166"/>
+              <rect x="516" y="102" width="56" height="6" fill="#ff6b35"/>
+              <g fill="#ff6b35">
+                <rect x="548" y="108" width="18" height="8"/>
+                <rect x="554" y="116" width="12" height="16"/>
+                <rect x="544" y="132" width="12" height="14"/>
+                <rect x="532" y="146" width="12" height="20"/>
+                <rect x="540" y="166" width="14" height="22"/>
+                <rect x="552" y="188" width="12" height="32"/>
+                <rect x="540" y="220" width="20" height="80"/>
+              </g>
+              <g fill="#ffd166">
+                <rect x="552" y="110" width="8" height="4"/>
+                <rect x="556" y="120" width="4" height="8"/>
+                <rect x="546" y="136" width="4" height="6"/>
+                <rect x="534" y="150" width="4" height="10"/>
+                <rect x="544" y="172" width="4" height="12"/>
+                <rect x="554" y="196" width="4" height="16"/>
+                <rect x="544" y="232" width="6" height="60"/>
+              </g>
+
+              <rect y="212" width="640" height="88" fill="#2b1d1d"/>
+              <rect y="242" width="640" height="58" fill="#241717"/>
+              <rect y="274" width="640" height="26" fill="#1d1212"/>
+
+              <g fill="#ff6b35">
+                <rect x="18" y="246" width="54" height="4"/><rect x="66" y="250" width="16" height="4"/>
+                <rect x="108" y="236" width="42" height="4"/><rect x="146" y="240" width="20" height="4"/>
+                <rect x="190" y="266" width="58" height="4"/><rect x="240" y="270" width="18" height="4"/>
+                <rect x="292" y="250" width="36" height="4"/><rect x="324" y="254" width="20" height="4"/>
+                <rect x="386" y="234" width="48" height="4"/><rect x="428" y="238" width="18" height="4"/>
+                <rect x="472" y="260" width="42" height="4"/><rect x="506" y="264" width="20" height="4"/>
+              </g>
+              <g fill="#ffd166">
+                <rect x="20" y="247" width="12" height="2"/><rect x="112" y="237" width="10" height="2"/>
+                <rect x="196" y="267" width="14" height="2"/><rect x="296" y="251" width="8" height="2"/>
+                <rect x="392" y="235" width="12" height="2"/><rect x="478" y="261" width="10" height="2"/>
+              </g>
+
+              <g fill="#3b2a2d">
+                <rect x="120" y="250" width="18" height="10"/><rect x="126" y="244" width="8" height="8"/>
+                <rect x="272" y="256" width="20" height="10"/><rect x="280" y="248" width="8" height="10"/>
+                <rect x="438" y="246" width="16" height="10"/><rect x="444" y="240" width="8" height="8"/>
+                <rect x="592" y="252" width="20" height="10"/><rect x="600" y="244" width="8" height="10"/>
+              </g>
+
+              <g fill="#1c1212">
+                <rect x="168" y="188" width="6" height="32"/>
+                <rect x="158" y="196" width="10" height="4"/>
+                <rect x="172" y="202" width="12" height="4"/>
+                <rect x="404" y="170" width="6" height="34"/>
+                <rect x="394" y="178" width="10" height="4"/>
+                <rect x="408" y="186" width="12" height="4"/>
+              </g>
+
+              <g fill="#ffb347">
+                <rect x="66" y="214" width="4" height="4"/><rect x="158" y="222" width="4" height="4"/>
+                <rect x="250" y="206" width="4" height="4"/><rect x="338" y="214" width="4" height="4"/>
+                <rect x="452" y="202" width="4" height="4"/><rect x="536" y="214" width="4" height="4"/>
+                <rect x="610" y="206" width="4" height="4"/>
+              </g>
+            </g>
+
+            <!-- sendero -->
+            <path id="trailPathBase" class="ie-trail-path-base" fill="none" stroke="#6f5232" stroke-width="16" stroke-linecap="square" stroke-linejoin="miter" d="M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552"/>
+            <path id="trailPathTop" class="ie-trail-path" fill="none" stroke="#d8b078" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter" d="M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552"/>
+
+            <!-- paradas y explorador (se generan por JS) -->
+            <g id="trailStops"></g>
+            <g id="trailHiker" class="ie-trail-hiker" transform="translate(64 244)">
+              <g class="ie-trail-hiker-inner">
+                <rect x="-14" y="-1" width="28" height="5" fill="rgba(0,0,0,.28)"/>
+                <image class="ie-trail-avatar" href="images/uploads/avatar.png" x="-27" y="-51" width="54" height="54" role="presentation"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="ie-trail-caption">
+          <strong id="trailPlace">Orilla del río</strong>
+          <span id="trailStatus">Cada respuesta correcta te acerca a la cumbre</span>
+        </div>
+      </div>
+
+      <div class="ie-trail-game">
+        <div id="quizPhoto" class="ie-trail-photo">🌿</div>
+        <div class="ie-trail-body">
+          <p class="ie-quiz-question" id="quizQuestion">¿Qué especie aparece en la foto?</p>
+          <div class="ie-quiz-options" id="quizOptions"></div>
+          <div class="ie-quiz-feedback" id="quizFeedback" aria-live="polite"></div>
+          <div class="ie-quiz-next">
+            <button class="ie-btn ie-btn-primary" type="button" id="quizNext" hidden>Continuar →</button>
           </div>
         </div>
       </div>
-      <div id="quizPhoto" class="ie-quiz-photo">🌿</div>
-      <div class="ie-quiz-body">
-        <p class="ie-quiz-question" id="quizQuestion">¿Qué especie aparece en la foto?</p>
-        <div class="ie-quiz-options" id="quizOptions"></div>
-        <div class="ie-quiz-feedback" id="quizFeedback" aria-live="polite"></div>
-        <div class="ie-quiz-next">
-          <button class="ie-btn ie-btn-primary" type="button" id="quizNext" hidden>Siguiente especie →</button>
-          <button class="ie-btn ie-btn-ghost" type="button" id="quizSkip">Saltar</button>
-        </div>
+    </div>
+
+    <div class="ie-trail-reward" id="trailReward" hidden>
+      <p class="ie-reward-kicker">¡Felicidades, explorador!</p>
+      <h2>Encontraste la Espada de la Sabiduría</h2>
+      <div class="ie-reward-sword">
+        <svg viewBox="0 0 160 240" role="img" aria-label="Espada de la Sabiduría en pixel art" shape-rendering="crispEdges">
+          <g opacity=".18" fill="#ffd166">
+            <rect x="72" y="0" width="16" height="4"/>
+            <rect x="64" y="4" width="32" height="4"/>
+            <rect x="56" y="8" width="48" height="4"/>
+          </g>
+          <g class="ie-sword-sparks" fill="#ffe8a0">
+            <rect x="34" y="42" width="6" height="6"/>
+            <rect x="28" y="48" width="18" height="3"/>
+            <rect x="120" y="58" width="6" height="6"/>
+            <rect x="114" y="64" width="18" height="3"/>
+            <rect x="44" y="94" width="4" height="4"/>
+            <rect x="116" y="112" width="4" height="4"/>
+            <rect x="24" y="140" width="4" height="4"/>
+            <rect x="130" y="150" width="4" height="4"/>
+          </g>
+          <path d="M76 8 H84 V18 H88 V28 H92 V124 H68 V28 H72 V18 H76 Z" fill="#d7eef8"/>
+          <rect x="74" y="24" width="5" height="98" fill="#ffffff"/>
+          <rect x="86" y="24" width="4" height="98" fill="#8fb7cc"/>
+          <rect x="80" y="30" width="2" height="88" fill="#a8cbdb"/>
+          <g>
+            <rect x="34" y="122" width="92" height="14" fill="#ffd166"/>
+            <rect x="38" y="118" width="18" height="4" fill="#ffd166"/>
+            <rect x="104" y="118" width="18" height="4" fill="#ffd166"/>
+            <rect x="34" y="132" width="92" height="4" fill="#d9a441"/>
+            <rect x="68" y="122" width="24" height="14" fill="#ffe8a0"/>
+            <rect x="74" y="124" width="12" height="10" fill="#2ecc71"/>
+            <rect x="78" y="126" width="4" height="4" fill="#b8ffd9"/>
+          </g>
+          <g>
+            <rect x="72" y="136" width="16" height="44" fill="#5b4025"/>
+            <rect x="76" y="136" width="4" height="44" fill="#8a5f37"/>
+            <rect x="72" y="144" width="16" height="3" fill="#3a2a1c"/>
+            <rect x="72" y="152" width="16" height="3" fill="#3a2a1c"/>
+            <rect x="72" y="160" width="16" height="3" fill="#3a2a1c"/>
+            <rect x="72" y="168" width="16" height="3" fill="#3a2a1c"/>
+          </g>
+          <g>
+            <rect x="66" y="180" width="28" height="14" fill="#ffd166"/>
+            <rect x="70" y="194" width="20" height="8" fill="#d9a441"/>
+            <rect x="72" y="182" width="16" height="10" fill="#2ecc71"/>
+            <rect x="76" y="184" width="4" height="4" fill="#b8ffd9"/>
+            <rect x="68" y="182" width="4" height="10" fill="#ffe8a0"/>
+          </g>
+        </svg>
+      </div>
+      <p class="ie-reward-text">Cruzaste el bosque, navegaste el agua y dominaste el fuego. La espada guarda todo lo que aprendiste sobre las especies de Tibirita.</p>
+      <div class="ie-reward-actions">
+        <button class="ie-btn ie-btn-primary" type="button" id="trailPlayAgain">Volver a jugar</button>
       </div>
     </div>
   </section>
@@ -159,10 +554,76 @@
 
   var state = {
     species: [],
-    quiz: { pool: [], current: null, score: 0, streak: 0, round: 0, answered: false },
+    trail: {
+      mapIndex: 0,
+      route: [],
+      index: 0,
+      attempts: 0,
+      bests: {},
+      answered: false,
+      solved: false,
+      wrong: false,
+      completed: false,
+      won: false
+    },
     explorer: { path: [] },
     memory: { deck: [], first: null, second: null, lock: false, moves: 0, matches: 0, pairs: 6 }
   };
+
+  var MAPS = [
+    {
+      id: 'bosque',
+      name: 'Bosque de Tibirita',
+      shortName: 'bosque',
+      theme: 'forest',
+      aria: 'Mapa pixel art del bosque con seis paradas',
+      path: 'M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552',
+      stops: [
+        { x: 64, y: 246, place: 'Orilla del río' },
+        { x: 150, y: 206, place: 'Pradera de flores' },
+        { x: 252, y: 232, place: 'Bosque de musgo' },
+        { x: 346, y: 166, place: 'Puente del arroyo' },
+        { x: 430, y: 196, place: 'Bosque alto' },
+        { x: 552, y: 132, place: 'Cumbre del cerro' }
+      ]
+    },
+    {
+      id: 'agua',
+      name: 'Ríos y cascadas',
+      shortName: 'agua',
+      theme: 'water',
+      aria: 'Mapa pixel art de agua con ocho paradas entre islas y puentes',
+      path: 'M52 250 H92 V222 H132 H176 V250 H210 H250 V200 H286 H326 V230 H360 H400 V180 H436 H476 V214 H510 H548 V150 H584',
+      stops: [
+        { x: 52, y: 250, place: 'Muelle de madera' },
+        { x: 132, y: 222, place: 'Puente de tablones' },
+        { x: 210, y: 250, place: 'Isla de las palmeras' },
+        { x: 286, y: 200, place: 'Paso de los peces' },
+        { x: 360, y: 230, place: 'Isla escondida' },
+        { x: 436, y: 180, place: 'Puente colgante' },
+        { x: 510, y: 214, place: 'Muelle del faro' },
+        { x: 584, y: 150, place: 'Faro de la costa' }
+      ]
+    },
+    {
+      id: 'fuego',
+      name: 'Volcán ardiente',
+      shortName: 'fuego',
+      theme: 'fire',
+      aria: 'Mapa pixel art de fuego con ocho paradas entre lava y roca volcánica',
+      path: 'M48 250 H84 V218 H124 H164 V246 H202 H238 V196 H276 H312 V226 H348 H384 V172 H420 H456 V204 H494 H530 V134 H572',
+      stops: [
+        { x: 48, y: 250, place: 'Borde del cráter' },
+        { x: 124, y: 218, place: 'Sendero de obsidiana' },
+        { x: 202, y: 246, place: 'Río de lava' },
+        { x: 276, y: 196, place: 'Puente de roca' },
+        { x: 348, y: 226, place: 'Valle de ceniza' },
+        { x: 420, y: 172, place: 'Garganta ardiente' },
+        { x: 494, y: 204, place: 'Risco humeante' },
+        { x: 572, y: 134, place: 'Cima del volcán' }
+      ]
+    }
+  ];
 
   var LEVELS = [
     { key: 'reino', label: 'Grupo general' },
@@ -187,7 +648,7 @@
       return;
     }
     $('gameLoading').style.display = 'none';
-    initQuiz();
+    initTrail();
     initExplorer();
     initMemory();
   }).catch(function (error) {
@@ -219,78 +680,183 @@
     return copy;
   }
 
-  function initQuiz() {
-    state.quiz.pool = state.species.filter(function (sp) { return sp.photos && sp.photos.length; });
-    if (!state.quiz.pool.length) state.quiz.pool = state.species.slice();
+  function hasPhoto(sp) { return sp.photos && sp.photos.length; }
 
-    var best = Number(IE.safeGet('ie_quiz_best', 0)) || 0;
-    $('quizBest').textContent = best;
+  function currentMap() { return MAPS[state.trail.mapIndex] || MAPS[0]; }
+  function mapBest(map) { return Number(state.trail.bests[map.id]) || 0; }
 
-    if (!state.quiz.pool.some(function (sp) { return sp.photos && sp.photos.length; })) {
+  function initTrail() {
+    var photoPool = state.species.filter(hasPhoto);
+    if (!photoPool.length) {
       $('quizPhoto').textContent = '🌿';
       $('quizQuestion').textContent = 'Aún no hay fotos suficientes para jugar. ¡Sube imágenes desde el administrador!';
       $('quizOptions').innerHTML = '';
-      $('quizSkip').hidden = true;
+      $('trailRestart').hidden = true;
       return;
     }
 
-    nextQuestion();
-    $('quizNext').addEventListener('click', nextQuestion);
-    $('quizSkip').addEventListener('click', nextQuestion);
+    var saved = IE.safeGet('ie_trail_best_v2', {});
+    state.trail.bests = (saved && typeof saved === 'object' && !Array.isArray(saved)) ? saved : {};
+    if (!state.trail.bests.bosque) {
+      var oldBest = Number(IE.safeGet('ie_trail_best', 0)) || 0;
+      if (oldBest) state.trail.bests.bosque = oldBest;
+    }
+
+    $('trailRestart').addEventListener('click', function () { startMap(true); });
+    $('quizNext').addEventListener('click', advanceTrail);
+    $('trailPlayAgain').addEventListener('click', playAgain);
+    startAdventure();
   }
 
-  function nextQuestion() {
-    var pool = state.quiz.pool;
-    var candidates = pool.filter(function (sp) {
-      return sp.photos && sp.photos.length && (!state.quiz.current || sp.id !== state.quiz.current.id);
+  function startAdventure() {
+    state.trail.mapIndex = 0;
+    state.trail.won = false;
+    $('trailReward').hidden = true;
+    $('trailCard').hidden = false;
+    startMap(false);
+  }
+
+  function playAgain() {
+    $('trailReward').hidden = true;
+    $('trailCard').hidden = false;
+    state.trail.mapIndex = 0;
+    state.trail.won = false;
+    startMap(false);
+    $('trailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function startMap(isRestart) {
+    var trail = state.trail;
+    var map = currentMap();
+    trail.route = buildRoute(map);
+    trail.index = 0;
+    trail.answered = false;
+    trail.solved = false;
+    trail.wrong = false;
+    trail.completed = false;
+    trail.won = false;
+    trail.attempts = isRestart ? trail.attempts + 1 : 1;
+    applyMapScene(map);
+
+    var hiker = $('trailHiker');
+    hiker.style.transition = 'none';
+    renderTrailQuestion();
+    requestAnimationFrame(function () { hiker.style.transition = ''; });
+  }
+
+  function applyMapScene(map) {
+    var svg = $('trailMap');
+    svg.setAttribute('data-theme', map.theme);
+    svg.setAttribute('aria-label', map.aria);
+    document.querySelectorAll('.ie-map-scene').forEach(function (scene) {
+      scene.classList.toggle('is-active', scene.getAttribute('data-scene') === map.theme);
     });
-    if (!candidates.length) candidates = pool;
-    var target = candidates[Math.floor(Math.random() * candidates.length)];
+    $('trailPathBase').setAttribute('d', map.path);
+    $('trailPathTop').setAttribute('d', map.path);
+  }
 
-    var names = [];
+  function buildOptions(target) {
+    var names = [target.name];
     var seen = {};
-    names.push(target.name);
     seen[target.name.toLowerCase()] = true;
-    var others = shuffle(pool).filter(function (sp) {
+    shuffle(state.species).forEach(function (sp) {
+      if (names.length >= 4) return;
       var key = sp.name.toLowerCase();
-      if (seen[key]) return false;
+      if (seen[key]) return;
       seen[key] = true;
-      return true;
-    }).slice(0, 3);
-    others.forEach(function (sp) { names.push(sp.name); });
-    names = shuffle(names);
+      names.push(sp.name);
+    });
+    return shuffle(names);
+  }
 
-    state.quiz.current = target;
-    state.quiz.answered = false;
-    state.quiz.round++;
+  function buildRoute(map) {
+    var pool = state.species.filter(hasPhoto);
+    if (!pool.length) pool = state.species.slice();
+    var length = Math.min(map.stops.length, pool.length);
+    return shuffle(pool).slice(0, length).map(function (target) {
+      return { species: target, options: buildOptions(target) };
+    });
+  }
+
+  function stopElement(index) {
+    var stop = currentMap().stops[index];
+    var status = 'is-future';
+    if (state.trail.completed || index < state.trail.index || (state.trail.solved && index === state.trail.index)) status = 'is-done';
+    else if (index === state.trail.index) status = 'is-current';
+
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'ie-trail-stop ' + status);
+    g.setAttribute('transform', 'translate(' + stop.x + ' ' + stop.y + ')');
+    g.innerHTML =
+      (status === 'is-current' ? '<rect class="ie-stop-ring" x="-14" y="-4" width="28" height="8"></rect>' : '') +
+      '<rect class="ie-stop-shadow" x="-9" y="2" width="18" height="4"></rect>' +
+      '<rect class="ie-stop-pole" x="-1" y="-28" width="3" height="30"></rect>' +
+      '<rect class="ie-stop-flag" x="2" y="-28" width="18" height="12"></rect>' +
+      '<rect class="ie-stop-flag-tip" x="20" y="-28" width="3" height="8"></rect>' +
+      '<text x="11" y="-19" text-anchor="middle" font-family="Courier New, monospace" font-size="8" font-weight="700" fill="#10231d">' + (index + 1) + '</text>';
+    return g;
+  }
+
+  function renderTrailStops() {
+    var layer = $('trailStops');
+    layer.innerHTML = '';
+    state.trail.route.forEach(function (_, index) {
+      layer.appendChild(stopElement(index));
+    });
+  }
+
+  function moveHiker() {
+    var map = currentMap();
+    var index = state.trail.completed ? state.trail.route.length - 1 : state.trail.index;
+    var stop = map.stops[Math.max(0, Math.min(index, map.stops.length - 1))];
+    if (!stop) return;
+    $('trailHiker').style.transform = 'translate(' + stop.x + 'px,' + (stop.y - 2) + 'px)';
+  }
+
+  function renderTrailQuestion() {
+    var trail = state.trail;
+    var map = currentMap();
+    var item = trail.route[trail.index];
+    if (!item) return;
+    var target = item.species;
+    trail.answered = false;
+    trail.solved = false;
+    trail.wrong = false;
 
     var photo = target.photos && target.photos[0];
     $('quizPhoto').innerHTML = photo
-      ? '<img src="' + esc(photo) + '" alt="Especie misteriosa" style="width:100%;height:100%;object-fit:cover">'
+      ? '<img src="' + esc(photo) + '" alt="Especie misteriosa" loading="lazy">'
       : '🌿';
-    $('quizQuestion').textContent = '¿Qué especie aparece en la foto?';
+    $('quizQuestion').textContent = 'Parada ' + (trail.index + 1) + ' de ' + trail.route.length + ' · ¿Qué especie aparece en la foto?';
     $('quizFeedback').innerHTML = '';
     $('quizNext').hidden = true;
-    $('quizSkip').hidden = false;
-    $('quizProgressBar').style.width = Math.min(100, (state.quiz.round - 1) * 8) + '%';
-    $('quizProgressText').textContent = 'Ronda ' + state.quiz.round;
+    $('quizNext').textContent = trail.index === trail.route.length - 1
+      ? (trail.mapIndex === MAPS.length - 1 ? 'Reclamar la espada →' : 'Completar mapa →')
+      : 'Siguiente parada →';
+    $('trailPlace').textContent = map.name + ' · ' + map.stops[trail.index].place;
+    $('trailStatus').textContent = 'Observa bien: si fallas, vuelves al inicio de este mapa.';
 
     var options = $('quizOptions');
     options.innerHTML = '';
-    names.forEach(function (name, index) {
+    item.options.forEach(function (name, index) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'ie-quiz-option';
       btn.innerHTML = '<span class="letter">' + String.fromCharCode(65 + index) + '</span><span>' + esc(name) + '</span>';
-      btn.addEventListener('click', function () { answerQuiz(btn, name, target); });
+      btn.addEventListener('click', function () { answerTrail(btn, name, target); });
       options.appendChild(btn);
     });
-    updateQuizStats();
+
+    renderTrailStops();
+    moveHiker();
+    updateTrailHud();
   }
 
-  function answerQuiz(button, name, target) {
-    if (state.quiz.answered) return;
-    state.quiz.answered = true;
+  function answerTrail(button, name, target) {
+    var trail = state.trail;
+    var map = currentMap();
+    if (trail.answered) return;
+    trail.answered = true;
     var correct = name.toLowerCase() === target.name.toLowerCase();
 
     $('quizOptions').querySelectorAll('.ie-quiz-option').forEach(function (btn) {
@@ -300,35 +866,97 @@
     });
     if (!correct) button.classList.add('is-wrong');
 
+    var speciesLink = ' <a href="' + IE.speciesUrl(target.id) + '" style="color:var(--verde-texto);font-weight:700">Ver ficha →</a>';
+    var details = '<strong>' + esc(target.name) + '</strong>' +
+      (target.scientificName ? ' <em>(' + esc(target.scientificName) + ')</em>' : '');
+
     if (correct) {
-      state.quiz.score += 10;
-      state.quiz.streak += 1;
-      $('quizFeedback').innerHTML = '<strong>¡Correcto!</strong> Es <strong>' + esc(target.name) +
-        '</strong>' + (target.scientificName ? ' <em>(' + esc(target.scientificName) + ')</em>' : '') +
-        '. <a href="' + IE.speciesUrl(target.id) + '" style="color:var(--verde-texto);font-weight:700">Ver ficha →</a>';
+      trail.solved = true;
+      trail.wrong = false;
+      updateTrailBest(trail.index + 1);
+
+      if (trail.index + 1 >= trail.route.length) {
+        trail.completed = true;
+        if (trail.mapIndex === MAPS.length - 1) {
+          trail.won = true;
+          $('quizFeedback').innerHTML = '<strong>¡Completaste el mapa de fuego!</strong> La última especie era ' + details +
+            '. La Espada de la Sabiduría ya es tuya.' + speciesLink;
+          $('quizNext').textContent = 'Reclamar la espada ⚔️';
+          $('quizNext').hidden = false;
+          $('trailStatus').textContent = '¡El volcán se ha calmado! Reclama tu recompensa.';
+        } else {
+          var nextMap = MAPS[trail.mapIndex + 1];
+          $('quizFeedback').innerHTML = '<strong>¡Mapa completado!</strong> Reconociste las ' + trail.route.length +
+            ' especies de este territorio. La última era ' + details + '.' + speciesLink;
+          $('quizNext').textContent = 'Ir al mapa de ' + nextMap.shortName + ' →';
+          $('quizNext').hidden = false;
+          $('trailStatus').textContent = '¡Ruta completada! El siguiente territorio te espera.';
+        }
+      } else {
+        $('quizFeedback').innerHTML = '<strong>¡Correcto!</strong> Es ' + details + '.' + speciesLink;
+        $('quizNext').textContent = 'Siguiente parada →';
+        $('quizNext').hidden = false;
+        $('trailStatus').textContent = '¡Bien! La siguiente parada te espera.';
+      }
     } else {
-      state.quiz.streak = 0;
-      $('quizFeedback').innerHTML = 'Casi. La respuesta era <strong>' + esc(target.name) +
-        '</strong>' + (target.scientificName ? ' <em>(' + esc(target.scientificName) + ')</em>' : '') +
-        '. <a href="' + IE.speciesUrl(target.id) + '" style="color:var(--verde-texto);font-weight:700">Ver ficha →</a>';
+      trail.solved = false;
+      trail.wrong = true;
+      $('quizFeedback').innerHTML = 'Era ' + details + '. Vuelves al inicio de ' + map.name + '.' + speciesLink;
+      $('quizNext').textContent = 'Volver al inicio ↺';
+      $('quizNext').hidden = false;
+      $('trailStatus').textContent = '¡Uy! Un error reinicia este mapa.';
     }
 
-    var best = Number(IE.safeGet('ie_quiz_best', 0)) || 0;
-    if (state.quiz.score > best) {
-      IE.safeSet('ie_quiz_best', state.quiz.score);
-      best = state.quiz.score;
-    }
-    var bestStreak = Number(IE.safeGet('ie_quiz_best_streak', 0)) || 0;
-    if (state.quiz.streak > bestStreak) IE.safeSet('ie_quiz_best_streak', state.quiz.streak);
-
-    $('quizNext').hidden = false;
-    updateQuizStats(best);
+    renderTrailStops();
+    updateTrailHud();
   }
 
-  function updateQuizStats(best) {
-    $('quizScore').textContent = state.quiz.score;
-    $('quizStreak').textContent = state.quiz.streak;
-    $('quizBest').textContent = best == null ? (Number(IE.safeGet('ie_quiz_best', 0)) || 0) : best;
+  function advanceTrail() {
+    var trail = state.trail;
+    if (trail.completed) {
+      if (trail.won) {
+        showReward();
+        return;
+      }
+      trail.mapIndex++;
+      startMap(false);
+      return;
+    }
+    if (trail.wrong) {
+      startMap(true);
+      return;
+    }
+    if (!trail.answered) return;
+    if (trail.index < trail.route.length - 1) {
+      trail.index++;
+      renderTrailQuestion();
+    }
+  }
+
+  function showReward() {
+    $('trailCard').hidden = true;
+    $('trailReward').hidden = false;
+    $('trailReward').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    IE.toast('¡Conseguiste la Espada de la Sabiduría! ⚔️');
+  }
+
+  function updateTrailBest(stops) {
+    var map = currentMap();
+    if (stops > mapBest(map)) {
+      state.trail.bests[map.id] = stops;
+      IE.safeSet('ie_trail_best_v2', state.trail.bests);
+    }
+  }
+
+  function updateTrailHud() {
+    var trail = state.trail;
+    var map = currentMap();
+    var total = trail.route.length || map.stops.length;
+    var current = trail.completed ? total : Math.min(trail.index + 1, total);
+    $('trailWorld').textContent = (trail.mapIndex + 1) + ' / ' + MAPS.length;
+    $('trailStop').textContent = current + ' / ' + total;
+    $('trailBest').textContent = Math.min(mapBest(map), total) + ' / ' + total;
+    $('trailAttempts').textContent = trail.attempts;
   }
 
   /* ── Explorador guiado ────────────────────────────────────── */
@@ -542,7 +1170,7 @@
     IE.toast('¡Memoria completada! 🎉');
   }
 
-  /* ── Atajos del quiz: 1-4 para responder ──────────────────── */
+  /* ── Atajos de la ruta: 1-4 para responder ────────────────── */
   document.addEventListener('keydown', function (event) {
     if (!document.getElementById('panel-quiz').classList.contains('is-active')) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName || '')) return;
@@ -551,7 +1179,7 @@
       var option = document.querySelectorAll('#quizOptions .ie-quiz-option')[number - 1];
       if (option && !option.disabled) option.click();
     }
-    if (event.key === 'Enter' && !document.getElementById('quizNext').hidden) nextQuestion();
+    if (event.key === 'Enter' && !document.getElementById('quizNext').hidden) advanceTrail();
   });
 })();
 </script>

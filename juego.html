@@ -105,329 +105,302 @@
       </div>
 
       <div class="ie-trail-mapwrap">
-        <div class="ie-trail-mapframe">
-          <svg id="trailMap" class="ie-trail-map" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet" role="img" data-theme="forest" aria-label="Mapa pixel art de una ruta con seis banderas para explorar">
+        <div class="ie-trail-mapframe" id="trailMapframe">
+          <svg id="trailMap" class="ie-trail-map" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet" role="img" data-theme="forest" aria-label="Mapa cenital del bosque con seis banderas repartidas por el terreno">
+            <defs>
+              <pattern id="ieForestGround" width="32" height="32" patternUnits="userSpaceOnUse">
+                <rect width="32" height="32" fill="#3f7d5a"/>
+                <rect x="4" y="5" width="4" height="4" fill="#4a8d63"/>
+                <rect x="18" y="19" width="4" height="4" fill="#356b4c"/>
+                <rect x="26" y="8" width="2" height="5" fill="#4f9269"/>
+                <rect x="11" y="25" width="6" height="2" fill="#4f9269"/>
+              </pattern>
+              <pattern id="ieWaterGround" width="40" height="24" patternUnits="userSpaceOnUse">
+                <rect width="40" height="24" fill="#2f9fc0"/>
+                <rect x="4" y="5" width="14" height="3" fill="#5cc7d8"/>
+                <rect x="24" y="15" width="12" height="3" fill="#278aad"/>
+                <rect x="10" y="19" width="6" height="2" fill="#5cc7d8"/>
+              </pattern>
+              <pattern id="ieFireGround" width="32" height="32" patternUnits="userSpaceOnUse">
+                <rect width="32" height="32" fill="#2b1d1d"/>
+                <rect x="5" y="7" width="7" height="4" fill="#3b2a2d"/>
+                <rect x="21" y="20" width="5" height="4" fill="#1d1212"/>
+                <rect x="15" y="2" width="2" height="6" fill="#3b2a2d"/>
+                <rect x="2" y="24" width="4" height="2" fill="#3b2a2d"/>
+              </pattern>
+              <g id="ieForestTree">
+                <rect x="7" y="18" width="5" height="12" fill="#5b4025"/>
+                <rect x="2" y="10" width="15" height="10" fill="#2c6647"/>
+                <rect x="4" y="4" width="11" height="8" fill="#357a55"/>
+                <rect x="7" y="0" width="5" height="6" fill="#4a9b6e"/>
+              </g>
+              <g id="ieForestBush">
+                <rect x="0" y="4" width="14" height="7" fill="#2f6347"/>
+                <rect x="4" y="0" width="7" height="6" fill="#3f8d62"/>
+              </g>
+              <g id="ieFlowerPink">
+                <rect x="3" y="7" width="2" height="5" fill="#2f6347"/>
+                <rect x="0" y="3" width="4" height="4" fill="#f2a6c4"/>
+                <rect x="4" y="3" width="4" height="4" fill="#f7c5d8"/>
+                <rect x="2" y="1" width="4" height="4" fill="#f2a6c4"/>
+                <rect x="2" y="5" width="4" height="2" fill="#ffe8a0"/>
+              </g>
+              <g id="ieFlowerGold">
+                <rect x="3" y="7" width="2" height="5" fill="#2f6347"/>
+                <rect x="0" y="3" width="4" height="4" fill="#ffd166"/>
+                <rect x="4" y="3" width="4" height="4" fill="#ffe8a0"/>
+                <rect x="2" y="1" width="4" height="4" fill="#ffd166"/>
+              </g>
+              <g id="ieRock">
+                <rect x="0" y="4" width="14" height="7" fill="#8a9b91"/>
+                <rect x="3" y="1" width="8" height="6" fill="#a6b5aa"/>
+                <rect x="2" y="8" width="10" height="4" fill="#6f8077"/>
+              </g>
+              <g id="ieReed">
+                <rect x="2" y="0" width="2" height="16" fill="#3f7d5a"/>
+                <rect x="9" y="4" width="2" height="12" fill="#4a9b6e"/>
+                <rect x="0" y="2" width="3" height="4" fill="#7ac48c"/>
+                <rect x="10" y="6" width="3" height="4" fill="#7ac48c"/>
+              </g>
+              <g id="iePalm">
+                <rect x="7" y="8" width="4" height="18" fill="#7a5230"/>
+                <rect x="0" y="2" width="12" height="4" fill="#2f7d52"/>
+                <rect x="6" y="0" width="12" height="4" fill="#3f9b62"/>
+                <rect x="10" y="6" width="10" height="4" fill="#4cb36f"/>
+                <rect x="3" y="-2" width="10" height="4" fill="#4cb36f"/>
+              </g>
+              <g id="ieWaterRock">
+                <rect x="0" y="5" width="13" height="6" fill="#7d8f96"/>
+                <rect x="3" y="2" width="7" height="5" fill="#a6b5ba"/>
+              </g>
+              <g id="ieDeadTree">
+                <rect x="7" y="6" width="4" height="20" fill="#1c1212"/>
+                <rect x="1" y="9" width="8" height="3" fill="#1c1212"/>
+                <rect x="10" y="14" width="8" height="3" fill="#1c1212"/>
+                <rect x="2" y="6" width="4" height="3" fill="#1c1212"/>
+              </g>
+              <g id="ieVolcanicRock">
+                <rect x="0" y="4" width="14" height="7" fill="#3b2a2d"/>
+                <rect x="3" y="1" width="8" height="6" fill="#4a3438"/>
+                <rect x="2" y="8" width="10" height="4" fill="#241717"/>
+              </g>
+              <g id="ieEmber">
+                <rect width="4" height="4" fill="#ffb347"/>
+              </g>
+            </defs>
+
             <g class="ie-map-scene is-active" data-scene="forest">
-            <!-- cielo -->
-            <rect width="640" height="300" fill="#a9dde3"/>
-            <rect width="640" height="86" fill="#bfe9e8"/>
-            <rect y="86" width="640" height="42" fill="#d5f0e8"/>
+              <rect width="640" height="300" fill="url(#ieForestGround)"/>
+              <g fill="#356b4c" opacity=".42">
+                <rect y="256" width="640" height="44"/>
+                <rect y="0" width="640" height="18"/>
+              </g>
+              <g fill="#4a8d63" opacity=".32">
+                <rect x="210" y="160" width="70" height="10"/>
+                <rect x="420" y="120" width="80" height="10"/>
+                <rect x="60" y="160" width="90" height="10"/>
+              </g>
 
-            <!-- sol pixelado -->
-            <g fill="#ffe08a">
-              <rect x="536" y="18" width="6" height="6"/>
-              <rect x="530" y="24" width="18" height="6"/>
-              <rect x="524" y="30" width="30" height="6"/>
-              <rect x="530" y="36" width="18" height="6"/>
-              <rect x="536" y="42" width="6" height="6"/>
-            </g>
+              <!-- estanque noroeste -->
+              <path fill="#4fa9c4" d="M0 0 H128 V10 H168 V24 H186 V48 H178 V66 H158 V82 H128 V94 H96 V88 H64 V74 H32 V52 H0 Z"/>
+              <path fill="#8ad8e8" opacity=".85" d="M16 24 H62 V30 H90 V42 H108 V56 H92 V64 H62 V52 H32 V38 H16 Z"/>
+              <rect x="48" y="40" width="34" height="4" fill="#a8e6ef"/>
+              <rect x="122" y="18" width="28" height="4" fill="#a8e6ef"/>
+              <g fill="#d8c27a" opacity=".35">
+                <rect x="0" y="0" width="136" height="8"/>
+                <rect x="104" y="82" width="58" height="8"/>
+              </g>
 
-            <!-- nubes -->
-            <g fill="#f1fbf8">
-              <rect x="54" y="42" width="48" height="8"/>
-              <rect x="42" y="50" width="72" height="8"/>
-              <rect x="60" y="34" width="26" height="8"/>
-              <rect x="300" y="54" width="40" height="8"/>
-              <rect x="288" y="62" width="64" height="8"/>
-              <rect x="312" y="46" width="20" height="8"/>
-            </g>
+              <!-- charca sureste -->
+              <path fill="#4fa9c4" d="M640 300 V274 H604 V260 H566 V252 H524 V262 H502 V280 H522 V300 Z"/>
+              <rect x="542" y="270" width="42" height="4" fill="#a8e6ef"/>
+              <rect x="576" y="258" width="22" height="4" fill="#8ad8e8"/>
 
-            <!-- montañas lejanas -->
-            <path fill="#84bda3" d="M0 158 V140 H24 V120 H48 V100 H72 V84 H96 V100 H120 V120 H144 V140 H180 V116 H204 V96 H228 V80 H252 V96 H276 V116 H300 V140 H340 V120 H364 V100 H388 V80 H412 V100 H436 V120 H460 V140 H500 V124 H524 V108 H548 V124 H572 V144 H640 V300 H0 Z"/>
-            <g fill="#eaf7f0">
-              <rect x="72" y="84" width="24" height="8"/>
-              <rect x="64" y="92" width="10" height="8"/>
-              <rect x="96" y="92" width="6" height="8"/>
-              <rect x="228" y="80" width="24" height="8"/>
-              <rect x="220" y="88" width="10" height="8"/>
-              <rect x="252" y="88" width="6" height="8"/>
-              <rect x="388" y="80" width="24" height="8"/>
-              <rect x="380" y="88" width="10" height="8"/>
-              <rect x="412" y="88" width="6" height="8"/>
-            </g>
+              <!-- árboles -->
+              <use href="#ieForestTree" transform="translate(22 106) scale(1.25)"/>
+              <use href="#ieForestTree" transform="translate(122 30) scale(1.05)"/>
+              <use href="#ieForestTree" transform="translate(246 26) scale(1.15)"/>
+              <use href="#ieForestTree" transform="translate(314 126) scale(.9)"/>
+              <use href="#ieForestTree" transform="translate(392 22) scale(1.1)"/>
+              <use href="#ieForestTree" transform="translate(492 108) scale(1.2)"/>
+              <use href="#ieForestTree" transform="translate(592 28) scale(1)"/>
+              <use href="#ieForestTree" transform="translate(560 276) scale(1.15)"/>
+              <use href="#ieForestTree" transform="translate(198 250) scale(1.05)"/>
+              <use href="#ieForestTree" transform="translate(434 232) scale(.95)"/>
+              <use href="#ieForestTree" transform="translate(280 206) scale(.85)"/>
 
-            <!-- colinas medias -->
-            <path fill="#5d9b75" d="M0 196 V178 H40 V162 H80 V178 H120 V158 H160 V178 H200 V164 H240 V180 H280 V160 H320 V176 H360 V156 H400 V176 H440 V164 H480 V180 H520 V160 H560 V176 H600 V164 H640 V300 H0 Z"/>
-
-            <!-- suelo -->
-            <rect y="212" width="640" height="88" fill="#3f7d5a"/>
-            <rect y="240" width="640" height="60" fill="#356b4c"/>
-            <rect y="272" width="640" height="28" fill="#2c5b41"/>
-
-            <!-- estanque -->
-            <path fill="#4fa9c4" d="M0 300 V268 H16 V258 H44 V252 H80 V256 H108 V266 H124 V300 Z"/>
-            <rect x="18" y="270" width="28" height="4" fill="#8ad8e8"/>
-            <rect x="70" y="262" width="24" height="4" fill="#8ad8e8"/>
-
-            <!-- pasto y flores -->
-            <g fill="#4f9269">
-              <rect x="150" y="222" width="4" height="4"/><rect x="196" y="212" width="4" height="4"/>
-              <rect x="270" y="242" width="4" height="4"/><rect x="316" y="206" width="4" height="4"/>
-              <rect x="390" y="224" width="4" height="4"/><rect x="470" y="210" width="4" height="4"/>
-              <rect x="540" y="196" width="4" height="4"/><rect x="594" y="226" width="4" height="4"/>
-            </g>
-            <g fill="#f2a6c4">
-              <rect x="170" y="238" width="4" height="4"/><rect x="330" y="228" width="4" height="4"/>
-              <rect x="458" y="236" width="4" height="4"/><rect x="516" y="206" width="4" height="4"/>
-            </g>
-
-            <!-- árboles pixelados -->
-            <g transform="translate(18 170)">
-              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
-              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
-              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
-              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
-            </g>
-            <g transform="translate(112 156) scale(.9)">
-              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
-              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
-              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
-              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
-            </g>
-            <g transform="translate(206 170)">
-              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
-              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
-              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
-              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
-            </g>
-            <g transform="translate(286 138) scale(.9)">
-              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
-              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
-              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
-              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
-            </g>
-            <g transform="translate(400 136) scale(1.1)">
-              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
-              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
-              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
-              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
-            </g>
-            <g transform="translate(500 154) scale(.95)">
-              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
-              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
-              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
-              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
-            </g>
-            <g transform="translate(584 132) scale(1.15)">
-              <rect x="10" y="30" width="6" height="18" fill="#5b4025"/>
-              <rect x="0" y="24" width="26" height="8" fill="#2c6647"/>
-              <rect x="4" y="16" width="18" height="8" fill="#357a55"/>
-              <rect x="8" y="8" width="10" height="8" fill="#3f8d62"/>
+              <!-- arbustos, flores y rocas -->
+              <use href="#ieForestBush" transform="translate(158 212)"/>
+              <use href="#ieForestBush" transform="translate(364 154)"/>
+              <use href="#ieForestBush" transform="translate(512 190)"/>
+              <use href="#ieForestBush" transform="translate(74 190)"/>
+              <use href="#ieFlowerPink" transform="translate(120 232)"/>
+              <use href="#ieFlowerPink" transform="translate(276 48)"/>
+              <use href="#ieFlowerPink" transform="translate(458 88)"/>
+              <use href="#ieFlowerGold" transform="translate(196 160)"/>
+              <use href="#ieFlowerGold" transform="translate(386 262)"/>
+              <use href="#ieFlowerGold" transform="translate(576 214)"/>
+              <use href="#ieRock" transform="translate(330 272)"/>
+              <use href="#ieRock" transform="translate(460 190) scale(.8)"/>
+              <use href="#ieRock" transform="translate(600 206)"/>
+              <g fill="#4f9269">
+                <rect x="182" y="88" width="4" height="4"/>
+                <rect x="206" y="142" width="4" height="4"/>
+                <rect x="446" y="152" width="4" height="4"/>
+                <rect x="540" y="126" width="4" height="4"/>
+                <rect x="610" y="90" width="4" height="4"/>
+                <rect x="300" y="240" width="4" height="4"/>
+              </g>
             </g>
 
-            <!-- arbustos y rocas -->
-            <g fill="#2f6347">
-              <rect x="138" y="264" width="22" height="8"/><rect x="144" y="258" width="12" height="8"/>
-              <rect x="328" y="250" width="20" height="8"/><rect x="334" y="244" width="10" height="8"/>
-              <rect x="468" y="250" width="24" height="8"/><rect x="474" y="244" width="12" height="8"/>
-              <rect x="604" y="228" width="22" height="8"/><rect x="610" y="222" width="12" height="8"/>
-            </g>
-            <g fill="#8a9b91">
-              <rect x="220" y="252" width="12" height="8"/><rect x="358" y="252" width="10" height="6"/>
-              <rect x="556" y="240" width="12" height="8"/>
-            </g>
-            <g>
-              <rect x="270" y="248" width="2" height="6" fill="#eadfc4"/>
-              <rect x="266" y="244" width="10" height="4" fill="#d94f4f"/>
-              <rect x="280" y="252" width="2" height="4" fill="#eadfc4"/>
-              <rect x="277" y="249" width="8" height="3" fill="#e8833f"/>
-            </g>
-            </g>
-
-            <!-- mapa de agua -->
             <g class="ie-map-scene" data-scene="water">
-              <rect width="640" height="300" fill="#8fd7e8"/>
-              <rect width="640" height="78" fill="#aee6ec"/>
-              <rect y="78" width="640" height="62" fill="#d3f2ee"/>
-
-              <g fill="#ffe8a0">
-                <rect x="524" y="22" width="6" height="6"/>
-                <rect x="518" y="28" width="18" height="6"/>
-                <rect x="512" y="34" width="30" height="6"/>
-                <rect x="518" y="40" width="18" height="6"/>
-                <rect x="524" y="46" width="6" height="6"/>
+              <rect width="640" height="300" fill="url(#ieWaterGround)"/>
+              <g fill="#1f7699" opacity=".35">
+                <rect y="0" width="640" height="18"/>
+                <rect y="286" width="640" height="14"/>
+                <rect x="0" y="140" width="40" height="120"/>
+                <rect x="600" y="240" width="40" height="60"/>
+              </g>
+              <g fill="#8ad8e8" opacity=".8">
+                <rect x="24" y="150" width="34" height="4"/>
+                <rect x="270" y="92" width="46" height="4"/>
+                <rect x="480" y="150" width="34" height="4"/>
+                <rect x="360" y="270" width="42" height="4"/>
+                <rect x="140" y="160" width="24" height="4"/>
+                <rect x="560" y="180" width="28" height="4"/>
               </g>
 
-              <g fill="#f4fdfb">
-                <rect x="58" y="46" width="46" height="8"/>
-                <rect x="46" y="54" width="70" height="8"/>
-                <rect x="64" y="38" width="24" height="8"/>
-                <rect x="304" y="38" width="38" height="8"/>
-                <rect x="292" y="46" width="62" height="8"/>
-                <rect x="316" y="30" width="18" height="8"/>
-              </g>
-
-              <rect y="140" width="640" height="160" fill="#2f9fc0"/>
-              <rect y="168" width="640" height="132" fill="#278aad"/>
-              <rect y="208" width="640" height="92" fill="#1f7699"/>
-
-              <g fill="#8ad8e8">
-                <rect x="24" y="160" width="38" height="4"/><rect x="110" y="174" width="52" height="4"/>
-                <rect x="210" y="154" width="30" height="4"/><rect x="300" y="182" width="46" height="4"/>
-                <rect x="392" y="158" width="34" height="4"/><rect x="470" y="176" width="54" height="4"/>
-                <rect x="560" y="166" width="30" height="4"/>
-              </g>
-              <g fill="#5cc7d8">
-                <rect x="70" y="196" width="44" height="3"/><rect x="160" y="212" width="30" height="3"/>
-                <rect x="250" y="188" width="54" height="3"/><rect x="348" y="206" width="36" height="3"/>
-                <rect x="440" y="192" width="48" height="3"/><rect x="530" y="210" width="42" height="3"/>
-              </g>
-
+              <!-- islas -->
               <g>
-                <path fill="#e8d5a4" d="M0 300 V260 H20 V250 H58 V246 H92 V254 H112 V266 H128 V300 Z"/>
-                <rect x="22" y="252" width="70" height="8" fill="#6aa56f"/>
-                <path fill="#e8d5a4" d="M170 300 V262 H196 V252 H232 V248 H266 V258 H286 V300 Z"/>
-                <rect x="194" y="254" width="70" height="8" fill="#6aa56f"/>
-                <path fill="#e8d5a4" d="M330 300 V250 H356 V240 H392 V246 H414 V260 H428 V300 Z"/>
-                <rect x="354" y="244" width="58" height="6" fill="#6aa56f"/>
-                <path fill="#e8d5a4" d="M480 300 V246 H506 V236 H542 V244 H560 V300 Z"/>
-                <rect x="504" y="240" width="52" height="6" fill="#6aa56f"/>
-                <path fill="#e8d5a4" d="M560 300 V176 H580 V150 H620 V158 H640 V300 Z"/>
-                <rect x="578" y="156" width="46" height="10" fill="#6aa56f"/>
+                <path fill="#e8d5a4" d="M0 300 V194 H30 V184 H74 V178 H118 V188 H154 V206 H180 V226 H186 V300 Z"/>
+                <path fill="#6aa56f" d="M0 300 V216 H28 V206 H70 V202 H108 V212 H146 V230 H170 V300 Z"/>
+                <path fill="#e8d5a4" d="M20 124 V44 H48 V30 H104 V22 H176 V30 H218 V50 H238 V86 H226 V118 H188 V136 H124 V142 H64 V132 H34 V124 Z"/>
+                <path fill="#6aa56f" d="M34 118 V58 H58 V44 H110 V36 H172 V46 H210 V64 H224 V92 H212 V116 H174 V124 H110 V130 H54 V120 Z"/>
+                <path fill="#e8d5a4" d="M232 230 V156 H258 V136 H298 V128 H344 V138 H394 V152 H422 V190 H410 V224 H374 V238 H306 V234 H262 V224 Z"/>
+                <path fill="#6aa56f" d="M250 220 V168 H272 V150 H306 V142 H340 V150 H380 V164 H404 V190 H394 V214 H362 V224 H304 V220 H272 V210 Z"/>
+                <path fill="#e8d5a4" d="M410 114 V50 H438 V32 H498 V22 H574 V32 H618 V58 H630 V106 H606 V128 H548 V120 H482 V112 Z"/>
+                <path fill="#6aa56f" d="M426 106 V62 H450 V46 H504 V36 H566 V46 H606 V64 H616 V102 H594 V116 H544 V110 H474 V104 Z"/>
+                <path fill="#e8d5a4" d="M446 300 V220 H476 V202 H516 V192 H566 V200 H610 V216 H640 V300 Z"/>
+                <path fill="#6aa56f" d="M462 300 V234 H488 V216 H522 V208 H564 V216 H604 V230 H628 V300 Z"/>
+                <path fill="#e8d5a4" d="M556 190 V130 H578 V118 H620 V126 H640 V190 Z"/>
+                <path fill="#6aa56f" d="M568 184 V140 H588 V130 H618 V136 H632 V184 Z"/>
               </g>
 
-              <g transform="translate(34 220)">
-                <rect x="14" y="18" width="4" height="22" fill="#7a5230"/>
-                <rect x="4" y="10" width="22" height="4" fill="#2f7d52"/>
-                <rect x="0" y="4" width="12" height="4" fill="#3f9b62"/>
-                <rect x="18" y="2" width="12" height="4" fill="#3f9b62"/>
-                <rect x="8" y="-4" width="10" height="4" fill="#4cb36f"/>
-              </g>
-              <g transform="translate(210 214) scale(.9)">
-                <rect x="14" y="18" width="4" height="22" fill="#7a5230"/>
-                <rect x="4" y="10" width="22" height="4" fill="#2f7d52"/>
-                <rect x="0" y="4" width="12" height="4" fill="#3f9b62"/>
-                <rect x="18" y="2" width="12" height="4" fill="#3f9b62"/>
-                <rect x="8" y="-4" width="10" height="4" fill="#4cb36f"/>
-              </g>
-              <g transform="translate(360 204) scale(.8)">
-                <rect x="14" y="18" width="4" height="22" fill="#7a5230"/>
-                <rect x="4" y="10" width="22" height="4" fill="#2f7d52"/>
-                <rect x="0" y="4" width="12" height="4" fill="#3f9b62"/>
-                <rect x="18" y="2" width="12" height="4" fill="#3f9b62"/>
-                <rect x="8" y="-4" width="10" height="4" fill="#4cb36f"/>
+              <!-- puentes y pasarelas -->
+              <g>
+                <rect x="174" y="232" width="76" height="10" fill="#6b4a2b"/>
+                <rect x="180" y="234" width="64" height="4" fill="#8a5f37"/>
+                <rect x="228" y="126" width="40" height="10" fill="#6b4a2b"/>
+                <rect x="234" y="128" width="28" height="4" fill="#8a5f37"/>
+                <rect x="404" y="120" width="54" height="10" fill="#6b4a2b"/>
+                <rect x="410" y="122" width="42" height="4" fill="#8a5f37"/>
+                <rect x="414" y="210" width="64" height="10" fill="#6b4a2b"/>
+                <rect x="420" y="212" width="52" height="4" fill="#8a5f37"/>
               </g>
 
-              <g transform="translate(268 228)">
-                <rect x="0" y="12" width="36" height="6" fill="#6b4a2b"/>
-                <rect x="4" y="8" width="28" height="4" fill="#8a5f37"/>
-                <rect x="16" y="-14" width="3" height="22" fill="#6b4a2b"/>
-                <path fill="#f4f8f2" d="M19 -12 L19 4 L34 4 Z"/>
+              <!-- palmeras, juncos y rocas -->
+              <use href="#iePalm" transform="translate(24 218) scale(1.1)"/>
+              <use href="#iePalm" transform="translate(124 198) scale(.95)"/>
+              <use href="#iePalm" transform="translate(52 56)"/>
+              <use href="#iePalm" transform="translate(188 62) scale(1.1)"/>
+              <use href="#iePalm" transform="translate(272 180) scale(.9)"/>
+              <use href="#iePalm" transform="translate(398 208) scale(1.05)"/>
+              <use href="#iePalm" transform="translate(472 54) scale(1.1)"/>
+              <use href="#iePalm" transform="translate(582 34) scale(.95)"/>
+              <use href="#iePalm" transform="translate(496 248) scale(1.05)"/>
+              <use href="#iePalm" transform="translate(600 238) scale(.9)"/>
+              <use href="#ieReed" transform="translate(196 172)"/>
+              <use href="#ieReed" transform="translate(238 86)"/>
+              <use href="#ieReed" transform="translate(430 182)"/>
+              <use href="#ieReed" transform="translate(552 152)"/>
+              <use href="#ieReed" transform="translate(612 202)"/>
+              <use href="#ieWaterRock" transform="translate(148 226)"/>
+              <use href="#ieWaterRock" transform="translate(340 150) scale(.9)"/>
+              <use href="#ieWaterRock" transform="translate(522 212)"/>
+              <use href="#ieWaterRock" transform="translate(590 104)"/>
+              <g fill="#6aa56f">
+                <ellipse cx="206" cy="168" rx="10" ry="5"/>
+                <ellipse cx="268" cy="118" rx="8" ry="4"/>
+                <ellipse cx="440" cy="174" rx="10" ry="5"/>
+                <ellipse cx="536" cy="164" rx="8" ry="4"/>
               </g>
-
-              <g fill="#7d8f96">
-                <rect x="130" y="266" width="12" height="8"/><rect x="302" y="258" width="10" height="6"/>
-                <rect x="446" y="252" width="12" height="8"/>
-              </g>
-              <g fill="#ffd166">
-                <rect x="120" y="232" width="8" height="4"/><rect x="128" y="230" width="4" height="8"/>
-                <rect x="380" y="236" width="8" height="4"/><rect x="388" y="234" width="4" height="8"/>
-              </g>
-
-              <g transform="translate(612 118)">
-                <rect x="0" y="30" width="24" height="46" fill="#f4f8f2"/>
-                <rect x="2" y="8" width="20" height="24" fill="#f4f8f2"/>
-                <rect x="2" y="14" width="20" height="4" fill="#d94f4f"/>
-                <rect x="2" y="24" width="20" height="4" fill="#d94f4f"/>
-                <rect x="-1" y="2" width="26" height="6" fill="#d94f4f"/>
-                <rect x="6" y="-6" width="12" height="8" fill="#ffd166"/>
-                <rect x="12" y="-18" width="4" height="12" fill="#ffe8a0" opacity=".4"/>
-                <rect x="22" y="-18" width="4" height="12" fill="#ffe8a0" opacity=".2"/>
+              <g fill="#8ad8e8" opacity=".9">
+                <rect x="240" y="250" width="22" height="3"/>
+                <rect x="450" y="144" width="26" height="3"/>
+                <rect x="80" y="156" width="20" height="3"/>
               </g>
             </g>
 
-            <!-- mapa de fuego -->
             <g class="ie-map-scene" data-scene="fire">
-              <rect width="640" height="300" fill="#3a1c2b"/>
-              <rect width="640" height="88" fill="#55222e"/>
-              <rect y="88" width="640" height="54" fill="#742c2c"/>
-
-              <g>
-                <rect x="522" y="22" width="36" height="36" fill="#ff8c42" opacity=".22"/>
-                <rect x="516" y="28" width="48" height="24" fill="#ff8c42" opacity=".16"/>
-                <rect x="528" y="16" width="24" height="48" fill="#ff8c42" opacity=".16"/>
-                <rect x="530" y="30" width="24" height="24" fill="#ffd166"/>
-                <rect x="536" y="36" width="12" height="12" fill="#3a1c2b"/>
+              <rect width="640" height="300" fill="url(#ieFireGround)"/>
+              <g fill="#3b2a2d" opacity=".5">
+                <rect y="248" width="640" height="52"/>
+                <rect y="0" width="640" height="20"/>
               </g>
 
-              <g fill="#6b3236" opacity=".8">
-                <rect x="50" y="40" width="52" height="8"/>
-                <rect x="38" y="48" width="78" height="8"/>
-                <rect x="60" y="32" width="28" height="8"/>
-                <rect x="300" y="54" width="44" height="8"/>
-                <rect x="288" y="62" width="68" height="8"/>
-                <rect x="312" y="46" width="20" height="8"/>
-              </g>
+              <!-- lagunas de lava -->
+              <path fill="#ff6b35" d="M0 0 H120 V14 H96 V34 H66 V54 H30 V46 H0 Z"/>
+              <path fill="#ffd166" opacity=".75" d="M12 8 H82 V16 H62 V28 H28 V20 H12 Z"/>
+              <rect x="100" y="42" width="24" height="4" fill="#ffb347"/>
+              <path fill="#ff6b35" d="M640 300 V238 H610 V220 H572 V228 H540 V248 H556 V270 H592 V300 Z"/>
+              <path fill="#ffd166" opacity=".75" d="M600 252 H630 V268 H608 V286 H588 V274 H600 Z"/>
 
-              <path fill="#4a2630" d="M0 190 V172 H28 V154 H56 V136 H84 V154 H112 V172 H144 V190 H180 V174 H204 V158 H228 V174 H260 V190 H300 V172 H328 V156 H356 V172 H380 V190 H640 V300 H0 Z"/>
-
-              <path fill="#5c2b30" d="M346 220 V204 H372 V188 H398 V172 H424 V156 H450 V140 H476 V124 H502 V108 H526 V92 H558 V108 H582 V124 H608 V140 H640 V300 H346 Z"/>
-              <rect x="522" y="94" width="44" height="8" fill="#ffd166"/>
-              <rect x="516" y="102" width="56" height="6" fill="#ff6b35"/>
+              <!-- grietas incandescentes -->
               <g fill="#ff6b35">
-                <rect x="548" y="108" width="18" height="8"/>
-                <rect x="554" y="116" width="12" height="16"/>
-                <rect x="544" y="132" width="12" height="14"/>
-                <rect x="532" y="146" width="12" height="20"/>
-                <rect x="540" y="166" width="14" height="22"/>
-                <rect x="552" y="188" width="12" height="32"/>
-                <rect x="540" y="220" width="20" height="80"/>
+                <rect x="180" y="50" width="32" height="4"/>
+                <rect x="212" y="54" width="12" height="4"/>
+                <rect x="224" y="58" width="4" height="22"/>
+                <rect x="228" y="80" width="28" height="4"/>
+                <rect x="340" y="132" width="48" height="4"/>
+                <rect x="388" y="136" width="4" height="24"/>
+                <rect x="392" y="160" width="30" height="4"/>
+                <rect x="120" y="190" width="42" height="4"/>
+                <rect x="160" y="194" width="4" height="18"/>
+                <rect x="500" y="170" width="36" height="4"/>
+                <rect x="536" y="174" width="4" height="18"/>
               </g>
               <g fill="#ffd166">
-                <rect x="552" y="110" width="8" height="4"/>
-                <rect x="556" y="120" width="4" height="8"/>
-                <rect x="546" y="136" width="4" height="6"/>
-                <rect x="534" y="150" width="4" height="10"/>
-                <rect x="544" y="172" width="4" height="12"/>
-                <rect x="554" y="196" width="4" height="16"/>
-                <rect x="544" y="232" width="6" height="60"/>
+                <rect x="184" y="51" width="8" height="2"/>
+                <rect x="230" y="82" width="10" height="2"/>
+                <rect x="344" y="133" width="10" height="2"/>
+                <rect x="394" y="162" width="8" height="2"/>
+                <rect x="124" y="191" width="8" height="2"/>
+                <rect x="504" y="171" width="8" height="2"/>
               </g>
 
-              <rect y="212" width="640" height="88" fill="#2b1d1d"/>
-              <rect y="242" width="640" height="58" fill="#241717"/>
-              <rect y="274" width="640" height="26" fill="#1d1212"/>
-
-              <g fill="#ff6b35">
-                <rect x="18" y="246" width="54" height="4"/><rect x="66" y="250" width="16" height="4"/>
-                <rect x="108" y="236" width="42" height="4"/><rect x="146" y="240" width="20" height="4"/>
-                <rect x="190" y="266" width="58" height="4"/><rect x="240" y="270" width="18" height="4"/>
-                <rect x="292" y="250" width="36" height="4"/><rect x="324" y="254" width="20" height="4"/>
-                <rect x="386" y="234" width="48" height="4"/><rect x="428" y="238" width="18" height="4"/>
-                <rect x="472" y="260" width="42" height="4"/><rect x="506" y="264" width="20" height="4"/>
-              </g>
-              <g fill="#ffd166">
-                <rect x="20" y="247" width="12" height="2"/><rect x="112" y="237" width="10" height="2"/>
-                <rect x="196" y="267" width="14" height="2"/><rect x="296" y="251" width="8" height="2"/>
-                <rect x="392" y="235" width="12" height="2"/><rect x="478" y="261" width="10" height="2"/>
-              </g>
-
-              <g fill="#3b2a2d">
-                <rect x="120" y="250" width="18" height="10"/><rect x="126" y="244" width="8" height="8"/>
-                <rect x="272" y="256" width="20" height="10"/><rect x="280" y="248" width="8" height="10"/>
-                <rect x="438" y="246" width="16" height="10"/><rect x="444" y="240" width="8" height="8"/>
-                <rect x="592" y="252" width="20" height="10"/><rect x="600" y="244" width="8" height="10"/>
-              </g>
-
-              <g fill="#1c1212">
-                <rect x="168" y="188" width="6" height="32"/>
-                <rect x="158" y="196" width="10" height="4"/>
-                <rect x="172" y="202" width="12" height="4"/>
-                <rect x="404" y="170" width="6" height="34"/>
-                <rect x="394" y="178" width="10" height="4"/>
-                <rect x="408" y="186" width="12" height="4"/>
-              </g>
-
+              <!-- rocas, árboles quemados y brasas -->
+              <use href="#ieVolcanicRock" transform="translate(58 118) scale(1.2)"/>
+              <use href="#ieVolcanicRock" transform="translate(292 86) scale(.9)"/>
+              <use href="#ieVolcanicRock" transform="translate(430 190) scale(1.1)"/>
+              <use href="#ieVolcanicRock" transform="translate(560 116) scale(.8)"/>
+              <use href="#ieVolcanicRock" transform="translate(190 256)"/>
+              <use href="#ieDeadTree" transform="translate(48 152) scale(1.1)"/>
+              <use href="#ieDeadTree" transform="translate(184 44) scale(.9)"/>
+              <use href="#ieDeadTree" transform="translate(472 34)"/>
+              <use href="#ieDeadTree" transform="translate(614 194) scale(1.1)"/>
+              <use href="#ieEmber" transform="translate(96 222)"/>
+              <use href="#ieEmber" transform="translate(278 154)"/>
+              <use href="#ieEmber" transform="translate(356 238)"/>
+              <use href="#ieEmber" transform="translate(522 66)"/>
+              <use href="#ieEmber" transform="translate(600 132)"/>
               <g fill="#ffb347">
-                <rect x="66" y="214" width="4" height="4"/><rect x="158" y="222" width="4" height="4"/>
-                <rect x="250" y="206" width="4" height="4"/><rect x="338" y="214" width="4" height="4"/>
-                <rect x="452" y="202" width="4" height="4"/><rect x="536" y="214" width="4" height="4"/>
-                <rect x="610" y="206" width="4" height="4"/>
+                <rect x="140" y="86" width="4" height="4"/>
+                <rect x="326" y="42" width="4" height="4"/>
+                <rect x="418" y="112" width="4" height="4"/>
+                <rect x="510" y="192" width="4" height="4"/>
+                <rect x="620" y="86" width="4" height="4"/>
+                <rect x="78" y="270" width="4" height="4"/>
+              </g>
+              <g fill="#1c1212" opacity=".65">
+                <rect x="240" y="156" width="16" height="6"/>
+                <rect x="246" y="150" width="6" height="6"/>
+                <rect x="380" y="252" width="18" height="6"/>
+                <rect x="388" y="246" width="6" height="6"/>
               </g>
             </g>
 
-            <!-- sendero -->
-            <path id="trailPathBase" class="ie-trail-path-base" fill="none" stroke="#6f5232" stroke-width="16" stroke-linecap="square" stroke-linejoin="miter" d="M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552"/>
-            <path id="trailPathTop" class="ie-trail-path" fill="none" stroke="#d8b078" stroke-width="10" stroke-linecap="square" stroke-linejoin="miter" d="M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552"/>
+            <!-- portal de salida (se activa al completar las banderas) -->
+            <g id="trailExit"></g>
 
             <!-- banderas (se generan por JS) -->
             <g id="trailStops"></g>
@@ -574,12 +547,13 @@
       near: -1,
       active: -1,
       encounterOpen: false,
+      transitioning: false,
       answered: false,
       solved: false,
       wrong: false,
       completed: false,
       won: false,
-      player: { x: 24, y: 278, facing: 'down', moving: false }
+      player: { x: 50, y: 270, facing: 'down', moving: false }
     },
     explorer: { path: [] },
     memory: { deck: [], first: null, second: null, lock: false, moves: 0, matches: 0, pairs: 6 }
@@ -591,16 +565,16 @@
       name: 'Bosque de Tibirita',
       shortName: 'bosque',
       theme: 'forest',
-      aria: 'Mapa pixel art del bosque con seis banderas para explorar',
-      start: { x: 40, y: 220 },
-      path: 'M64 246 H108 V206 H150 H196 V232 H252 H304 V166 H346 H392 V196 H430 H486 V132 H552',
+      aria: 'Mapa cenital del bosque con seis banderas repartidas por el terreno',
+      start: { x: 50, y: 270 },
+      exit: { x: 600, y: 150 },
       stops: [
-        { x: 64, y: 246, place: 'Orilla del río' },
-        { x: 150, y: 206, place: 'Pradera de flores' },
-        { x: 252, y: 232, place: 'Bosque de musgo' },
-        { x: 346, y: 166, place: 'Puente del arroyo' },
-        { x: 430, y: 196, place: 'Bosque alto' },
-        { x: 552, y: 132, place: 'Cumbre del cerro' }
+        { x: 90, y: 250, place: 'Claro del helecho' },
+        { x: 230, y: 80, place: 'Bosque de pinos' },
+        { x: 410, y: 70, place: 'Rincón de musgo' },
+        { x: 150, y: 170, place: 'Pradera húmeda' },
+        { x: 350, y: 190, place: 'Sendero de raíces' },
+        { x: 540, y: 240, place: 'Orilla del arroyo' }
       ]
     },
     {
@@ -608,18 +582,18 @@
       name: 'Ríos y cascadas',
       shortName: 'agua',
       theme: 'water',
-      aria: 'Mapa pixel art de agua con ocho banderas entre islas y puentes',
-      start: { x: 40, y: 278 },
-      path: 'M52 250 H92 V222 H132 H176 V250 H210 H250 V200 H286 H326 V230 H360 H400 V180 H436 H476 V214 H510 H548 V150 H584',
+      aria: 'Mapa cenital del humedal con ocho banderas repartidas entre islas',
+      start: { x: 50, y: 270 },
+      exit: { x: 600, y: 150 },
       stops: [
-        { x: 52, y: 250, place: 'Muelle de madera' },
-        { x: 132, y: 222, place: 'Puente de tablones' },
-        { x: 210, y: 250, place: 'Isla de las palmeras' },
-        { x: 286, y: 200, place: 'Paso de los peces' },
-        { x: 360, y: 230, place: 'Isla escondida' },
-        { x: 436, y: 180, place: 'Puente colgante' },
-        { x: 510, y: 214, place: 'Muelle del faro' },
-        { x: 584, y: 150, place: 'Faro de la costa' }
+        { x: 80, y: 250, place: 'Isla de los juncos' },
+        { x: 170, y: 120, place: 'Muelle viejo' },
+        { x: 310, y: 200, place: 'Islote central' },
+        { x: 450, y: 90, place: 'Palmar alto' },
+        { x: 560, y: 60, place: 'Punta de arena' },
+        { x: 100, y: 60, place: 'Isla de las garzas' },
+        { x: 520, y: 250, place: 'Playa escondida' },
+        { x: 370, y: 190, place: 'Puente de madera' }
       ]
     },
     {
@@ -627,25 +601,26 @@
       name: 'Volcán ardiente',
       shortName: 'fuego',
       theme: 'fire',
-      aria: 'Mapa pixel art de fuego con ocho banderas entre lava y roca volcánica',
-      start: { x: 40, y: 278 },
-      path: 'M48 250 H84 V218 H124 H164 V246 H202 H238 V196 H276 H312 V226 H348 H384 V172 H420 H456 V204 H494 H530 V134 H572',
+      aria: 'Mapa cenital del volcán con ocho banderas repartidas por la roca',
+      start: { x: 50, y: 270 },
+      exit: { x: 600, y: 150 },
       stops: [
-        { x: 48, y: 250, place: 'Borde del cráter' },
-        { x: 124, y: 218, place: 'Sendero de obsidiana' },
-        { x: 202, y: 246, place: 'Río de lava' },
-        { x: 276, y: 196, place: 'Puente de roca' },
-        { x: 348, y: 226, place: 'Valle de ceniza' },
-        { x: 420, y: 172, place: 'Garganta ardiente' },
-        { x: 494, y: 204, place: 'Risco humeante' },
-        { x: 572, y: 134, place: 'Cima del volcán' }
+        { x: 90, y: 240, place: 'Campo de ceniza' },
+        { x: 230, y: 60, place: 'Grieta humeante' },
+        { x: 400, y: 70, place: 'Roca de obsidiana' },
+        { x: 500, y: 230, place: 'Borde del cráter' },
+        { x: 150, y: 150, place: 'Valle de basalto' },
+        { x: 330, y: 210, place: 'Camino de brasas' },
+        { x: 480, y: 140, place: 'Arco de piedra' },
+        { x: 580, y: 70, place: 'Fumarola' }
       ]
     }
   ];
 
-  var PLAYER_BOUNDS = { minX: 32, maxX: 608, minY: 130, maxY: 286 };
+  var PLAYER_BOUNDS = { minX: 32, maxX: 608, minY: 64, maxY: 286 };
   var PLAYER_SPEED = 108;
   var INTERACT_RADIUS = 28;
+  var EXIT_RADIUS = 30;
 
   var PLAYER_FRAMES = {
     down: {
@@ -823,6 +798,7 @@
     trail.near = -1;
     trail.active = -1;
     trail.encounterOpen = false;
+    trail.transitioning = false;
     trail.answered = false;
     trail.solved = false;
     trail.wrong = false;
@@ -835,6 +811,8 @@
     $('trailGame').hidden = true;
     $('trailGame').classList.remove('is-open');
     $('trailControls').classList.remove('is-paused');
+    $('trailMapframe').classList.remove('is-leaving');
+    $('trailExit').innerHTML = '';
     $('quizFeedback').innerHTML = '';
     $('quizOptions').innerHTML = '';
     $('trailInteract').hidden = true;
@@ -854,8 +832,6 @@
     document.querySelectorAll('.ie-map-scene').forEach(function (scene) {
       scene.classList.toggle('is-active', scene.getAttribute('data-scene') === map.theme);
     });
-    $('trailPathBase').setAttribute('d', map.path);
-    $('trailPathTop').setAttribute('d', map.path);
   }
 
   function buildOptions(target) {
@@ -902,6 +878,7 @@
     g.setAttribute('data-y', flag.y);
     g.innerHTML =
       (status === 'is-current' ? '<rect class="ie-stop-ring" x="-22" y="-7" width="44" height="14"></rect>' : '') +
+      '<ellipse class="ie-stop-clearing" cx="0" cy="2" rx="20" ry="7"></ellipse>' +
       '<rect class="ie-stop-shadow" x="-11" y="2" width="22" height="5"></rect>' +
       '<rect class="ie-stop-pole" x="-1.5" y="-30" width="4" height="32"></rect>' +
       '<rect class="ie-stop-flag" x="2.5" y="-30" width="24" height="16"></rect>' +
@@ -918,9 +895,66 @@
     });
   }
 
+  function renderTrailExit() {
+    var layer = $('trailExit');
+    var trail = state.trail;
+    layer.innerHTML = '';
+    if (!trail.completed || trail.won) return;
+
+    var map = currentMap();
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'ie-trail-exit');
+    g.setAttribute('transform', 'translate(' + map.exit.x + ' ' + map.exit.y + ')');
+    g.innerHTML =
+      '<ellipse class="ie-exit-glow" cx="0" cy="4" rx="36" ry="19"></ellipse>' +
+      '<ellipse class="ie-exit-ring" cx="0" cy="4" rx="23" ry="12"></ellipse>' +
+      '<ellipse class="ie-exit-core" cx="0" cy="4" rx="14" ry="7"></ellipse>' +
+      '<path class="ie-exit-arrow" d="M-7 -1 H4 V-7 L16 4 L4 15 V9 H-7 Z"></path>' +
+      '<text x="0" y="-23" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="700" fill="#ffe8a0" stroke="#10231d" stroke-width="2" paint-order="stroke">SIGUIENTE</text>';
+    layer.appendChild(g);
+  }
+
+  function checkExit() {
+    var trail = state.trail;
+    if (!trail.completed || trail.transitioning || trail.encounterOpen || trail.won) return false;
+    var map = currentMap();
+    var distance = Math.hypot(trail.player.x - map.exit.x, trail.player.y - map.exit.y);
+    if (distance > EXIT_RADIUS) return false;
+    enterExit();
+    return true;
+  }
+
+  function enterExit() {
+    var trail = state.trail;
+    if (trail.transitioning) return;
+    trail.transitioning = true;
+    stopMoving();
+    $('trailMapframe').classList.add('is-leaving');
+    $('trailPlace').textContent = currentMap().name + ' · Portal';
+    $('trailStatus').textContent = 'Entrando al siguiente territorio…';
+
+    var finalMap = trail.mapIndex === MAPS.length - 1;
+    window.setTimeout(function () {
+      if (!trail.transitioning || !trail.completed) return;
+      $('trailMapframe').classList.remove('is-leaving');
+      if (finalMap) {
+        trail.won = true;
+        trail.transitioning = false;
+        renderTrailExit();
+        showReward();
+        return;
+      }
+      trail.mapIndex++;
+      trail.transitioning = false;
+      startMap(false);
+      IE.toast('Entraste a ' + currentMap().name + ' 🧭');
+      $('trailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 520);
+  }
+
   function updateNearFlag() {
     var trail = state.trail;
-    if (trail.encounterOpen) return;
+    if (trail.encounterOpen || trail.transitioning) return;
     var near = -1;
     var best = INTERACT_RADIUS;
     trail.route.forEach(function (flag, index) {
@@ -950,6 +984,20 @@
       return;
     }
 
+    if (trail.transitioning) {
+      interact.hidden = true;
+      $('trailPlace').textContent = map.name + ' · Portal';
+      $('trailStatus').textContent = 'Entrando al siguiente territorio…';
+      return;
+    }
+
+    if (trail.completed) {
+      interact.hidden = true;
+      $('trailPlace').textContent = map.name;
+      $('trailStatus').textContent = '¡Mapa completado! Camina hacia el portal del este.';
+      return;
+    }
+
     if (trail.near >= 0 && trail.route[trail.near]) {
       interact.hidden = false;
       interact.textContent = 'Responder bandera ' + (trail.near + 1);
@@ -961,9 +1009,7 @@
     interact.hidden = true;
     $('trailPlace').textContent = map.name;
     var remaining = trail.route.length - countAnswered();
-    if (trail.completed) {
-      $('trailStatus').textContent = trail.won ? '¡Recompensa desbloqueada!' : '¡Mapa completado!';
-    } else if (remaining === trail.route.length) {
+    if (remaining === trail.route.length) {
       $('trailStatus').textContent = 'Camina con las flechas o los botones y busca las banderas.';
     } else if (remaining > 0) {
       $('trailStatus').textContent = 'Quedan ' + remaining + ' banderas por descubrir.';
@@ -974,14 +1020,14 @@
 
   function tryEnterFlag() {
     var trail = state.trail;
-    if (trail.encounterOpen || trail.near < 0) return;
+    if (trail.encounterOpen || trail.transitioning || trail.near < 0) return;
     openEncounter(trail.near);
   }
 
   function openEncounter(index) {
     var trail = state.trail;
     var flag = trail.route[index];
-    if (!flag || flag.answered) return;
+    if (!flag || flag.answered || trail.transitioning) return;
 
     stopMoving();
     trail.active = index;
@@ -1017,9 +1063,11 @@
     updateNearFlag();
     updateInteractionUi();
     updateTrailHud();
+    renderTrailExit();
     if (scrollBack) {
       $('trailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    checkExit();
   }
 
   function renderTrailQuestion(index) {
@@ -1078,19 +1126,18 @@
 
       if (answeredCount >= trail.route.length) {
         trail.completed = true;
+        trail.won = false;
         if (trail.mapIndex === MAPS.length - 1) {
-          trail.won = true;
           $('quizFeedback').innerHTML = '<strong>¡Completaste el mapa de fuego!</strong> La última especie era ' + details +
-            '. La Espada de la Sabiduría ya es tuya.' + speciesLink;
-          $('quizNext').textContent = 'Reclamar la espada ⚔️';
-          $('trailStatus').textContent = '¡El volcán se ha calmado! Reclama tu recompensa.';
+            '. El portal a la Espada de la Sabiduría se ha abierto. Cierra este panel y camina hacia el portal del este.' + speciesLink;
+          $('trailStatus').textContent = '¡Portal abierto! Camina hacia la salida del este.';
         } else {
           var nextMap = MAPS[trail.mapIndex + 1];
           $('quizFeedback').innerHTML = '<strong>¡Mapa completado!</strong> Reconociste las ' + trail.route.length +
-            ' banderas de este territorio. La última era ' + details + '.' + speciesLink;
-          $('quizNext').textContent = 'Ir al mapa de ' + nextMap.shortName + ' →';
-          $('trailStatus').textContent = '¡Ruta completada! El siguiente territorio te espera.';
+            ' banderas de este territorio. El portal hacia ' + nextMap.name + ' se ha abierto al este.' + speciesLink;
+          $('trailStatus').textContent = '¡Portal abierto! Camina hacia la salida del este.';
         }
+        $('quizNext').textContent = 'Cerrar y buscar el portal →';
       } else {
         var remaining = trail.route.length - answeredCount;
         $('quizFeedback').innerHTML = '<strong>¡Bandera asegurada!</strong> Es ' + details + '. Quedan ' +
@@ -1108,6 +1155,7 @@
 
     $('quizNext').hidden = false;
     renderTrailFlags();
+    renderTrailExit();
     updateTrailHud();
   }
 
@@ -1119,19 +1167,15 @@
       return;
     }
     if (trail.completed) {
-      if (trail.won) {
-        showReward();
-        return;
-      }
-      trail.mapIndex++;
-      startMap(false);
-      $('trailCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      closeEncounter(true);
       return;
     }
     if (trail.solved) closeEncounter(true);
   }
 
   function showReward() {
+    state.trail.transitioning = false;
+    $('trailMapframe').classList.remove('is-leaving');
     $('trailCard').hidden = true;
     $('trailReward').hidden = false;
     $('trailReward').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1166,7 +1210,7 @@
   }
 
   function beginMove(direction) {
-    if (state.trail.encounterOpen) return;
+    if (state.trail.encounterOpen || state.trail.transitioning) return;
     moveHeld[direction] = true;
     if (!moveRaf) {
       lastMoveTs = 0;
@@ -1196,7 +1240,7 @@
   }
 
   function moveTick(timestamp) {
-    if (state.trail.encounterOpen || !anyMoveHeld()) {
+    if (state.trail.encounterOpen || state.trail.transitioning || !anyMoveHeld()) {
       moveRaf = null;
       state.trail.player.moving = false;
       updatePlayerFrame(timestamp, true);
@@ -1224,6 +1268,11 @@
     updatePlayerPosition();
     updateNearFlag();
     updatePlayerFrame(timestamp, false);
+
+    if (checkExit()) {
+      moveRaf = null;
+      return;
+    }
 
     moveRaf = requestAnimationFrame(moveTick);
   }

@@ -821,14 +821,14 @@ html { scroll-behavior: smooth; }
   overflow: hidden;
   border: 4px solid #16332f;
   box-shadow: inset 0 0 0 3px #2e5d51;
-  background: #a9dde3;
+  background: #0f2b27;
 }
 .ie-trail-map { display: block; width: 100%; height: auto; shape-rendering: crispEdges; }
 .ie-trail-player {
   position: absolute;
   z-index: 6;
-  left: 3.75%;
-  top: 92.667%;
+  left: 7.813%;
+  top: 90%;
   width: 9.2%;
   transform: translate(-50%, -100%);
   pointer-events: none;
@@ -854,17 +854,6 @@ html { scroll-behavior: smooth; }
 }
 .ie-map-scene { display: none; }
 .ie-map-scene.is-active { display: block; }
-.ie-trail-path { stroke-dasharray: 10 8; }
-.ie-trail-map[data-theme="water"] { background: #8fd7e8; }
-.ie-trail-map[data-theme="water"] .ie-trail-path-base { stroke: #5b4025; }
-.ie-trail-map[data-theme="water"] .ie-trail-path { stroke: #c9975c; stroke-dasharray: 12 7; }
-.ie-trail-map[data-theme="fire"] { background: #3a1c2b; }
-.ie-trail-map[data-theme="fire"] .ie-trail-path-base { stroke: #241313; }
-.ie-trail-map[data-theme="fire"] .ie-trail-path {
-  stroke: #ff7a3d;
-  stroke-dasharray: 12 11;
-  filter: drop-shadow(0 0 3px rgba(255, 107, 53, .75));
-}
 .ie-trail-map[data-theme="water"] .ie-trail-stop.is-current .ie-stop-flag,
 .ie-trail-map[data-theme="water"] .ie-trail-stop.is-current .ie-stop-flag-tip { fill: #8ef0ff; }
 .ie-trail-map[data-theme="water"] .ie-stop-ring { stroke: #8ef0ff; }
@@ -988,6 +977,7 @@ html { scroll-behavior: smooth; }
 .ie-trail-body .ie-quiz-next { margin-top: 12px; }
 .ie-trail-card [hidden] { display: none !important; }
 
+.ie-trail-stop .ie-stop-clearing { fill: rgba(5, 20, 15, .17); }
 .ie-trail-stop .ie-stop-shadow { fill: rgba(9, 24, 20, .28); }
 .ie-trail-stop .ie-stop-pole { fill: #5c432d; }
 .ie-trail-stop .ie-stop-flag,
@@ -1003,6 +993,30 @@ html { scroll-behavior: smooth; }
   animation: ie-stop-pulse 1.1s steps(2, end) infinite;
 }
 @keyframes ie-stop-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+.ie-trail-exit { pointer-events: none; }
+.ie-trail-exit .ie-exit-glow {
+  fill: #ffd166;
+  opacity: .2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ie-exit-pulse 1.5s ease-in-out infinite;
+}
+.ie-trail-exit .ie-exit-ring {
+  fill: rgba(255, 209, 102, .12);
+  stroke: #ffd166;
+  stroke-width: 3;
+}
+.ie-trail-exit .ie-exit-core { fill: rgba(255, 209, 102, .28); }
+.ie-trail-exit .ie-exit-arrow { fill: #ffe8a0; }
+@keyframes ie-exit-pulse {
+  0%, 100% { opacity: .14; transform: scale(.9); }
+  50% { opacity: .34; transform: scale(1.08); }
+}
+.ie-trail-mapframe.is-leaving .ie-trail-map,
+.ie-trail-mapframe.is-leaving .ie-trail-player {
+  opacity: .28;
+  transition: opacity .3s ease;
+}
 /* Recompensa final */
 .ie-trail-card[hidden],
 .ie-trail-reward[hidden] { display: none !important; }

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-05T21:15:38.714Z",
+  "generatedAt": "2026-11-07T05:17:44.232Z",
   "source": "content/*.md",
   "levels": {
     "reinos": [
@@ -960,7 +960,9 @@
         "fecha": "2026-11-05T14:40:00.000-06:00",
         "ubicacion": "centro",
         "vereda": [
-          "CASCO URBANO"
+          "CASCO URBANO",
+          "SOATAMA",
+          "LAGUNA"
         ],
         "imagenes": [
           "/images/uploads/whatsapp-image-2026-10-07-at-2.46.38-pm-1-.jpeg"
